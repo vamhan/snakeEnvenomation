@@ -1,0 +1,80 @@
+.scroll-content {
+    background-image: url('../img/bg.jpg');
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-attachment: fixed;
+}
+
+.yn_button{
+  color:white !important;
+  background-color:#68696B !important;
+  border:0px !important;
+  width: 100%;
+  padding: 10px
+}
+
+.r_button{
+  margin-bottom: 10px;
+}
+.selected{
+  color:white !important;
+  background-color: #0035AD !important;
+  border:0px !important;
+}
+
+.nav{
+  height:50px;
+  background-color: #0035AD;
+}
+
+.header_title{
+  text-align:center;
+  margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.border{
+  border: 1px solid;
+  border-radius: 15px;
+  padding: 15px !important;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.snake_content{
+  margin-bottom: 10px;
+}
+
+.snake_content .col-lg-5{
+
+    padding-top:13%;
+}
+
+.snake_img{
+  text-align: center;
+}
+
+.content_header{
+  text-align: right;
+}
+
+.main_body{
+  background-color: #0035AD;
+}
+
+.form-index{
+  color: white;
+}
+
+.form-index label, .form-normal label{
+  padding-top:8px;
+}
