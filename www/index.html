@@ -15,7 +15,7 @@
 
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
-    <!--<script src="lib/ngCordova/dist/ng-cordova.js"></script> -->
+    <script src="lib/ngCordova/dist/ng-cordova.js"></script>
 
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
@@ -57,75 +57,6 @@
                 <div class="padding">
                     <button class="button button-block button-positive" ng-click="login(user, patient)">
                         Submit
-                    </button>
-                </div>
-            </ion-content>
-        </ion-view>
-    </script>
-    
-    <script id="record.html" type="text/ng-template">
-        <ion-view hide-nav-bar="true">
-            <ion-content>
-                <div class="card">
-                    <div class="item item-divider">Physician's information</div>
-                    <div class="item"><input type="text" placeholder="Physician ID" ng-model="user.username"></div>
-                    <div class="item"><input type="text" placeholder="Physician Name" ng-model="user.password"></div>
-                    <div class="item"><input type="text" placeholder="Location/hospital" ng-model="user.hospital"></div>
-                </div>
-                <div class="card">
-                    <div class="item item-divider">Patient's information</div>
-                    <div class="item"><input type="text" placeholder="National ID" ng-model="patient.id"></div>
-                    <div class="item"><input type="text" placeholder="Patient Name" ng-model="patient.name"></div>
-                    <div class="item item-select">
-                        <div class="input-label">Patient Gender</div>
-                        <select ng-model="patient.gender">
-                            <option>Male</option>
-                            <option>Female</option>
-                        </select>
-                    </div>
-                    <div class="item item-select">
-                        <div class="input-label">Patient Birthdate</div>
-                        <input type="date" ng-model="patient.birthdate">
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="item item-divider">Date and time of incident</div>
-                    <div class="item item-select">
-                        <div class="input-label">Date of incident</div>
-                        <input type="date" ng-model="incident.date">
-                    </div>
-                    <div class="item item-select">
-                        <div class="input-label">Time of incident</div>
-                        <input type="date" ng-model="incident.time">
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="item item-divider">Location of Incident</div>
-                    <div class="item"><input type="text" placeholder="District" ng-model="incident.district"></div>
-                    <div class="item"><input type="text" placeholder="Province" ng-model="incident.province"></div>
-                </div>
-                <div class="padding">
-                    <button class="button button-block button-positive" ng-click="confirm(user, patient, incident)">
-                        Confirm
-                    </button>
-                </div>
-            </ion-content>
-        </ion-view>
-    </script>
-    
-    <script id="patientPUtil.html" type="text/ng-template">
-        <ion-view hide-nav-bar="true">
-            <ion-content>
-                <div class="padding border">
-                    <div class="header_title">
-                        <h2 style="font-weight:600">Does the patient has systemic bleeding?</h2>
-                        <button class="button" ng-class="class" style="width:40%;margin-right:20px" ng-click="toggleSelection()">Yes</button>
-                        <button class="button" ng-class="class" style="width:40%" ng-click="toggleSelection()">No</button>
-                    </div>
-                </div>
-                <div class="padding">
-                    <button class="button button-block button-positive" ng-click="confirm(user, patient, incident)">
-                        Confirm
                     </button>
                 </div>
             </ion-content>

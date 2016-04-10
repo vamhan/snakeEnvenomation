@@ -1,0 +1,67 @@
+<ion-view hide-nav-bar="true">
+    <ion-content>
+        <div class="padding border">
+            <div class="header_title">
+                <h3 style="font-weight:600">Does the patient has systemic bleeding?</h2>
+                <button class="button" ng-class="b_y_class" style="width:40%;margin-right:20px" ng-click="toggleYesSelection('b_y_class', 'b_n_class')">Yes</button>
+                <button class="button" ng-class="b_n_class" style="width:40%" ng-click="toggleNoSelection('b_n_class', 'b_y_class')">No</button>
+            </div>
+            <div class="header_title">
+                <h3 style="font-weight:600">Does the patient have impending respiratory failure?</h2>
+                <button class="button" ng-class="r_y_class" style="width:40%;margin-right:20px" ng-click="toggleYesSelection('r_y_class', 'r_n_class')">Yes</button>
+                <button class="button" ng-class="r_n_class" style="width:40%" ng-click="toggleNoSelection('r_n_class', 'r_y_class')">No</button>
+            </div>
+            
+            <ion-list>
+                <div class="item item-checkbox" style="padding-left:50px">
+                    <div class="checkbox">
+                        <input type="checkbox" ng-model="snake[0]" ng-change="snakeTypeSelect(0)">
+                    </div>
+                    <div class="row row-center">
+                        <div class="col">
+                            <img src="img/snake.jpg" width="100%"/>
+                        </div>
+                        <div class="col">
+                            <img src="img/snake.jpg" width="100%"/>
+                        </div>
+                        <a class="col col-20" href="http://www.google.com" style="word-wrap: break-word;white-space:normal">งูเขียวหางไหม้</a> 
+                    </div>
+                </div> 
+                <div class="item item-checkbox">
+                    <div class="checkbox">
+                        <input type="checkbox" ng-model="snake[1]" ng-change="snakeTypeSelect(1)">
+                    </div>
+                    <a class="row row-center" href="http://www.google.com">
+                        <div class="col col-20">งูเขียวหางไหม้</div>
+                        <div class="col">
+                            <img src="img/snake.jpg" width="100%"/>
+                        </div>
+                        <div class="col">
+                            <img src="img/snake.jpg" width="100%"/>
+                        </div>
+                    </a> 
+                </div>
+                <div class="item item-checkbox">
+                    <div class="checkbox">
+                        <input type="checkbox" ng-model="snake[2]" ng-change="snakeTypeSelect(2)">
+                    </div>
+                    <a class="row row-center" href="http://www.google.com">
+                        <div class="col col-20">งูกะปะ</div>
+                        <div class="col">
+                            <img src="img/snake.jpg" width="100%"/>
+                        </div>
+                        <div class="col">
+                            <img src="img/snake.jpg" width="100%"/>
+                        </div>
+                    </a> 
+                </div>
+            </ion-list>
+        </div>
+        
+        <div class="padding">
+            <button class="button button-block button-positive" ng-click="confirm(snake)">
+                Submit
+            </button>
+        </div>
+    </ion-content>
+</ion-view>

@@ -78,3 +78,7 @@
 .form-index label, .form-normal label{
   padding-top:8px;
 }
+
+.item input[type="text"] {
+    width: 100%
+}
