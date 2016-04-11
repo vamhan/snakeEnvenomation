@@ -82,3 +82,24 @@
 .item input[type="text"] {
     width: 100%
 }
+
+.popover ion-content {
+    background-image: none
+}
+
+.list .item {
+    background-color: transparent;
+    border-color: darkgray;
+}
+
+.unit-list .item input {
+    text-align: right
+}
+
+.info-list .item .col:first-child {
+    font-weight: bold
+}
+
+.info-list .item .col:last-child {
+    text-align: right
+}

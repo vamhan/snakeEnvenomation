@@ -1,0 +1,79 @@
+<ion-view view-title="Management">
+    <ion-content>
+        <div class="header_title">
+            <h3 class="light" style="font-weight:600">Management of Hematotoxic Snake Russell's viper</h2>
+        </div>
+        <div class="card info-list">
+            <div class="item item-divider">Information</div>
+            <div class="item row">
+                <div class="col">Physician Name :</div>
+                <div class="col">Fullname Surname</div>
+            </div>
+            <div class="item row">
+                <div class="col">Patient Name :</div>
+                <div class="col">Fullname Surname</div>
+            </div>
+            <div class="item row">
+                <div class="col">Has systemic bleeding :</div>
+                <div class="col">Yes</div>
+            </div>
+            <div class="item row">
+                <div class="col">Have impending respiratory failure :</div>
+                <div class="col">Yes</div>
+            </div>
+            <div class="item row">
+                <div class="col">Snake Type :</div>
+                <div class="col">งูแมวเซา</div>
+            </div>
+        </div>
+        
+        <div class="card info-list">
+            <div class="item item-divider">Current State</div>
+            <div class="item">
+                CBC, PT, INR, 20 min WBCT q 6 hr for 2 times (6, 12)
+            </div>
+        </div>
+        
+        <div class="card info-list">
+            <div class="item item-divider">
+                <span style="float:left">Lestest Blood Test Result</span>
+                <a ng-click="navigateToBloodResultList()" style="float:right">View all results</a>
+            </div>
+            <div class="item row">
+                <div class="col">INR :</div>
+                <div class="col">1</div>
+            </div>
+            <div class="item row">
+                <div class="col">20 Minutes WBCT :</div>
+                <div class="col">Clotted</div>
+            </div>
+            <div class="item row">
+                <div class="col">WBC :</div>
+                <div class="col">1</div>
+            </div>
+            <div class="item row">
+                <div class="col">Hct :</div>
+                <div class="col">1</div>
+            </div>
+            <div class="item row">
+                <div class="col">Platelet :</div>
+                <div class="col">1</div>
+            </div>
+            <div class="item row">
+                <div class="col">Blood :</div>
+                <div class="col">Positive</div>
+            </div>
+            <div class="item row">
+                <div class="col">RBC :</div>
+                <div class="col">0 - 1</div>
+            </div>
+        </div>
+        
+        <div class="card info-list">
+            <div class="item item-divider">More information</div>
+            <div class="item"><a ng-click="showPopup(0)">Indication for antivenom</a></div>
+            <div class="item"><a ng-click="showPopup(1)">How to manage</a></div>
+        </div>
+        
+    </ion-content>
+</ion-view>

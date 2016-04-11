@@ -13,48 +13,23 @@
             </div>
             
             <ion-list>
-                <div class="item item-checkbox" style="padding-left:50px">
-                    <div class="checkbox">
-                        <input type="checkbox" ng-model="snake[0]" ng-change="snakeTypeSelect(0)">
+                <div class="header_title" style="margin-top:10px;margin-bottom:0px">
+                    <h2 style="margin-bottom:0px">Type of Snake</h2>
+                </div>
+                <div ng-repeat="snake in snakes" class="item item-checkbox" style="padding-left:50px">
+                    <div class="checkbox" style="width:40px">
+                        <input type="checkbox" ng-model="snakeCheckbox[snake.id]" ng-change="snakeTypeSelect(snake.id)">
                     </div>
                     <div class="row row-center">
                         <div class="col">
-                            <img src="img/snake.jpg" width="100%"/>
+                            <img ng-src="{{snake.img1}}" width="100%"/>
                         </div>
                         <div class="col">
-                            <img src="img/snake.jpg" width="100%"/>
+                            <img ng-src="{{snake.img2}}" width="100%"/>
                         </div>
-                        <a class="col col-20" href="http://www.google.com" style="word-wrap: break-word;white-space:normal">งูเขียวหางไหม้</a> 
+                        <a class="col col-20" ng-click="openPopover($event, snake.id)" style="word-wrap: break-word;white-space:normal">{{snake.thaiName}}</a> 
                     </div>
                 </div> 
-                <div class="item item-checkbox">
-                    <div class="checkbox">
-                        <input type="checkbox" ng-model="snake[1]" ng-change="snakeTypeSelect(1)">
-                    </div>
-                    <a class="row row-center" href="http://www.google.com">
-                        <div class="col col-20">งูเขียวหางไหม้</div>
-                        <div class="col">
-                            <img src="img/snake.jpg" width="100%"/>
-                        </div>
-                        <div class="col">
-                            <img src="img/snake.jpg" width="100%"/>
-                        </div>
-                    </a> 
-                </div>
-                <div class="item item-checkbox">
-                    <div class="checkbox">
-                        <input type="checkbox" ng-model="snake[2]" ng-change="snakeTypeSelect(2)">
-                    </div>
-                    <a class="row row-center" href="http://www.google.com">
-                        <div class="col col-20">งูกะปะ</div>
-                        <div class="col">
-                            <img src="img/snake.jpg" width="100%"/>
-                        </div>
-                        <div class="col">
-                            <img src="img/snake.jpg" width="100%"/>
-                        </div>
-                    </a> 
-                </div>
             </ion-list>
         </div>
         
