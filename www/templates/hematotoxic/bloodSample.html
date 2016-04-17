@@ -1,19 +1,19 @@
-<ion-view view-title="Blood Test">
+<ion-view view-title="Blood Test" id="blood_view">
     <ion-content>
         <div class="header_title">
-            <h3 class="light" style="font-weight:600">Management of Hematotoxic Snake Russell's viper</h2>
+            <h3 class="light" style="font-weight:600">Management of Hematotoxic Snake {{snake.name}}</h2>
         </div>
         <div class="card unit-list">
-            <label class="item item-input">
+            <label class="item item-input" style="background-color:lightblue">
                 <span class="input-label">INR</span>
-                <input type="text" placeholder="INR">
+                <input type="text" placeholder="INR" ng-model="bloodTest.INR">
                 <span class="input-label">Unit</span>
             </label>
         </div>
         <div class="card unit-list">
-            <div class="item item-select">
+            <div class="item item-select" style="background-color:lightblue">
                 <div class="input-label">20 Minutes WBCT</div>
-                <select ng-model="patient.gender">
+                <select ng-model="bloodTest.WBCT" style="background-color:lightblue">
                     <option>Clotted</option>
                     <option>Unclotted</option>
                 </select>
@@ -23,32 +23,32 @@
             <div class="item item-divider">CBC</div>
             <div class="item item-input">
                 <span class="input-label">WBC</span>
-                <input type="text" placeholder="WBC">
+                <input type="number" placeholder="WBC" ng-model="bloodTest.WBC">
                 <span class="input-label">Unit</span>
             </div>
             <div class="item item-input">
                 <span class="input-label">Hct</span>
-                <input type="text" placeholder="Hct">
+                <input type="number" placeholder="Hct" ng-model="bloodTest.Hct">
                 <span class="input-label">Unit</span>
             </div>
-            <div class="item item-input">
+            <div class="item item-input" style="background-color:lightblue">
                 <span class="input-label">Platelet</span>
-                <input type="text" placeholder="Platelet">
+                <input type="number" placeholder="Platelet" ng-model="bloodTest.platelets">
                 <span class="input-label">Unit</span>
             </div>
         </div>
-        <div class="card unit-list">
+        <div class="card unit-list" ng-show="snake.snake_id == 0">
             <div class="item item-divider">UA</div>
             <div class="item item-select">
                 <div class="input-label">Blood</div>
-                <select>
+                <select ng-model="bloodTest.ua.blood">
                     <option>Positive</option>
                     <option>Negative</option>
                 </select>
             </div>
             <div class="item item-select">
                 <div class="input-label">RBC</div>
-                <select>
+                <select ng-model="bloodTest.ua.rbc">
                     <option>0 - 1</option>
                     <option>2 - 5</option>
                     <option>5 - 10</option>
@@ -58,12 +58,12 @@
             </div>
             <div class="item item-input">
                 <span class="input-label">Cretinine</span>
-                <input type="text" placeholder="Cretinine">
+                <input type="number" placeholder="Cretinine" ng-model="bloodTest.ua.cretinine">
                 <span class="input-label">Unit</span>
             </div>
         </div>
         <div class="padding">
-            <button class="button button-block button-positive" ng-click="confirm(user, patient, incident)">
+            <button class="button button-block button-positive" ng-click="confirm(bloodTest)">
                 Confirm
             </button>
         </div>

@@ -2,60 +2,75 @@
     <ion-content>
         <div class="card">
             <div class="item item-divider">Physician's information</div>
-            <div class="item">
+            <div class="item item-input">
+                <span class="input-label">Physician ID</span>
                 <input type="text" placeholder="Physician ID" ng-model="user.username">
             </div>
-            <div class="item">
-                <input type="text" placeholder="Physician Name" ng-model="user.password">
+            <div class="item item-input">
+                <span class="input-label">Name</span>
+                <input type="text" placeholder="Physician Name" ng-model="user.physician_name">
             </div>
-            <div class="item">
-                <input type="text" placeholder="Location/hospital" ng-model="user.hospital">
+            <div class="item item-input">
+                <span class="input-label">Hospital</span>
+                <input type="text" placeholder="Hospital" ng-model="user.hospital.hospital_name">
+            </div>
+            <div class="item item-input">
+                <span class="input-label">Province</span>
+                <input type="text" placeholder="Hospital Province" ng-model="user.hospital.hospital_province">
             </div>
         </div>
         <div class="card">
             <div class="item item-divider">Patient's information</div>
-            <div class="item">
-                <input type="text" placeholder="National ID" ng-model="patient.id">
+            <div class="item item-input">
+                <span class="input-label">National ID</span>
+                <input type="text" placeholder="National ID" ng-model="patient.patient_national_id">
             </div>
-            <div class="item">
-                <input type="text" placeholder="Patient Name" ng-model="patient.name">
+            <div class="item item-input">
+                <span class="input-label">Patient Name</span>
+                <input type="text" placeholder="Patient Name" ng-model="patient.patient_name">
             </div>
             <div class="item item-select">
                 <div class="input-label">Patient Gender</div>
-                <select ng-model="patient.gender">
+                <select ng-model="patient.patient_gender">
                     <option>Male</option>
                     <option>Female</option>
                 </select>
             </div>
-            <div class="item item-icon-right">
-                <div class="input-label" style="float:left">Patient Birthdate</div>
-                <input type="text" style="float:right;width:140px;text-align:right" ng-model="record.patient.birthdate" />
-                <ion-select ng-model="patient.birthdate" ng-click="openDatePicker('record.patient.birthdate')" class="icon ion-ios-calendar-outline"
-                />
+            <div class="item item-input item-stacked-label">
+                <span class="input-label">Patient Age</span>
+                <span class="input-label" ng-bind-html="age"></span>
+                <div class="item-icon-right" style="padding-top:10px;padding-left:20px">
+                    <div class="input-label" style="float:left;color:grey;font-size:14px;padding-top:9px">Birthdate</div>
+                    <input type="text" ng-disabled="true" style="float:right;width:160px;text-align:right;color:grey;font-size:14px;padding-right:30px" ng-model="patient.patient_birthdate" />
+                    <ion-select ng-click="openDatePicker('patient.patient_birthdate')" class="icon ion-ios-calendar-outline" style="padding-top:40px;"
+                    />
+                </div>
             </div>
         </div>
         <div class="card">
             <div class="item item-divider">Date and time of incident</div>
             <div class="item item-icon-right">
                 <div class="input-label" style="float:left">Date of incident</div>
-                <input type="text" style="float:right;width:140px;text-align:right" ng-model="record.incident.date" />
-                <ion-select ng-model="incident.date" ng-click="openDatePicker('record.incident.date')" class="icon ion-ios-calendar-outline"
+                <input type="text" ng-disabled="true" style="float:right;width:140px;text-align:right" ng-model="incident.incident_date" />
+                <ion-select ng-click="openDatePicker('incident.incident_date')" class="icon ion-ios-calendar-outline"
                 />
             </div>
             <div class="item item-icon-right">
                 <div class="input-label" style="float:left">Time of incident</div>
-                <input type="text" style="float:right;width:100px;text-align:right" ng-model="record.incident.time" />
-                <ion-select ng-model="incident.time" ng-click="openTimePicker('record.incident.time')" class="icon ion-ios-calendar-outline"
+                <input type="text" ng-disabled="true" style="float:right;width:100px;text-align:right" ng-model="incident.incident_time" />
+                <ion-select ng-click="openTimePicker('incident.incident_time')" class="icon ion-ios-calendar-outline"
                 />
             </div>
         </div>
         <div class="card">
             <div class="item item-divider">Location of Incident</div>
-            <div class="item">
-                <input type="text" placeholder="District" ng-model="incident.district">
+            <div class="item item-input">
+                <span class="input-label">District</span>
+                <input type="text" id="incident_district" placeholder="District" ng-model="incident.incident_district">
             </div>
-            <div class="item">
-                <input type="text" placeholder="Province" ng-model="incident.province">
+            <div class="item item-input">
+                <span class="input-label">Province</span>
+                <input type="text" id="incident_province" placeholder="Province" ng-model="incident.incident_province">
             </div>
         </div>
         <div class="padding">

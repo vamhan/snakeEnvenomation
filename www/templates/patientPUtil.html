@@ -7,7 +7,7 @@
                 <button class="button" ng-class="b_n_class" style="width:40%" ng-click="toggleNoSelection('b_n_class', 'b_y_class')">No</button>
             </div>
             <div class="header_title">
-                <h3 style="font-weight:600">Does the patient have impending respiratory failure?</h2>
+                <h3 style="font-weight:600">Does the patient has impending respiratory failure?</h2>
                 <button class="button" ng-class="r_y_class" style="width:40%;margin-right:20px" ng-click="toggleYesSelection('r_y_class', 'r_n_class')">Yes</button>
                 <button class="button" ng-class="r_n_class" style="width:40%" ng-click="toggleNoSelection('r_n_class', 'r_y_class')">No</button>
             </div>
@@ -18,7 +18,7 @@
                 </div>
                 <div ng-repeat="snake in snakes" class="item item-checkbox" style="padding-left:50px">
                     <div class="checkbox" style="width:40px">
-                        <input type="checkbox" ng-model="snakeCheckbox[snake.id]" ng-change="snakeTypeSelect(snake.id)">
+                        <input type="checkbox" ng-model="snakeCheckbox[snake.snake_id]" ng-change="snakeTypeSelect(snake.snake_id)">
                     </div>
                     <div class="row row-center">
                         <div class="col">
@@ -27,14 +27,14 @@
                         <div class="col">
                             <img ng-src="{{snake.img2}}" width="100%"/>
                         </div>
-                        <a class="col col-20" ng-click="openPopover($event, snake.id)" style="word-wrap: break-word;white-space:normal">{{snake.thaiName}}</a> 
+                        <a class="col col-20" ng-click="openPopover($event, snake.snake_id)" style="word-wrap: break-word;white-space:normal">{{snake.thaiName}}</a> 
                     </div>
                 </div> 
             </ion-list>
         </div>
         
         <div class="padding">
-            <button class="button button-block button-positive" ng-click="confirm(snake)">
+            <button class="button button-block button-positive" ng-click="confirm()">
                 Submit
             </button>
         </div>

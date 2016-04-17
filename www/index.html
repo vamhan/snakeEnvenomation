@@ -16,17 +16,18 @@
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
     <script src="lib/ngCordova/dist/ng-cordova.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?&sensor=false"></script>
 
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
 
     <!-- your app's js -->
     <script src="js/app.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/controller.js"></script> 
+    <script src="js/service.js"></script> 
 </head>
 
 <body>
-
     <ion-nav-bar class="bar-positive">
         <ion-nav-back-button class="button icon-left ion-chevron-left button-clear button-light">
         </ion-nav-back-button>
@@ -43,22 +44,24 @@
                 <div class="header_title">
                     <h1 class="light" style="font-weight:600">Mahidol Snake Envenomation<br>Support System</h1>
                 </div>
-                <div class="list list-inset">
-                    <label class="item item-input">
-                        <input type="text" placeholder="Physician ID" ng-model="user.username">
-                    </label>
-                    <label class="item item-input">
-                        <input type="text" placeholder="Password" ng-model="user.password">
-                    </label>
-                    <label class="item item-input">
-                        <input type="text" placeholder="Patient ID" ng-model="patient.id">
-                    </label>
-                </div>
-                <div class="padding">
-                    <button class="button button-block button-positive" ng-click="login(user, patient)">
-                        Submit
-                    </button>
-                </div>
+                <form name="signinForm" novalidate="" ng-submit="login(signinForm, user, patient)">  
+                    <div class="list list-inset">
+                        <label class="item item-input" ng-class="{ 'has-error' : signinForm.username.$invalid && signinForm.$submitted}">
+                            <input type="text" placeholder="Physician ID" name="username" ng-model="user.username" required>
+                        </label>
+                        <div class="form-error" ng-show="signinForm.username.$error.required && signinForm.$submitted">This field is required.</div>  
+                        <label class="item item-input" ng-class="{ 'has-error' : signinForm.patientID.$invalid && signinForm.$submitted}">
+                            <input type="text" placeholder="Patient ID" name="patientID" ng-model="patient.id" ng-pattern="/^[0-9]{13}$/" required>
+                        </label>
+                        <div class="form-error" ng-show="signinForm.patientID.$error.required && signinForm.$submitted">This field is required.</div> 
+                        <div class="form-error" ng-show="signinForm.patientID.$error.pattern && signinForm.$submitted">This field should be only number with length 13</div>
+                    </div>
+                    <div class="padding">
+                        <button class="button button-block button-positive" type="submit">
+                            Submit
+                        </button>
+                    </div>
+                </form>
             </ion-content>
         </ion-view>
     </script>

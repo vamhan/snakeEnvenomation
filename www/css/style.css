@@ -87,7 +87,7 @@
     background-image: none
 }
 
-.list .item {
+.border .list .item {
     background-color: transparent;
     border-color: darkgray;
 }
@@ -102,4 +102,14 @@
 
 .info-list .item .col:last-child {
     text-align: right
+}
+
+label.item.has-error {  
+  border-bottom: 2px solid red;
+}
+
+.form-error {
+  padding: 2px 0 2px 16px;
+  color: red;
+  margin: 5px 0;
 }

@@ -1,36 +1,36 @@
 <ion-view view-title="Management">
     <ion-content>
         <div class="header_title">
-            <h3 class="light" style="font-weight:600">Management of Hematotoxic Snake Russell's viper</h2>
+            <h3 class="light" style="font-weight:600">Management of Hematotoxic Snake {{snake.name}}</h2>
         </div>
         <div class="card info-list">
             <div class="item item-divider">Information</div>
             <div class="item row">
                 <div class="col">Physician Name :</div>
-                <div class="col">Fullname Surname</div>
+                <div class="col">{{user.physician_name}}</div>
             </div>
             <div class="item row">
                 <div class="col">Patient Name :</div>
-                <div class="col">Fullname Surname</div>
+                <div class="col">{{patient.patient_name}}</div>
             </div>
             <div class="item row">
                 <div class="col">Has systemic bleeding :</div>
-                <div class="col">Yes</div>
+                <div class="col">{{record.systemic_bleeding}}</div>
             </div>
             <div class="item row">
                 <div class="col">Have impending respiratory failure :</div>
-                <div class="col">Yes</div>
+                <div class="col">{{record.respiratory_failure}}</div>
             </div>
             <div class="item row">
                 <div class="col">Snake Type :</div>
-                <div class="col">งูแมวเซา</div>
+                <div class="col">{{snake.thaiName}}</div>
             </div>
         </div>
         
         <div class="card info-list">
             <div class="item item-divider">Current State</div>
-            <div class="item">
-                CBC, PT, INR, 20 min WBCT q 6 hr for 2 times (6, 12)
+            <div class="item item-text-wrap">
+                {{stage.action_text}}
             </div>
         </div>
         
@@ -41,31 +41,31 @@
             </div>
             <div class="item row">
                 <div class="col">INR :</div>
-                <div class="col">1</div>
+                <div class="col">{{bloodTest.INR}}</div>
             </div>
             <div class="item row">
                 <div class="col">20 Minutes WBCT :</div>
-                <div class="col">Clotted</div>
+                <div class="col">{{bloodTest.WBCT}}</div>
             </div>
             <div class="item row">
                 <div class="col">WBC :</div>
-                <div class="col">1</div>
+                <div class="col">{{bloodTest.WBC}}</div>
             </div>
             <div class="item row">
                 <div class="col">Hct :</div>
-                <div class="col">1</div>
+                <div class="col">{{bloodTest.Hct}}</div>
             </div>
             <div class="item row">
                 <div class="col">Platelet :</div>
-                <div class="col">1</div>
+                <div class="col">{{bloodTest.platelets}}</div>
             </div>
             <div class="item row">
                 <div class="col">Blood :</div>
-                <div class="col">Positive</div>
+                <div class="col">{{bloodTest.ua.blood}}</div>
             </div>
             <div class="item row">
                 <div class="col">RBC :</div>
-                <div class="col">0 - 1</div>
+                <div class="col">{{bloodTest.ua.cretinine}}</div>
             </div>
         </div>
         
