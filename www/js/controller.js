@@ -1,5 +1,5 @@
 
-var skipInput = true;
+var skipInput = false;
 
 angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
@@ -238,9 +238,9 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
     .controller('BloodSampleCtrl', function($scope, $state, $ionicHistory, BloodTestService, SnakeService, StageService, $parse, $ionicPopup) {
 
         $scope.bloodTest = {}
+        $scope.bloodTest.WBCT = "Clotted"
         if (skipInput) {
             $scope.bloodTest.INR = 0.8
-            $scope.bloodTest.WBCT = "Clotted"
             $scope.bloodTest.platelets = 60000
         }
 
@@ -251,14 +251,17 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
             // validate input
             //var integerRegex = /^[1-9]+[0-9]*$/
             var decimalRegex = /^(0|[1-9][0-9]*)(\.[0-9]+)?$/
+            var valid = true;
             angular.forEach(angular.element(document.querySelectorAll("#blood_view input")), function(value, key) {
                 var element = angular.element(value)
                 if ((element.attr('ng-model') == "bloodTest.INR" || element.attr('ng-model') == "bloodTest.platelets") && !angular.element(value).val()) {
+                    valid = false;
                     $ionicPopup.alert({
                         title: element[0].previousElementSibling.innerHTML + " is invalid",
                         template: 'This field is required!'
                     });
                 } else if (angular.element(value).val() && !decimalRegex.test(angular.element(value).val())) {
+                    valid = false;
                     $ionicPopup.alert({
                         title: element[0].previousElementSibling.innerHTML + " is invalid",
                         template: 'Only decimal value is acceptable!'
@@ -266,26 +269,27 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                 }
             });
             
-            BloodTestService.addBloodTest(bloodTest);
-            
-            
-            var nextStage = stage.next_yes_stage;
-            var times = $state.params.times;
-            if (stage.relate_to == "blood test" && !StageService.checkCondition(stage, bloodTest)) {
-                if ($state.params.times >= stage.times) {
-                    nextStage = stage.next_no_stage;
-                } else {
-                    nextStage = stage.stage_num // still in the same stage if test isn't completed
-                    times += 1;
+            if (valid) {
+                BloodTestService.addBloodTest(bloodTest);
+                
+                var nextStage = stage.next_yes_stage;
+                var times = $state.params.times;
+                if (stage.relate_to == "blood test" && !StageService.checkCondition(stage, bloodTest)) {
+                    if ($state.params.times >= stage.times) {
+                        nextStage = stage.next_no_stage;
+                    } else {
+                        nextStage = stage.stage_num // still in the same stage if test isn't completed
+                        times += 1;
+                    }
                 }
+                if (nextStage == 0) {
+                    nextStage = stage.stage_num
+                }
+                $ionicHistory.nextViewOptions({
+                    historyRoot: true
+                });
+                $state.go('hmanagement', { snake: $state.params.snake, stage: nextStage, times: times });
             }
-            if (nextStage == 0) {
-                nextStage = stage.stage_num
-            }
-            $ionicHistory.nextViewOptions({
-                historyRoot: true
-            });
-            $state.go('hmanagement', { snake: $state.params.snake, stage: nextStage, times: times });
         };
 
 
