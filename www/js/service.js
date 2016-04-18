@@ -1,30 +1,53 @@
-var user = {user_id: 1, physician_name: "Varunya Thavornun", hospital: {hospital_name: "Ram", hospital_province: "BKK"}};
-var patient = {patient_id: 1, patient_name: "kkk", patient_gender: "Female", patient_birthdate: "10/04/1980"};
-var record = {}
+//var user = {user_id: 1, physician_name: "Varunya Thavornun", hospital: {hospital_name: "Ram", hospital_province: "BKK"}};
+//var patient = {patient_id: 1, patient_name: "kkk", patient_gender: "Female", patient_birthdate: "10/04/1980"};
+var user = {};
+var patient = {};
+var record = {};
 var bloodTests = [];
+
+var api_host_url = "http://localhost:3000"
 
 
 angular.module('snakeEnvenomation.services', [])
 
-    .factory('UserService', function() {
-        
+    .factory('UserService', function($q, $http) {
+
         return {
             loginUser: function(username, patientId) {
-                user["username"] = username;
-                patient["patient_national_id"] = patientId;
-                return username == "root";
+                var deferred = $q.defer();
+                var promise = deferred.promise;
+                $http.get(api_host_url + "/account?username=" + username + "&patient_national_id=" + patientId)
+                    .success(function(data, status, headers, config) {
+                            user = data.physician;
+                            patient = data.patient;
+                            user["username"] = username;
+                            patient["patient_national_id"] = patientId;
+                            deferred.resolve();
+                    })
+                    .error(function(data, status, headers, config) {
+                        deferred.reject(status);
+                    });
+                promise.success = function(fn) {
+                    promise.then(fn);
+                    return promise;
+                }
+                promise.error = function(fn) {
+                    promise.then(null, fn);
+                    return promise;
+                }
+                return promise;
             },
             getUserInfo: function() {
                 return user;
             },
             getPatientInfo: function() {
                 return patient;
-            } 
+            }
         }
     })
-    
+
     .factory('RecordService', function() {
-        
+
         return {
             addRecord: function(incident) {
                 record["record_id"] = 1;
@@ -36,7 +59,7 @@ angular.module('snakeEnvenomation.services', [])
                 record["systemic_bleeding"] = bleeding;
                 record["respiratory_failure"] = resFail;
                 record["snake_type"] = snakeType;
-            } 
+            }
         }
     })
 
@@ -62,9 +85,9 @@ angular.module('snakeEnvenomation.services', [])
             }
         }
     })
-    
+
     .factory('BloodTestService', function() {
-        
+
         return {
             addBloodTest: function(bloodTest) {
                 bloodTests.push(bloodTest);
@@ -300,15 +323,15 @@ angular.module('snakeEnvenomation.services', [])
                 angular.forEach(stage.condition, function(value, key) {
                     switch (value.compare) {
                         case 'lt':
-                            if (data[value.indicator] < value.value) 
+                            if (data[value.indicator] < value.value)
                                 pass = true;
                             break;
                         case 'gt':
-                            if (data[value.indicator] > value.value) 
+                            if (data[value.indicator] > value.value)
                                 pass = true;
                             break;
                         default:
-                            if (data[value.indicator] == value.value) 
+                            if (data[value.indicator] == value.value)
                                 pass = true;
                             break;
                     }

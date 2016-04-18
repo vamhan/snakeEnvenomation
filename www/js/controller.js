@@ -14,45 +14,45 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
         $scope.login = function(form, user, patient) {
             if (form.$valid) {
-                if (UserService.loginUser(user.username, patient.id)) {
+                UserService.loginUser(user.username, patient.id).success(function(data) {
                     $ionicHistory.nextViewOptions({
                         historyRoot: true
                     });
                     $state.go('record');
-                } else {
+                }).error(function(data) {
                     var alertPopup = $ionicPopup.alert({
                         title: 'Login failed!',
                         template: 'Please check your credentials!'
                     });
-                }
+                });
             }
         };
     })
 
     .controller('RecordCtrl', function($scope, $state, $ionicHistory, $cordovaDatePicker, $parse, UserService, RecordService, $cordovaGeolocation, $timeout) {
 
-        $scope.user = UserService.getUserInfo();
-        $scope.patient = UserService.getPatientInfo();
-        var birthdate = $scope.patient.patient_birthdate ? new Date($scope.patient.patient_birthdate) : new Date()
-        var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        $scope.age = getAge(birthdate)
-        $scope.patient.patient_birthdate = birthdate.getDate() + " " + monthNames[birthdate.getMonth()] + " " + birthdate.getFullYear()
-        $scope.incident = {}
-        var today = new Date();
-        $scope.incident.incident_date = today.getDate() + " " + monthNames[today.getMonth()] + " " + today.getFullYear()
-        var minute = today.getMinutes()
-        if (minute < 10)
-            minute = "0" + today.getMinutes()
-        $scope.incident.incident_time = today.getHours() + ":" + minute
-        
-        var hasData = false
-        var posOptions = { timeout: 10000, enableHighAccuracy: false };
-        $cordovaGeolocation.getCurrentPosition(posOptions)
-            .then(function(position) {
-                var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-                //alert(position.coords.latitude + " " + position.coords.longitude)
-                var geocoder = new google.maps.Geocoder();
-                geocoder.geocode({ 'latLng': latlng }, function(results, status) {
+    $scope.user = UserService.getUserInfo();
+    $scope.patient = UserService.getPatientInfo();
+    var birthdate = $scope.patient.patient_birthdate ? new Date($scope.patient.patient_birthdate) : new Date()
+    var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    $scope.age = getAge(birthdate)
+    $scope.patient.patient_birthdate = birthdate.getDate() + " " + monthNames[birthdate.getMonth()] + " " + birthdate.getFullYear()
+    $scope.incident = {}
+    var today = new Date();
+    $scope.incident.incident_date = today.getDate() + " " + monthNames[today.getMonth()] + " " + today.getFullYear()
+    var minute = today.getMinutes()
+    if (minute < 10)
+        minute = "0" + today.getMinutes()
+    $scope.incident.incident_time = today.getHours() + ":" + minute
+
+    var hasData = false
+    var posOptions = { timeout: 10000, enableHighAccuracy: false };
+    $cordovaGeolocation.getCurrentPosition(posOptions)
+        .then(function(position) {
+            var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+            //alert(position.coords.latitude + " " + position.coords.longitude)
+            var geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ 'latLng': latlng }, function(results, status) {
                 if (status == google.maps.GeocoderStatus.OK) {
                     var country = "";
                     if (results[0]) {
@@ -66,66 +66,66 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                     }
                 }
             });
-            }, function(err) {
-                alert("Current location cannot be retrieved")
-            }
+        }, function(err) {
+            alert("Current location cannot be retrieved")
+        }
         );
 
 
-        $scope.openDatePicker = function(element) {
-            var date = new Date()
-            if (element == 'patient.patient_birthdate' && $scope.patient.patient_birthdate) {
-                date = new Date($scope.patient.patient_birthdate)
-            }
-            var options = {
-                date: date,
-                mode: 'date',
-                allowOldDates: true,
-                allowFutureDates: true,
-                doneButtonLabel: 'DONE',
-                doneButtonColor: '#F2F3F4',
-                cancelButtonLabel: 'CANCEL',
-                cancelButtonColor: '#000000'
-            };
-            $cordovaDatePicker.show(options).then(function(date) {
-                var dateS = date.getDate() + " " + monthNames[date.getMonth()] + " " + date.getFullYear()
-                var model = $parse(element)
-                model.assign($scope, dateS)
-                if (element == 'patient.patient_birthdate')
-                    $scope.age = getAge(new Date($scope.patient.patient_birthdate))
-            });
+    $scope.openDatePicker = function(element) {
+        var date = new Date()
+        if (element == 'patient.patient_birthdate' && $scope.patient.patient_birthdate) {
+            date = new Date($scope.patient.patient_birthdate)
         }
-
-        $scope.openTimePicker = function(element) {
-            var options = {
-                date: new Date(),
-                mode: 'time',
-                allowOldDates: true,
-                allowFutureDates: true,
-                doneButtonLabel: 'DONE',
-                doneButtonColor: '#F2F3F4',
-                cancelButtonLabel: 'CANCEL',
-                cancelButtonColor: '#000000'
-            };
-            $cordovaDatePicker.show(options).then(function(date) {
-                var minute = date.getMinutes()
-                if (date.getMinutes() < 10)
-                    minute = "0" + date.getMinutes()
-                var timeS = date.getHours() + ":" + minute
-                var model = $parse(element)
-                model.assign($scope, timeS)
-            });
-        }
-
-        $scope.confirm = function(user, patient, incident) {
-            RecordService.addRecord(incident)
-            
-            $ionicHistory.nextViewOptions({
-                historyRoot: true
-            });
-            $state.go('patientPUtil');
+        var options = {
+            date: date,
+            mode: 'date',
+            allowOldDates: true,
+            allowFutureDates: true,
+            doneButtonLabel: 'DONE',
+            doneButtonColor: '#F2F3F4',
+            cancelButtonLabel: 'CANCEL',
+            cancelButtonColor: '#000000'
         };
-    })
+        $cordovaDatePicker.show(options).then(function(date) {
+            var dateS = date.getDate() + " " + monthNames[date.getMonth()] + " " + date.getFullYear()
+            var model = $parse(element)
+            model.assign($scope, dateS)
+            if (element == 'patient.patient_birthdate')
+                $scope.age = getAge(new Date($scope.patient.patient_birthdate))
+        });
+    }
+
+    $scope.openTimePicker = function(element) {
+        var options = {
+            date: new Date(),
+            mode: 'time',
+            allowOldDates: true,
+            allowFutureDates: true,
+            doneButtonLabel: 'DONE',
+            doneButtonColor: '#F2F3F4',
+            cancelButtonLabel: 'CANCEL',
+            cancelButtonColor: '#000000'
+        };
+        $cordovaDatePicker.show(options).then(function(date) {
+            var minute = date.getMinutes()
+            if (date.getMinutes() < 10)
+                minute = "0" + date.getMinutes()
+            var timeS = date.getHours() + ":" + minute
+            var model = $parse(element)
+            model.assign($scope, timeS)
+        });
+    }
+
+    $scope.confirm = function(user, patient, incident) {
+        RecordService.addRecord(incident)
+
+        $ionicHistory.nextViewOptions({
+            historyRoot: true
+        });
+        $state.go('patientPUtil');
+    };
+})
 
     .controller('PatientPUtilCtrl', function($scope, $state, $ionicHistory, SnakeService, RecordService, $parse, $ionicPopover, $ionicPopup) {
         $scope.b_y_class = "button-dark";
@@ -178,11 +178,11 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         });
 
         $scope.confirm = function() {
-            
+
             $ionicHistory.nextViewOptions({
                 historyRoot: true
             });
-            
+
             var isCheckboxSelected = false;
             var selectedSnake = 0;
             angular.forEach($scope.snakeCheckbox, function(value, key) {
@@ -247,7 +247,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         $scope.snake = SnakeService.getSnakeByID($state.params.snake);
         var stage = StageService.getStage($state.params.stage);
         $scope.confirm = function(bloodTest) {
-            
+
             // validate input
             //var integerRegex = /^[1-9]+[0-9]*$/
             var decimalRegex = /^(0|[1-9][0-9]*)(\.[0-9]+)?$/
@@ -268,10 +268,10 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                     });
                 }
             });
-            
+
             if (valid) {
                 BloodTestService.addBloodTest(bloodTest);
-                
+
                 var nextStage = stage.next_yes_stage;
                 var times = $state.params.times;
                 if (stage.relate_to == "blood test" && !StageService.checkCondition(stage, bloodTest)) {
@@ -302,12 +302,12 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         $scope.patient = UserService.getPatientInfo();
         $scope.record = RecordService.getRecord();
         $scope.bloodTest = BloodTestService.getLatestBloodTest();
-        
-        
-        
+
+
+
         var stage = StageService.getStage($state.params.stage);
         $scope.stage = stage;
-        
+
         $scope.navigateToBloodResultList = function() {
             $state.go('bloodResultList');
         };
@@ -353,7 +353,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         }
 
     })
-    
+
     .controller('bloodResultCtrl', function($scope, $state) {
         $scope.navigateToBloodResult = function() {
             $state.go('bloodResult');
