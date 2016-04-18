@@ -119,10 +119,6 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
         $scope.confirm = function(user, patient, incident) {
             RecordService.addRecord(incident)
-            
-            $ionicHistory.nextViewOptions({
-                historyRoot: true
-            });
             $state.go('patientPUtil');
         };
     })
@@ -178,10 +174,6 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         });
 
         $scope.confirm = function() {
-            
-            $ionicHistory.nextViewOptions({
-                historyRoot: true
-            });
             
             var isCheckboxSelected = false;
             var selectedSnake = 0;
