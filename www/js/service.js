@@ -50,7 +50,7 @@ angular.module('snakeEnvenomation.services', [])
             { snake_id: 4, name: "king Cobra", thaiName: "งูจงอาง", img1: "img/snake.jpg", img2: "img/snake.jpg", info: "งูจงอาง" },
             { snake_id: 5, name: "Banded Krait", thaiName: "งูสามเหลี่ยม", img1: "img/snake.jpg", img2: "img/snake.jpg", info: "งูสามเหลี่ยม" },
             { snake_id: 6, name: "Malayan Krait", thaiName: "งูทับสมิงคลา", img1: "img/snake.jpg", img2: "img/snake.jpg", info: "งูทับสมิงคลา" },
-            { snake_id: 7, name: "unknown", thaiName: "งูไม่ทราบชนิด" }
+            { snake_id: 7, name: "unknown", thaiName: "งูไม่ทราบชนิด", img1: "img/unknown_snake.gif", img2: "img/unknown_snake.gif" }
         ];
 
         return {
