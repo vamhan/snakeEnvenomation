@@ -1,12 +1,12 @@
 {\rtf1\ansi\ansicpg1252\cocoartf1348\cocoasubrtf170
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 ArialMT;\f2\fmodern\fcharset0 CourierNewPSMT;
-\f3\fnil\fcharset0 Monaco;\f4\fmodern\fcharset0 CourierNewPS-BoldMT;\f5\fnil\fcharset0 Menlo-Regular;
-}
-{\colortbl;\red255\green255\blue255;\red85\green142\blue40;\red102\green177\blue50;\red0\green0\blue0;
-\red179\green100\blue143;\red179\green100\blue143;\red234\green234\blue234;\red100\green0\blue103;\red196\green140\blue255;
-\red173\green142\blue0;\red42\green0\blue255;\red234\green234\blue234;\red0\green0\blue120;\red35\green37\blue38;
-\red43\green39\blue19;}
-\paperw11900\paperh16840\margl1440\margr1440\vieww12580\viewh8400\viewkind0
+\f3\fnil\fcharset0 Monaco;\f4\fnil\fcharset222 Ayuthaya;\f5\fmodern\fcharset0 CourierNewPS-BoldMT;
+\f6\fnil\fcharset0 Menlo-Regular;\f7\fnil\fcharset222 Thonburi;}
+{\colortbl;\red255\green255\blue255;\red85\green142\blue40;\red102\green177\blue50;\red179\green100\blue143;
+\red234\green234\blue234;\red100\green0\blue103;\red196\green140\blue255;\red173\green142\blue0;\red42\green0\blue255;
+\red0\green0\blue120;\red35\green37\blue38;\red43\green39\blue19;\red42\green47\blue60;\red217\green232\blue255;
+\red45\green68\blue134;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww21400\viewh8400\viewkind0
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
 
 \f0\fs24 \cf0 - record page: Is national ID editable?\
@@ -21,53 +21,103 @@
 \
 \pard\pardeftab720\sl360
 \cf0 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec4 CREATE TABLE physician (user_id int, physician_id VARCHAR(20), physician_name VARCHAR(50), hospital_id int);\
-\pard\pardeftab720\sl360
-\cf0 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 CREATE TABLE \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec5 patient\expnd0\expndtw0\kerning0
-\outl0\strokewidth0  (\expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec5 patient\expnd0\expndtw0\kerning0
-\outl0\strokewidth0 _id int, \expnd0\expndtw0\kerning0
-patient_national_id\expnd0\expndtw0\kerning0
- int, \expnd0\expndtw0\kerning0
-patient\expnd0\expndtw0\kerning0
-_name VARCHAR(50), patient_gender enum(Male\'92, \'91Female\'92), \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec5 patient_birthdate date\expnd0\expndtw0\kerning0
-\outl0\strokewidth0 );\
+CREATE TABLE physician (user_id int, physician_id VARCHAR(20), physician_name VARCHAR(50), hospital_id int);\
+CREATE TABLE \expnd0\expndtw0\kerning0
+patient (patient_id int, patient_national_id int, patient_name VARCHAR(50), patient_gender enum(Male\'92, \'91Female\'92), patient_birthdate date);\
 CREATE TABLE hospital (hospital_id int, hospital_name VARCHAR(50), hospital_province varchar(50));\
-\pard\pardeftab720\sl360
-\cf0 \expnd0\expndtw0\kerning0
 CREATE TABLE treatmentRecord (
-\f1\fs30 \cf5 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec5 record_id int, user_id int, patient_id int, incident_date date, incident_time time, incident_district varchar(50), incident_province varchar(50), systemic_bleeding bit, respiratory_failure bit, snake_type int
+\f1\fs30 \cf4 \expnd0\expndtw0\kerning0
+record_id int, user_id int, patient_id int, incident_date date, incident_time time, incident_district varchar(50), incident_province varchar(50), systemic_bleeding bit, respiratory_failure bit, snake_type int
 \f0\fs24 \cf0 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 );
-\f2\fs26 \cf4 \cb7 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec4 \
+);
+\f2\fs26 \cb5 \expnd0\expndtw0\kerning0
+\
 \
 \pard\pardeftab720
 
-\f3\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \ul \ulc0 \outl0\strokewidth0 INSERT\ulnone  \cf8 INTO\cf0  \ul physician\ulnone  \cf8 VALUES\cf0  (\cf9 1\cf0 , \cf10 'root\cf11 \ul \ulc11 ','\cf0 \ulc0 V\ulnone arunya Thavornun\ul ', \cf9 \ulc9 1\cf0 \ulc0 );\ulnone \
-\ul IN\ulnone SERT INTO patient VALUES (\cf9 1\cf0 , \cf9 1234567891011\cf0 ,\cf10 'kkk\cf0 \ul \ulc0 ', \cf10 \ulnone 'Female\cf11 ','\cf9 1999\cf0 -\cf9 03\cf0 -\cf9 30\cf0 \ul \ulc0 ')\ulnone ;\
-\ul INSERT\ulnone  \cf8 INTO\cf0  \ul hospital\ulnone  \cf8 VALUES\cf0  (\cf9 1\cf0 , \cf10 'Ram\cf11 \ul \ulc11 ','\cf0 \ulnone kkk\ul ', \cf10 \ulnone 'Ramkhumhang\cf0 \ul \ulc0 ');
-\f4\b\fs24 \cb12 \expnd0\expndtw0\kerning0
+\f3\fs22 \cf0 \cb1 \kerning1\expnd0\expndtw0 \ul \ulc0 INSERT\ulnone  \cf6 INTO\cf0  \ul physician\ulnone  \cf6 VALUES\cf0  (\cf7 1\cf0 , \cf8 'root\cf9 \ul \ulc9 ','\cf0 \ulc0 V\ulnone arunya Thavornun\ul ', \cf7 \ulc7 1\cf0 \ulc0 );\ulnone \
+\ul IN\ulnone SERT INTO patient VALUES (\cf7 1\cf0 , \cf7 1234567891011\cf0 ,\cf8 'kkk\cf0 \ul ', \cf8 \ulnone 'Female\cf9 ','\cf7 1999\cf0 -\cf7 03\cf0 -\cf7 30\cf0 \ul ')\ulnone ;\
+\ul INSERT\ulnone  \cf6 INTO\cf0  \ul hospital\ulnone  \cf6 VALUES\cf0  (\cf7 1\cf0 , \cf8 'Ram\cf9 \ul \ulc9 '\cf0 , \cf8 \ulnone 'Ramkhumhang\cf0 \ul \ulc0 ');\
+\pard\pardeftab720
+\cf0 INSERT\ulnone  \cf6 INTO\cf0  \ul snake\ulnone  \cf6 VALUES\cf0 \ul  (0,"Russell Viper","
+\f4 \'a7\'d9\'e1\'c1\'c7\'e0\'ab\'d2
+\f3 ","img/snake.jpg,img/snake.jpg","
+\f4 \'a7\'d9\'e1\'c1\'c7\'e0\'ab\'d2
+\f3 \'94);\
+INSERT\ulnone  \cf6 INTO\cf0  \ul snake\ulnone  \cf6 VALUES\cf0 \ul  (1,\'94Green Pit Viper","
+\f4 \'a7\'d9\'e0\'a2\'d5\'c2\'c7\'cb\'d2\'a7\'e4\'cb\'c1\'e9
+\f3 ","img/snake.jpg,img/snake.jpg","
+\f4 \'a7\'d9\'e0\'a2\'d5\'c2\'c7\'cb\'d2\'a7\'e4\'cb\'c1\'e9
+\f3 \'94);\
+INSERT\ulnone  \cf6 INTO\cf0  \ul snake\ulnone  \cf6 VALUES\cf0 \ul  (2,\'94Malayan Pit Viper","
+\f4 \'a7\'d9\'a1\'d0\'bb\'d0
+\f3 ","img/snake.jpg,img/snake.jpg","
+\f4 \'a7\'d9\'a1\'d0\'bb\'d0
+\f3 \'94);\
+INSERT\ulnone  \cf6 INTO\cf0  \ul snake\ulnone  \cf6 VALUES\cf0 \ul  (3,\'94Cobra","
+\f4 \'a7\'d9\'e0\'cb\'e8\'d2
+\f3 ","img/snake.jpg,img/snake.jpg","
+\f4 \'a7\'d9\'e0\'cb\'e8\'d2
+\f3 \'94);\
+INSERT\ulnone  \cf6 INTO\cf0  \ul snake\ulnone  \cf6 VALUES\cf0 \ul  (4,\'94King Cobra","
+\f4 \'a7\'d9\'a8\'a7\'cd\'d2\'a7
+\f3 ","img/snake.jpg,img/snake.jpg","
+\f4 \'a7\'d9\'a8\'a7\'cd\'d2\'a7
+\f3 \'94);\
+INSERT\ulnone  \cf6 INTO\cf0  \ul snake\ulnone  \cf6 VALUES\cf0 \ul  (5,\'94Banded Krait","
+\f4 \'a7\'d9\'ca\'d2\'c1\'e0\'cb\'c5\'d5\'e8\'c2\'c1
+\f3 ","img/snake.jpg,img/snake.jpg","
+\f4 \'a7\'d9\'ca\'d2\'c1\'e0\'cb\'c5\'d5\'e8\'c2\'c1
+\f3 \'94);\
+INSERT\ulnone  \cf6 INTO\cf0  \ul snake\ulnone  \cf6 VALUES\cf0 \ul  (6,\'94Malayan Krait","
+\f4 \'a7\'d9\'b7\'d1\'ba\'ca\'c1\'d4\'a7\'a4\'c5\'d2
+\f3 ","img/snake.jpg,img/snake.jpg","
+\f4 \'a7\'d9\'b7\'d1\'ba\'ca\'c1\'d4\'a7\'a4\'c5\'d2
+\f3 \'94);\
+INSERT\ulnone  \cf6 INTO\cf0  \ul snake\ulnone  \cf6 VALUES\cf0 \ul  (7,\'94unknown","
+\f4 \'a7\'d9\'e4\'c1\'e8\'b7\'c3\'d2\'ba\'aa\'b9\'d4\'b4
+\f3 ","img/unknown.jpg,img/unknown.jpg","\'94);
+\f5\b\fs24 \cb5 \expnd0\expndtw0\kerning0
 \ulnone \
 \pard\pardeftab720\sl360
 \cf0 \
 \pard\pardeftab720
 
-\f5\b0\fs26 \cf13 \cb7 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec13 ALTER\cf14 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec14  \cf13 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec13 TABLE\cf14 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec14  patient MODIFY 
+\f6\b0\fs26 \cf10 \cb5 \expnd0\expndtw0\kerning0
+ALTER\cf11 \expnd0\expndtw0\kerning0
+ \cf10 \expnd0\expndtw0\kerning0
+TABLE\cf11 \expnd0\expndtw0\kerning0
+ patient MODIFY 
 \f0\fs24 \cf0 \cb1 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 patient_national_id long;
-\f5\fs26 \cf15 \cb7 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec15 \
+patient_national_id long;
+\f6\fs26 \cf12 \cb5 \expnd0\expndtw0\kerning0
+\
 \pard\pardeftab720\sl360
 
-\f2 \cf4 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec4 \
+\f2 \cf0 \expnd0\expndtw0\kerning0
+\
+\
+\pard\pardeftab720\sl307
+
+\f0\fs24 \cf13 \cb14 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec13 host : cdss.topwork.asia\
+username : root\
+password : Ooaakk1q2w3e \
+\
+\pard\pardeftab720\sl307
+{\field{\*\fldinst{HYPERLINK "http://www.topwork.asia/oakadmin/"}}{\fldrslt \cf15 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec15 http://www.topwork.asia/oakadmin/}}\
+dbName : cdss\
+dbusername  : cdss\
+password : cdss1q2w3e\
+\
+ftp : cdss.topwork.asia\
+username : cdss\
+password : admin1q2w3e\
+\pard\pardeftab720\sl307
+
+\f7 \cf13 \'e4\'c7\'e9\'c7\'d2\'a7
+\f0  file php
+\f2\fs26 \cf0 \cb5 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \
 }

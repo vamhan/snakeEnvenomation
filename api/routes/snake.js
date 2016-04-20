@@ -3,6 +3,7 @@ var appRouter = function(app, db) {
     app.get("/snakes", function(req, res) {
         db.query("SELECT * FROM snake",function(err,rows){
             if (err) {
+                console.log(err)
                 return res.status(500).send({ "message": "internal server error" });
             } else {
                 return res.status(200).send(rows);

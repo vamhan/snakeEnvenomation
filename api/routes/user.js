@@ -6,6 +6,7 @@ var appRouter = function(app, db) {
         } else {
             db.query("SELECT * FROM physician where physician_id='" + req.query.username + "'",function(err,rows){
                 if (err) {
+                    console.log(err)
                     return res.status(500).send({ "message": "internal server error" });
                 } else if (rows.length == 0) {
                     return res.status(401).send({ "message": "Login failed, wrong username" });

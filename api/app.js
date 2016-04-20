@@ -14,14 +14,14 @@ app.use(function (req, res, next) {
 // DataBase 
 var mysql = require("mysql");
 var con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "root",
-  database: "test_table"
+  host: "cdss.topwork.asia",
+  user: "cdss",
+  password: "cdss1q2w3e",
+  database: "cdss"
 });
 con.connect(function(err){
   if(err){
-    console.log('Error connecting to Db');
+    console.log(err);
     return;
   }
   console.log('Connection established');
@@ -31,6 +31,7 @@ var router = express.Router();
 
 var routes = require("./routes/user.js")(router, con);
 var routes = require("./routes/record.js")(router, con);
+var routes = require("./routes/snake.js")(router, con);
 app.use('/api', router);
  
 var server = app.listen(3000, function () {
