@@ -1,24 +1,31 @@
 var appRouter = function(app, db) {
     app.post("/treatment-record", function(req, res) {
-        var data = req.query;
-        var record_id = Math.floor(Date.now() / 1000);
-        data["record_id"] = record_id;
-        db.query("INSERT INTO treatmentRecord SET ?", data, function(err, rows) {
-            console.log(rows);
-            if (err) {
-                console.log(err)
-                var status;
-                var message;
-                if (err.code == 'ER_NO_REFERENCED_ROW_2') {
-                    status = 403;
-                    message = "Saving record failed, wrong user_id or patient_id";
-                } else {
-                    status = 400;
-                    message = "Saving record failed, missing parameter or malformed syntax";
-                }
-                return res.status(status).send({ "message": message });
+        
+        db.query("SELECT record_id FROM treatmentRecord WHERE user_id = " + req.query.user_id + " and patient_id = " + req.query.patient_id + " and status='active'", function(err, rows) {
+            if (!err && rows.length > 0) { // if there is already a record of this patient
+                return res.status(200).send({ "record_id": rows[0].record_id });
             } else {
-                return res.status(200).send({ "record_id": record_id });
+                var data = req.query;
+                var record_id = Math.floor(Date.now() / 1000);
+                data["record_id"] = record_id;
+                db.query("INSERT INTO treatmentRecord SET ?", data, function(err, rows) {
+                    console.log(rows);
+                    if (err) {
+                        console.log(err)
+                        var status;
+                        var message;
+                        if (err.code == 'ER_NO_REFERENCED_ROW_2') {
+                            status = 403;
+                            message = "Saving record failed, wrong user_id or patient_id";
+                        } else {
+                            status = 400;
+                            message = "Saving record failed, missing parameter or malformed syntax";
+                        }
+                        return res.status(status).send({ "message": message });
+                    } else {
+                        return res.status(200).send({ "record_id": record_id });
+                    }
+                });
             }
         });
     });
