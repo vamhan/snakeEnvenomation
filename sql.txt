@@ -1,0 +1,26 @@
+CREATE TABLE physician (user_id int, physician_id VARCHAR(20), physician_name VARCHAR(50), hospital_id int);
+CREATE TABLE patient (patient_id int, patient_national_id int, patient_name VARCHAR(50), patient_gender enum(Male’, ‘Female’), patient_birthdate date);
+CREATE TABLE hospital (hospital_id int, hospital_name VARCHAR(50), hospital_province varchar(50));
+CREATE TABLE treatmentRecord (record_id int, user_id int, patient_id int, incident_date date, incident_time time, incident_district varchar(50), incident_province varchar(50), systemic_bleeding bit, respiratory_failure bit, snake_type int);
+
+ALTER TABLE patient MODIFY patient_national_id long;
+
+INSERT INTO physician VALUES (1, 'root','Varunya Thavornun', 1);
+INSERT INTO patient VALUES (1, 1234567891011,'kkk', 'Female','1999-03-30');
+INSERT INTO hospital VALUES (1, 'Ram', 'Ramkhumhang');
+INSERT INTO snake VALUES (0,"Russell Viper","งูแมวเซา","img/snake.jpg,img/snake.jpg","งูแมวเซา");
+INSERT INTO snake VALUES (1,"Green Pit Viper","งูเขียวหางไหม้","img/snake.jpg,img/snake.jpg","งูเขียวหางไหม้");
+INSERT INTO snake VALUES (2,"Malayan Pit Viper","งูกะปะ","img/snake.jpg,img/snake.jpg","งูกะปะ");
+INSERT INTO snake VALUES (3,"Cobra","งูเห่า","img/snake.jpg,img/snake.jpg","งูเห่า");
+INSERT INTO snake VALUES (4,"King Cobra","งูจงอาง","img/snake.jpg,img/snake.jpg","งูจงอาง");
+INSERT INTO snake VALUES (5,"Banded Krait","งูสามเหลี่ยม","img/snake.jpg,img/snake.jpg","งูสามเหลี่ยม");
+INSERT INTO snake VALUES (6,"Malayan Krait","งูทับสมิงคลา","img/snake.jpg,img/snake.jpg","งูทับสมิงคลา");
+INSERT INTO snake VALUES (7,"unknown","งูไม่ทราบชนิด","img/unknown.jpg,img/unknown.jpg","");
+
+INSERT INTO `stage` (`stage_num`, `snake_id`, `action_text`, `frequent`, `times`, `condition_id`, `next_yes_stage`, `next_no_stage`, `action_type`,`additonal_action`, `relate_to`) VALUES ('41', '3', 'Observe motor weakness q 1 hr for 24 hr', '3600', '24', '3', '44', '42', 'alert', '', 'respiratory');
+INSERT INTO `stage` (`stage_num`, `snake_id`, `action_text`, `frequent`,`times`, `condition_id`, `next_yes_stage`, `next_no_stage`,`action_type`, `additonal_action`, `relate_to`) VALUES ('42', '3','', '0', '1', '2', '45','43', 'none', '', 'motor weakness');
+INSERT INTO `stage` (`stage_num`, `snake_id`, `action_text`, `frequent`,`times`, `condition_id`, `next_yes_stage`, `next_no_stage`,`action_type`, `additonal_action`, `relate_to`) VALUES ('43', '3','Done + tetanus prophylaxis', '0', '1', '0', '0','0', 'none', '', '');
+INSERT INTO `stage` (`stage_num`, `snake_id`, `action_text`, `frequent`,`times`, `condition_id`, `next_yes_stage`, `next_no_stage`,`action_type`, `additonal_action`, `relate_to`) VALUES ('44', '3','Intubalation and ventilation support. Consult PC', '0', '1', '0', '0','0', 'call', '1367', '');
+INSERT INTO `stage` (`stage_num`, `snake_id`, `action_text`, `frequent`,`times`, `condition_id`, `next_yes_stage`, `next_no_stage`,`action_type`, `additonal_action`, `relate_to`) VALUES ('45', '3','Antivenom for Cobra 10 vials. Observe motor weakness q 1 hr for 24 hr', '3600', '12', '2', '47','46', 'alert', '', 'motor weakness');
+INSERT INTO `stage` (`stage_num`, `snake_id`, `action_text`, `frequent`,`times`, `condition_id`, `next_yes_stage`, `next_no_stage`,`action_type`, `additonal_action`, `relate_to`) VALUES ('46', '3','At 12 hr, any motor weakness', '43200', '1', '2', '47','43', 'alert', '', 'motor weakness');
+INSERT INTO `stage` (`stage_num`, `snake_id`, `action_text`, `frequent`,`times`, `condition_id`, `next_yes_stage`, `next_no_stage`,`action_type`, `additonal_action`, `relate_to`) VALUES ('47', '3','Consult PC', '0', '1', '0', '0','0', 'call', '1367', '');

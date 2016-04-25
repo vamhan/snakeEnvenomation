@@ -1,18 +1,40 @@
-var user = {user_id: 1, physician_name: "Varunya Thavornun", hospital: {hospital_name: "Ram", hospital_province: "BKK"}};
-var patient = {patient_id: 1, patient_name: "kkk", patient_gender: "Female", patient_birthdate: "10/04/1980"};
-var record = {}
-var bloodTests = [];
+//var user = {user_id: 1, physician_name: "Varunya Thavornun", hospital: {hospital_name: "Ram", hospital_province: "BKK"}};
+//var patient = {patient_id: 1, patient_name: "kkk", patient_gender: "Female", patient_birthdate: "10/04/1980"};
 
 
-angular.module('snakeEnvenomation.services', [])
+//var api_host_url = "http://localhost:3000/api"
+var api_host_url = "http://cdss.topwork.asia:9080/snake-envenomation/api"
 
-    .factory('UserService', function() {
+angular.module('snakeEnvenomation.services', ['angular-md5'])
+
+    .factory('UserService', function($q, $http, md5) {
+        var user = {};
+        var patient = {};
         
         return {
             loginUser: function(username, patientId) {
-                user["username"] = username;
-                patient["patient_national_id"] = patientId;
-                return username == "root";
+                var deferred = $q.defer();
+                var promise = deferred.promise;
+                $http.get(api_host_url + "/login?username=" + md5.createHash(username || '') + "&patient_national_id=" + md5.createHash(patientId || ''))
+                    .success(function(data, status, headers, config) {
+                        user = data.physician;
+                        patient = data.patient;
+                        user["username"] = username;
+                        patient["patient_national_id"] = patientId;
+                        deferred.resolve();
+                    })
+                    .error(function(data, status, headers, config) {
+                        deferred.reject(status);
+                    });
+                promise.success = function(fn) {
+                    promise.then(fn);
+                    return promise;
+                }
+                promise.error = function(fn) {
+                    promise.then(null, fn);
+                    return promise;
+                }
+                return promise;
             },
             getUserInfo: function() {
                 return user;
@@ -22,8 +44,9 @@ angular.module('snakeEnvenomation.services', [])
             } 
         }
     })
-    
-    .factory('RecordService', function() {
+
+    .factory('RecordService', function($q, $http) {
+        var record = {};
         
         return {
             addRecord: function(incident) {
@@ -40,31 +63,46 @@ angular.module('snakeEnvenomation.services', [])
         }
     })
 
-    .factory('SnakeService', function() {
-
-        var snakes = [
-            { snake_id: 0, name: "Russell Viper", thaiName: "งูแมวเซา", img1: "img/snake.jpg", img2: "img/snake.jpg", info: "งูแมวเซา" },
-            { snake_id: 1, name: "Green Pit Viper", thaiName: "งูเขียวหางไหม้", img1: "img/snake.jpg", img2: "img/snake.jpg", info: "งูเขียวหางไหม้" },
-            { snake_id: 2, name: "Malayan Pit Viper", thaiName: "งูกะปะ", img1: "img/snake.jpg", img2: "img/snake.jpg", info: "งูกะปะ" },
-            { snake_id: 3, name: "Cobra", thaiName: "งูเห่า", img1: "img/snake.jpg", img2: "img/snake.jpg", info: "งูเห่า" },
-            { snake_id: 4, name: "king Cobra", thaiName: "งูจงอาง", img1: "img/snake.jpg", img2: "img/snake.jpg", info: "งูจงอาง" },
-            { snake_id: 5, name: "Banded Krait", thaiName: "งูสามเหลี่ยม", img1: "img/snake.jpg", img2: "img/snake.jpg", info: "งูสามเหลี่ยม" },
-            { snake_id: 6, name: "Malayan Krait", thaiName: "งูทับสมิงคลา", img1: "img/snake.jpg", img2: "img/snake.jpg", info: "งูทับสมิงคลา" },
-            { snake_id: 7, name: "unknown", thaiName: "งูไม่ทราบชนิด" }
-        ];
+    .factory('SnakeService', function($q, $http) {
+        
+        var snakes = [];
 
         return {
             getAllSnakes: function() {
-                return snakes;
+                if (snakes.length > 0) {
+                    return snakes;
+                } else {
+                    var deferred = $q.defer();
+                    var promise = deferred.promise;
+                    $http.get(api_host_url + "/snakes")
+                        .success(function(data, status, headers, config) {
+                            snakes = data;
+                            deferred.resolve(snakes);
+                        })
+                        .error(function(data, status, headers, config) {
+                            deferred.reject(status);
+                        });
+                    promise.success = function(fn) {
+                        promise.then(fn);
+                        return promise;
+                    }
+                    promise.error = function(fn) {
+                        promise.then(null, fn);
+                        return promise;
+                    }
+                    return promise;
+                }
             },
             getSnakeByID: function(snakeId) {
                 return snakes[snakeId]
             }
         }
     })
-    
-    .factory('BloodTestService', function() {
+
+    .factory('BloodTestService', function($q, $http) {
         
+        var bloodTests = [];
+
         return {
             addBloodTest: function(bloodTest) {
                 bloodTests.push(bloodTest);
@@ -78,9 +116,9 @@ angular.module('snakeEnvenomation.services', [])
         }
     })
 
-    .factory('StageService', function() {
+    .factory('StageService', function($q, $http) {
 
-        var stages = [
+        /*var stages = [
             {
                 stage_num: 1,
                 action_text: "CBC, PT, INR, 20 min WBCT, BUN, Creatinine, UA",
@@ -283,9 +321,32 @@ angular.module('snakeEnvenomation.services', [])
                 relate_to: "none"
             },
 
-        ];
+        ];*/
+        
+        var stages = [];
 
         return {
+            getAllStagesOfSnakeType(snake_type) {
+                var deferred = $q.defer();
+                var promise = deferred.promise;
+                $http.get(api_host_url + "/snakes/" + snake_type + "/stages")
+                    .success(function(data, status, headers, config) {
+                        stages = data;
+                        deferred.resolve(stages[0]);
+                    })
+                    .error(function(data, status, headers, config) {
+                        deferred.reject(status);
+                    });
+                promise.success = function(fn) {
+                    promise.then(fn);
+                    return promise;
+                }
+                promise.error = function(fn) {
+                    promise.then(null, fn);
+                    return promise;
+                }
+                return promise;
+            },
             getStage: function(stage_num) {
                 var stage;
                 angular.forEach(stages, function(value, key) {

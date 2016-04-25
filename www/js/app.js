@@ -75,6 +75,28 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                 templateUrl: 'templates/hematotoxic/bloodResult.html',
                 controller: 'bloodResultCtrl'
             })
+            .state('motorWeakness', {
+                url: '/neurotoxic/motorWeakness',
+                templateUrl: 'templates/neurotoxic/motorWeakness.html',
+                controller: 'MotorWeaknessCtrl',
+                params: {
+                    'snake': null,
+                    'stage': null,
+                    'record': null,
+                    'times': null
+                }
+            })
+            .state('nmanagement', {
+                url: '/neurotoxic/management',
+                templateUrl: 'templates/neurotoxic/management.html',
+                controller: 'NManagementCtrl',
+                params: {
+                    'snake': null,
+                    'stage': null,
+                    'record': null,
+                    'times': null
+                }
+            })
 
 
 
