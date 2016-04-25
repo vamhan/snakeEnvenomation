@@ -12,21 +12,23 @@ var appRouter = function(app, db) {
     });
 
     app.get("/snakes/:snake_id/stages", function(req, res) {
-        db.query("SELECT st.* FROM snake sn, stage st where sn.snake_id = st.snake_id",function(err,rows){
+        db.query("SELECT * FROM stage where snake_id = " + req.params.snake_id,function(err,rows){
             if (err) {
                 return res.status(500).send({ "message": "internal server error" });
             } else {
-                var stages = rows;
-                var counter = 0;
-                for (var i = 0; i < rows.length; i++) {
-                    var stage = stages[i]
-                    db.query("SELECT * FROM condition where condition_id=" + stage.condition_id, function(err, rows) {
-                        stage["condition"] = rows;
-                        counter++;
+                var promises = rows.map(function(stage) {
+                    return new Promise(function(resolve, reject) {
+                        db.query("SELECT * FROM stage_condition where condition_id=" + stage.condition_id, function(err, rows) {
+                            if (err) { return reject(err); }
+                            stage["condition"] = rows;
+                            resolve();
+                        });
                     });
-                }
-                while(counter == stages.length){}
-                return res.status(200).send(stages);
+                });
+
+                Promise.all(promises)
+                .then(function() { return res.status(200).send(rows); })
+                .catch(console.error);
             }
         });
     });

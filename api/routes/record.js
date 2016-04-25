@@ -4,6 +4,7 @@ var appRouter = function(app, db) {
         var record_id = Math.floor(Date.now() / 1000);
         data["record_id"] = record_id;
         db.query("INSERT INTO treatmentRecord SET ?", data, function(err, rows) {
+            console.log(rows);
             if (err) {
                 console.log(err)
                 var status;
@@ -54,15 +55,16 @@ var appRouter = function(app, db) {
     });
     
     app.post("/treatment-record/:record_id/blood-tests", function(req, res) {
-        db.query("UPDATE bloodTest SET ? where record_id=" + req.params.record_id, req.body, function(err, rows) {
+        db.query("INSERT INTO bloodTest SET record_id=" + req.params.record_id + ", ?", req.body, function(err, rows) {
             if (err) {
-                return res.status(400).send({ "message": "Saving data failed, malformed syntax" });
-            } else {
-                if (rows.affectedRows > 0) {
-                    return res.status(200).send({ "message": "Blood test result is saved successfully" });
-                } else {
+                console.log(err);
+                if (err.code == 'ER_NO_REFERENCED_ROW_2') {
                     return res.status(404).send({ "message": "Saving data failed, record_id not found" });
+                } else {
+                    return res.status(400).send({ "message": "Saving data failed, malformed syntax" });
                 }
+            } else {
+                return res.status(200).send({ "message": "Blood test result is saved successfully" });
             }
         });
     });
@@ -80,15 +82,16 @@ var appRouter = function(app, db) {
     });
     
     app.post("/treatment-record/:record_id/weakness-tests", function(req, res) {
-        db.query("UPDATE motorWeakness SET ? where record_id=" + req.params.record_id, req.body, function(err, rows) {
+        db.query("INSERT INTO motorWeakness SET record_id=" + req.params.record_id + ", ?", req.query, function(err, rows) {
             if (err) {
-                return res.status(400).send({ "message": "Saving data failed, malformed syntax" });
-            } else {
-                if (rows.affectedRows > 0) {
-                    return res.status(200).send({ "message": "Motor weakness test result is saved successfully" });
-                } else {
+                console.log(err);
+                if (err.code == 'ER_NO_REFERENCED_ROW_2') {
                     return res.status(404).send({ "message": "Saving data failed, record_id not found" });
+                } else {
+                    return res.status(400).send({ "message": "Saving data failed, malformed syntax" });
                 }
+            } else {
+                return res.status(200).send({ "message": "Motor weakness test result is saved successfully" });
             }
         });
     });
@@ -102,31 +105,33 @@ var appRouter = function(app, db) {
                 return res.status(404).send({ "message": "record_id not found" });
             } else {
                 var stage = rows[0]
-                db.query("SELECT * FROM condition where condition_id=" + stage.condition_id, function(err, rows) {
-                        stage["condition"] = rows;
-                        return res.status(200).send(stage);
+                db.query("SELECT * FROM stage_condition where condition_id=" + stage.condition_id, function(err, rows) {
+                    stage["condition"] = rows;
+                    return res.status(200).send(stage);
                 });
             }
         });
     });
     
     app.post("/treatment-record/:record_id/transaction", function(req, res) {
-        db.query("UPDATE transaction SET ? where record_id=" + req.params.record_id, req.query, function(err, rows) {
+        db.query("INSERT INTO transaction SET record_id=" + req.params.record_id + ", ?", req.query, function(err, rows) {
             if (err) {
-                return res.status(400).send({ "message": "Saving data failed, malformed syntax" });
-            } else {
-                if (rows.affectedRows > 0) {
-                    return res.status(200).send({ "message": "Motor weakness test result is saved successfully" });
+                console.log(err);
+                if (err.code == 'ER_NO_REFERENCED_ROW_2') {
+                    return res.status(404).send({ "message": "Saving log failed, record_id or stage_num not found" });
                 } else {
-                    return res.status(404).send({ "message": "Saving data failed, record_id not found" });
+                    return res.status(400).send({ "message": "Saving log failed, malformed syntax" });
                 }
+            } else {
+                return res.status(200).send({ "message": "Transaction log is saved successfully" });
             }
         });
     });
     
     app.get("/treatment-record/active", function(req, res) {
-        db.query("SELECT * FROM treatmentRecord where user_id=" + req.params.user_id + " and status = 'active' ", function(err, rows) {
+        db.query("SELECT * FROM treatmentRecord where user_id=" + req.query.user_id + " and status = 'active' ", function(err, rows) {
             if (err) {
+                console.log(err)
                 return res.status(500).send({ "message": "internal server error" });
             } else if (rows.length == 0) {
                 return res.status(404).send({ "message": "user_id not found" });
