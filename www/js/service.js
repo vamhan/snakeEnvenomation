@@ -1,122 +1,124 @@
 //var user = {user_id: 1, physician_name: "Varunya Thavornun", hospital: {hospital_name: "Ram", hospital_province: "BKK"}};
 //var patient = {patient_id: 1, patient_name: "kkk", patient_gender: "Female", patient_birthdate: "10/04/1980"};
 
+var api_host_url = "http://localhost:3000"
+
 
 //var api_host_url = "http://localhost:3000/api"
 var api_host_url = "http://cdss.topwork.asia:9080/snake-envenomation/api"
 
 angular.module('snakeEnvenomation.services', ['angular-md5'])
 
-    .factory('UserService', function($q, $http, md5) {
+    .factory('UserService', function ($q, $http, md5) {
         var user = {};
         var patient = {};
-        
+
         return {
-            loginUser: function(username, patientId) {
+            loginUser: function (username, patientId) {
                 var deferred = $q.defer();
                 var promise = deferred.promise;
                 $http.get(api_host_url + "/login?username=" + md5.createHash(username || '') + "&patient_national_id=" + md5.createHash(patientId || ''))
-                    .success(function(data, status, headers, config) {
+                    .success(function (data, status, headers, config) {
                         user = data.physician;
                         patient = data.patient;
                         user["username"] = username;
                         patient["patient_national_id"] = patientId;
                         deferred.resolve();
                     })
-                    .error(function(data, status, headers, config) {
+                    .error(function (data, status, headers, config) {
                         deferred.reject(status);
                     });
-                promise.success = function(fn) {
+                promise.success = function (fn) {
                     promise.then(fn);
                     return promise;
                 }
-                promise.error = function(fn) {
+                promise.error = function (fn) {
                     promise.then(null, fn);
                     return promise;
                 }
                 return promise;
             },
-            getUserInfo: function() {
+            getUserInfo: function () {
                 return user;
             },
-            getPatientInfo: function() {
+            getPatientInfo: function () {
                 return patient;
-            } 
+            }
         }
     })
 
-    .factory('RecordService', function($q, $http) {
+    .factory('RecordService', function ($q, $http) {
         var record = {};
-        
+
         return {
-            addRecord: function(incident) {
+            addRecord: function (incident) {
                 record["record_id"] = 1;
             },
-            getRecord: function() {
+            getRecord: function () {
                 return record;
             },
-            updateRecord: function(bleeding, resFail, snakeType) {
+            updateRecord: function (bleeding, resFail, snakeType) {
                 record["systemic_bleeding"] = bleeding;
                 record["respiratory_failure"] = resFail;
                 record["snake_type"] = snakeType;
-            } 
+            }
         }
     })
 
-    .factory('SnakeService', function($q, $http) {
-        
+    .factory('SnakeService', function ($q, $http) {
+
         var snakes = [];
 
         return {
-            getAllSnakes: function() {
+            getAllSnakes: function () {
                 if (snakes.length > 0) {
                     return snakes;
                 } else {
                     var deferred = $q.defer();
                     var promise = deferred.promise;
                     $http.get(api_host_url + "/snakes")
-                        .success(function(data, status, headers, config) {
+                        .success(function (data, status, headers, config) {
                             snakes = data;
                             deferred.resolve(snakes);
                         })
-                        .error(function(data, status, headers, config) {
+                        .error(function (data, status, headers, config) {
                             deferred.reject(status);
                         });
-                    promise.success = function(fn) {
+                    promise.success = function (fn) {
                         promise.then(fn);
                         return promise;
                     }
-                    promise.error = function(fn) {
+                    promise.error = function (fn) {
                         promise.then(null, fn);
                         return promise;
                     }
                     return promise;
                 }
             },
-            getSnakeByID: function(snakeId) {
+            getSnakeByID: function (snakeId) {
                 return snakes[snakeId]
             }
         }
     })
 
-    .factory('BloodTestService', function($q, $http) {
-        
+    .factory('BloodTestService', function ($q, $http) {
+
         var bloodTests = [];
 
         return {
-            addBloodTest: function(bloodTest) {
+            addBloodTest: function (bloodTest) {
                 bloodTests.push(bloodTest);
             },
-            getBloodTests: function() {
+            getBloodTests: function () {
                 return bloodTests;
             },
-            getLatestBloodTest: function() {
+            getLatestBloodTest: function () {
                 return bloodTests[bloodTests.length - 1]
             }
         }
     })
 
-    .factory('StageService', function($q, $http) {
+    .factory('StageService', function ($q, $http) {
 
         /*var stages = [
             {
@@ -322,7 +324,7 @@ angular.module('snakeEnvenomation.services', ['angular-md5'])
             },
 
         ];*/
-        
+
         var stages = [];
 
         return {
@@ -330,46 +332,46 @@ angular.module('snakeEnvenomation.services', ['angular-md5'])
                 var deferred = $q.defer();
                 var promise = deferred.promise;
                 $http.get(api_host_url + "/snakes/" + snake_type + "/stages")
-                    .success(function(data, status, headers, config) {
+                    .success(function (data, status, headers, config) {
                         stages = data;
                         deferred.resolve(stages[0]);
                     })
-                    .error(function(data, status, headers, config) {
+                    .error(function (data, status, headers, config) {
                         deferred.reject(status);
                     });
-                promise.success = function(fn) {
+                promise.success = function (fn) {
                     promise.then(fn);
                     return promise;
                 }
-                promise.error = function(fn) {
+                promise.error = function (fn) {
                     promise.then(null, fn);
                     return promise;
                 }
                 return promise;
             },
-            getStage: function(stage_num) {
+            getStage: function (stage_num) {
                 var stage;
-                angular.forEach(stages, function(value, key) {
+                angular.forEach(stages, function (value, key) {
                     if (stages[key].stage_num == stage_num) {
                         stage = stages[key];
                     }
                 });
                 return stage;
             },
-            checkCondition: function(stage, data) {
+            checkCondition: function (stage, data) {
                 var pass = false
-                angular.forEach(stage.condition, function(value, key) {
+                angular.forEach(stage.condition, function (value, key) {
                     switch (value.compare) {
                         case 'lt':
-                            if (data[value.indicator] < value.value) 
+                            if (data[value.indicator] < value.value)
                                 pass = true;
                             break;
                         case 'gt':
-                            if (data[value.indicator] > value.value) 
+                            if (data[value.indicator] > value.value)
                                 pass = true;
                             break;
                         default:
-                            if (data[value.indicator] == value.value) 
+                            if (data[value.indicator] == value.value)
                                 pass = true;
                             break;
                     }

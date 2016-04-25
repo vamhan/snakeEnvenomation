@@ -210,7 +210,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                 } else { // to hematotoxic snake management
                     RecordService.updateRecord($scope.b_y_class == "button-positive", $scope.r_y_class == "button-positive", selectedSnake)
                     StageService.getAllStagesOfSnakeType(selectedSnake).success(function (stage) {
-                        $state.go('bloodSample', { snake: selectedSnake, stage: stage.stage_num, times: 1 }); 
+                        $state.go('bloodSample', { snake: selectedSnake, stage: stage.stage_num, times: 1 });
                     });
                 }
             } else if (selectedSnake == 7) {
@@ -226,7 +226,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                 } else { // to neurotoxic snake management
                     RecordService.updateRecord($scope.b_y_class == "button-positive", $scope.r_y_class == "button-positive", selectedSnake)
                     StageService.getAllStagesOfSnakeType(selectedSnake).success(function (stage) {
-                        $state.go('motorWeakness', { snake: selectedSnake, stage: stage.stage_num, times: 1 }); 
+                        $state.go('motorWeakness', { snake: selectedSnake, stage: stage.stage_num, times: 1 });
                     });
                 }
             }
@@ -266,10 +266,10 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                     });
                 }
             });
-            
+
             if (valid) {
                 BloodTestService.addBloodTest(bloodTest);
-                
+
                 var nextStage = stage.next_yes_stage;
                 var times = $state.params.times;
                 if (stage.relate_to == "blood test" && !StageService.checkCondition(stage, bloodTest)) {
@@ -300,9 +300,9 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         $scope.patient = UserService.getPatientInfo();
         $scope.record = RecordService.getRecord();
         $scope.bloodTest = BloodTestService.getLatestBloodTest();
-        
-        
-        
+
+
+
         var stage = StageService.getStage($state.params.stage);
         $scope.stage = stage;
 
@@ -357,8 +357,8 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
             $state.go('bloodResult');
         };
     })
-    
-    
+
+
     .controller('MotorWeaknessCtrl', function ($scope, $state, $ionicHistory, SnakeService, StageService, $ionicPopup) {
 
         $scope.r_y_class = "button-dark";
@@ -411,7 +411,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                     data["respiratory_failure"] = $scope.r_y_class == "button-positive" ? 1 : 0
                     data["motor_weakness"] = 0
                     if (StageService.checkCondition(stage, data)) {
-                        angular.forEach(stage.condition, function(value, key) {
+                        angular.forEach(stage.condition, function (value, key) {
                             if (value.indicator == "respiratory_failure" && value.next_yes_stage != null) {
                                 nextStage = value.next_yes_stage
                             }
@@ -440,7 +440,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
 
     })
-    
+
     .controller('NManagementCtrl', function ($scope, $state, $ionicHistory, $ionicPopup, UserService, RecordService, SnakeService, StageService, $timeout) {
 
         $scope.snake = SnakeService.getSnakeByID($state.params.snake);
