@@ -1,0 +1,65 @@
+<ion-view view-title="Blood Test" id="blood_view">
+    <ion-content>
+        <div class="header_title">
+            <h3 class="light" style="font-weight:600">Management of Snake {{snake.snake_name}}</h3>
+        </div>
+        <div class="padding border">
+            <div class="header_title" ng-show="show_weakness">
+                <h3 style="font-weight:600">Does the patient has any motor weakness?</h3>
+                <button class="button" ng-class="m_y_class" style="width:40%;margin-right:20px" ng-click="toggleYesSelection('m_y_class', 'm_n_class')">Yes</button>
+                <button class="button" ng-class="m_n_class" style="width:40%" ng-click="toggleNoSelection('m_n_class', 'm_y_class')">No</button>
+            </div>
+            <div class="card unit-list" ng-show="show_bloodtest">
+                <label class="item item-input">
+                    <span class="input-label">INR prolong</span>
+                    <input type="text" placeholder="INR" ng-model="bloodTest.INR">
+                    <span class="input-label"></span>
+                </label>
+                <div class="item item-select">
+                    <div class="input-label">20 Minutes WBCT</div>
+                    <select ng-model="bloodTest.WBCT">
+                        <option>Clotted</option>
+                        <option>Unclotted</option>
+                    </select>
+                </div>
+                <div class="item item-input">
+                    <span class="input-label">Platelet</span>
+                    <input type="number" placeholder="Platelet" ng-model="bloodTest.platelets">
+                    <span class="input-label">/mcl</span>
+                </div>
+                <div class="item item-input" ng-show="show_creatinine">
+                    <span class="input-label">Creatinine</span>
+                    <input type="number" placeholder="Creatinine" ng-model="bloodTest.creatinine">
+                    <span class="input-label">mg/dl</span>
+                </div>
+            </div>
+            <div ng-show="show_unknown">
+                <div class="header_title">
+                    <h3 style="font-weight:600">Acute renal failure</h3>
+                    <button class="button" ng-class="ar_y_class" style="width:40%;margin-right:20px" ng-click="toggleYesSelection('ar_y_class', 'ar_n_class')">Yes</button>
+                    <button class="button" ng-class="ar_n_class" style="width:40%" ng-click="toggleNoSelection('ar_n_class', 'ar_y_class')">No</button>
+                </div>
+                <div class="header_title">
+                    <h3 style="font-weight:600">Local edema</h3>
+                    <button class="button" ng-class="le_y_class" style="width:40%;margin-right:20px" ng-click="toggleYesSelection('le_y_class', 'le_n_class')">Yes</button>
+                    <button class="button" ng-class="le_n_class" style="width:40%" ng-click="toggleNoSelection('le_n_class', 'le_y_class')">No</button>
+                </div>
+                <div class="header_title">
+                    <h3 style="font-weight:600">Snakebites occurred indoor (e.g. house, factory)</h3>
+                    <button class="button" ng-class="in_y_class" style="width:40%;margin-right:20px" ng-click="toggleYesSelection('in_y_class', 'in_n_class')">Yes</button>
+                    <button class="button" ng-class="in_n_class" style="width:40%" ng-click="toggleNoSelection('in_n_class', 'in_y_class')">No</button>
+                </div>
+                <div class="header_title">
+                    <h3 style="font-weight:600">Locked-jaw snakebite</h3>
+                    <button class="button" ng-class="j_y_class" style="width:40%;margin-right:20px" ng-click="toggleYesSelection('j_y_class', 'j_n_class')">Yes</button>
+                    <button class="button" ng-class="j_n_class" style="width:40%" ng-click="toggleNoSelection('j_n_class', 'j_y_class')">No</button>
+                </div>
+            </div>
+        </div>
+        <div class="padding">
+            <button class="button button-block button-positive" ng-click="confirm(bloodTest)">
+                Confirm
+            </button>
+        </div>
+    </ion-content>
+</ion-view>

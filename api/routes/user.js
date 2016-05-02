@@ -5,22 +5,39 @@ var appRouter = function(app, db) {
             return res.status(400).send({ "message": "username or patient_national_id parameter is missing" });
         } else {
             db.query("SELECT * FROM physician where physician_id='" + req.query.username + "'",function(err,rows){
+                var user = {};
                 if (err) {
                     console.log(err)
                     return res.status(500).send({ "message": "internal server error" });
-                } else if (rows.length == 0) {
-                    return res.status(401).send({ "message": "Login failed, wrong username" });
                 } else {
-                    var user = rows[0];
-                    delete user["physician_id"];
+                    if (rows.length == 0) {
+                        //return res.status(401).send({ "message": "Login failed, wrong username" });
+                        var user_id = Math.floor(Date.now() / 1000);
+                        user["user_id"] = user_id;
+                        user["physician_name"] = "";
+                        user["hospital_name"] = null;
+                        user["hospital_province"] = null;
+                        console.log("INSERT INTO physician SET user_id='" + user_id + "', physician_id='" + req.query.username + "'");
+                        db.query("INSERT INTO physician SET user_id='" + user_id + "', physician_id='" + req.query.username + "'");
+                    } else {
+                        user = rows[0];
+                        delete user["physician_id"];
+                    }
+
                     db.query("SELECT * FROM patient where patient_national_id='" + req.query.patient_national_id + "'",function(err,rows){
-                        if (rows.length > 0) {
+                        var patient = {};
+                        if (rows.length == 0) {
+                            var patient_id = Math.floor(Date.now() / 1000);
+                            patient["patient_id"] = patient_id
+                            patient["patient_name"] = null;
+                            patient["patient_gender"] = null;
+                            patient["patient_birthdate"] = null;
+                            db.query("INSERT INTO patient SET patient_id='" + patient_id + "', patient_national_id='" + req.query.patient_national_id + "'");
+                        } else {
                             patient = rows[0];
                             delete patient["patient_national_id"]
-                            return res.status(200).send({"physician": user, "patient": patient});
-                        } else {
-                            return res.status(200).send({"physician": user});
                         }
+                        return res.status(200).send({"physician": user, "patient": patient});
                     });
                 }
             });
@@ -45,6 +62,7 @@ var appRouter = function(app, db) {
         if (req.query.patient_name || req.query.patient_gender || req.query.patient_birthdate) {
             db.query("UPDATE patient SET ? where patient_id='" + req.params.patient_id + "'", req.query, function(err, rows) {
                 if (err) {
+                    console.log(err)
                     return res.status(400).send({ "message": "Saving data failed, malformed syntax" });
                 } else {
                     if (rows.affectedRows > 0) {

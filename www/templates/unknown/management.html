@@ -1,7 +1,7 @@
 <ion-view view-title="Management">
     <ion-content>
         <div class="header_title">
-            <h3 class="light" style="font-weight:600">Management of Neurotoxic Snake {{snake.snake_name}}</h3>
+            <h3 class="light" style="font-weight:600">Management of Snake {{snake.snake_name}}</h3>
         </div>
         <div class="card info-list">
             <div class="item item-divider">Information</div>
@@ -33,17 +33,6 @@
             </div>
             <div class="item" style="white-space:pre-line;padding-bottom: 0px">{{stage.action_text}}
                 <div style="margin-top:10px" ng-show="show_next_process"><button class="button button-assertive" ng-click="navigateToNextStage()">Go to next process</button></div>
-            </div>
-        </div>
-        
-        <div class="card info-list">
-            <div class="item item-divider">
-                <span style="float:left">Lestest Motor Weakness Result</span>
-                <a ng-click="navigateToWeaknessResultList()" style="float:right">View all results</a>
-            </div>
-            <div class="item row">
-                <div class="col">Motor weakness :</div>
-                <div class="col">{{latest_weakness}}</div>
             </div>
         </div>
         

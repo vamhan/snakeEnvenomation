@@ -1,13 +1,13 @@
 <ion-view view-title="Blood Test" id="blood_view">
     <ion-content>
         <div class="header_title">
-            <h3 class="light" style="font-weight:600">Management of Hematotoxic Snake {{snake.name}}</h2>
+            <h3 class="light" style="font-weight:600">Management of Hematotoxic Snake {{snake.snake_name}}</h3>
         </div>
         <div class="card unit-list">
             <label class="item item-input" style="background-color:lightblue">
                 <span class="input-label">INR</span>
                 <input type="text" placeholder="INR" ng-model="bloodTest.INR">
-                <span class="input-label">Unit</span>
+                <span class="input-label"></span>
             </label>
         </div>
         <div class="card unit-list">
@@ -24,17 +24,17 @@
             <div class="item item-input">
                 <span class="input-label">WBC</span>
                 <input type="number" placeholder="WBC" ng-model="bloodTest.WBC">
-                <span class="input-label">Unit</span>
+                <span class="input-label">cells/mcl</span>
             </div>
             <div class="item item-input">
                 <span class="input-label">Hct</span>
                 <input type="number" placeholder="Hct" ng-model="bloodTest.Hct">
-                <span class="input-label">Unit</span>
+                <span class="input-label">%</span>
             </div>
             <div class="item item-input" style="background-color:lightblue">
                 <span class="input-label">Platelet</span>
                 <input type="number" placeholder="Platelet" ng-model="bloodTest.platelets">
-                <span class="input-label">Unit</span>
+                <span class="input-label">/mcl</span>
             </div>
         </div>
         <div class="card unit-list" ng-show="snake.snake_id == 0">
@@ -57,9 +57,9 @@
                 </select>
             </div>
             <div class="item item-input">
-                <span class="input-label">Cretinine</span>
-                <input type="number" placeholder="Cretinine" ng-model="bloodTest.cretinine">
-                <span class="input-label">Unit</span>
+                <span class="input-label">Creatinine</span>
+                <input type="number" placeholder="Creatinine" ng-model="bloodTest.creatinine">
+                <span class="input-label">mg/dl</span>
             </div>
         </div>
         <div class="padding">

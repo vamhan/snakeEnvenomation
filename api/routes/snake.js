@@ -16,19 +16,24 @@ var appRouter = function(app, db) {
             if (err) {
                 return res.status(500).send({ "message": "internal server error" });
             } else {
-                var promises = rows.map(function(stage) {
-                    return new Promise(function(resolve, reject) {
-                        db.query("SELECT * FROM stage_condition where condition_id=" + stage.condition_id, function(err, rows) {
-                            if (err) { return reject(err); }
-                            stage["condition"] = rows;
-                            resolve();
+                var stages = rows;
+                db.query("SELECT * FROM stage where stage_num=4 or stage_num=36 or stage_num=45",function(err,rows){
+                    rows.map(function(row) {
+                        stages.push(row);
+                    });    
+                    var promises = stages.map(function(stage) {
+                        return new Promise(function(resolve, reject) {
+                            db.query("SELECT * FROM stage_condition where condition_id=" + stage.condition_id, function(err, rows) {
+                                if (err) { return reject(err); }
+                                stage["condition"] = rows;
+                                resolve();
+                            });
                         });
-                    });
+                    });   
+                    Promise.all(promises)
+                        .then(function() { return res.status(200).send(stages); })
+                        .catch(console.error);
                 });
-
-                Promise.all(promises)
-                .then(function() { return res.status(200).send(rows); })
-                .catch(console.error);
             }
         });
     });

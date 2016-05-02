@@ -1,0 +1,12 @@
+<ion-view view-title="Motor Weakness Results">
+    <ion-content>
+        <div class="list">
+            
+            <div class="item item-icon-right" ng-repeat="(index, weakness) in motorWeaknesses">
+                <span style="float:left">ครั้งที่ {{(index + 1)}} {{weakness.date_time}}</span>
+                <span style="float:right">{{(weakness.motor_weakness == 0) ? 'no' : 'yes'}}</span>
+            </div>
+
+        </div>
+    </ion-content>
+</ion-view>

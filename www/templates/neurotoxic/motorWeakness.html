@@ -1,7 +1,10 @@
 <ion-view>
     <ion-content>
+        <div class="header_title">
+            <h3 class="light" style="font-weight:600">Management of Neurotoxic Snake {{snake.snake_name}}</h3>
+        </div>
         <div class="padding border">
-            <div class="header_title">
+            <div class="header_title" ng-show="show_respiratory">
                 <h3 style="font-weight:600">Does the patient has impending respiratory failure?</h2>
                 <button class="button" ng-class="r_y_class" style="width:40%;margin-right:20px" ng-click="toggleYesSelection('r_y_class', 'r_n_class')">Yes</button>
                 <button class="button" ng-class="r_n_class" style="width:40%" ng-click="toggleNoSelection('r_n_class', 'r_y_class')">No</button>

@@ -73,7 +73,10 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
             .state('bloodResult', {
                 url: '/hematotoxic/bloodResult',
                 templateUrl: 'templates/hematotoxic/bloodResult.html',
-                controller: 'bloodResultCtrl'
+                controller: 'bloodResultCtrl',
+                params: {
+                    'index': null
+                }
             })
             .state('motorWeakness', {
                 url: '/neurotoxic/motorWeakness',
@@ -90,6 +93,33 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                 url: '/neurotoxic/management',
                 templateUrl: 'templates/neurotoxic/management.html',
                 controller: 'NManagementCtrl',
+                params: {
+                    'snake': null,
+                    'stage': null,
+                    'record': null,
+                    'times': null
+                }
+            })
+            .state('weaknessResultList', {
+                url: '/neurotoxic/weaknessResultList',
+                templateUrl: 'templates/neurotoxic/weaknessResultList.html',
+                controller: 'WeaknessResultCtrl'
+            })
+            .state('unknownTest', {
+                url: '/unknown/unknownTest',
+                templateUrl: 'templates/unknown/unknownTest.html',
+                controller: 'UnknownTestCtrl',
+                params: {
+                    'snake': null,
+                    'stage': null,
+                    'record': null,
+                    'times': null
+                }
+            })
+            .state('umanagement', {
+                url: '/unknown/management',
+                templateUrl: 'templates/unknown/management.html',
+                controller: 'UManagementCtrl',
                 params: {
                     'snake': null,
                     'stage': null,

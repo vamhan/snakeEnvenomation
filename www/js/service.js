@@ -1,17 +1,19 @@
 //var user = {user_id: 1, physician_name: "Varunya Thavornun", hospital: {hospital_name: "Ram", hospital_province: "BKK"}};
 //var patient = {patient_id: 1, patient_name: "kkk", patient_gender: "Female", patient_birthdate: "10/04/1980"};
 
-var api_host_url = "http://localhost:3000"
+var user = {};
+var patient = {};
+var activeRecords = [];
+var record = {};
+var snakes = [];
 
 
-//var api_host_url = "http://localhost:3000/api"
+//var api_host_url = "http://localhost:9080/snake-envenomation/api"
 var api_host_url = "http://cdss.topwork.asia:9080/snake-envenomation/api"
 
 angular.module('snakeEnvenomation.services', ['angular-md5'])
 
     .factory('UserService', function ($q, $http, md5) {
-        var user = {};
-        var patient = {};
 
         return {
             loginUser: function (username, patientId) {
@@ -25,8 +27,8 @@ angular.module('snakeEnvenomation.services', ['angular-md5'])
                         patient["patient_national_id"] = patientId;
                         deferred.resolve();
                     })
-                    .error(function (data, status, headers, config) {
-                        deferred.reject(status);
+                    .error(function (data, status, headers, config, statusText) {
+                        deferred.reject(statusText);
                     });
                 promise.success = function (fn) {
                     promise.then(fn);
@@ -43,16 +45,79 @@ angular.module('snakeEnvenomation.services', ['angular-md5'])
             },
             getPatientInfo: function () {
                 return patient;
-            }
+            },
+            updateUserInfo: function (user) {
+                $http.put(api_host_url + "/physician/" + user.user_id + "?"
+                    + "physician_name=" + user.physician_name
+                    + "&hospital_name=" + user.hospital_name
+                    + "&hospital_province=" + user.hospital_province);
+            },
+            updatePatientInfo: function (patient) {
+                var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                angular.forEach(monthNames, function(value, index) {
+                    if (patient.patient_birthdate.indexOf(value) > -1) {
+                        month = (index + 1 < 10) ? "0" + (index + 1) : (index + 1)
+                    }   
+                });
+                var formatDate = patient.patient_birthdate.substr(patient.patient_birthdate.length - 4) + "-" + month + "-" + patient.patient_birthdate.substr(0, 2);
+                $http.put(api_host_url + "/patient/" + patient.patient_id + "?"
+                    + "patient_name=" + patient.patient_name
+                    + "&patient_gender=" + patient.patient_gender
+                    + "&patient_birthdate=" + formatDate);
+            },
         }
     })
 
     .factory('RecordService', function ($q, $http) {
-        var record = {};
 
         return {
+            getAllActiveRecords: function () {
+                var deferred = $q.defer();
+                var promise = deferred.promise;
+                $http.get(api_host_url + "/treatment-record/active?user_id=" + user.user_id)
+                    .success(function (data, status, headers, config) {
+                        activeRecords = data;
+                        deferred.resolve();
+                    });
+                    
+                promise.success = function (fn) {
+                    promise.then(fn);
+                    return promise;
+                }
+                promise.error = function (fn) {
+                    promise.then(null, fn);
+                    return promise;
+                }
+                return promise;
+            },
+            getRecordOfPatient: function () {
+                angular.forEach(activeRecords, function(value, index) {
+                    if (value.patient_id == patient.patient_id) {
+                        record = value;
+                    }   
+                });
+                return record;
+            },
             addRecord: function (incident) {
-                record["record_id"] = 1;
+                
+                var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                angular.forEach(monthNames, function(value, index) {
+                    if (incident.incident_date.indexOf(value) > -1) {
+                        month = (index + 1 < 10) ? "0" + (index + 1) : (index + 1)
+                    }   
+                });
+                var formatDate = incident.incident_date.substr(incident.incident_date.length - 4) + "-" + month + "-" + incident.incident_date.substr(0, 2);
+                
+                $http.post(api_host_url + "/treatment-record?"
+                    + "user_id=" + user.user_id
+                    + "&patient_id=" + patient.patient_id
+                    + "&incident_date=" + formatDate
+                    + "&incident_time=" + incident.incident_time
+                    + "&incident_district=" + incident.incident_district
+                    + "&incident_province=" + incident.incident_province)
+                    .success(function (data, status, headers, config) {
+                        record["record_id"] = data.record_id;
+                    })
             },
             getRecord: function () {
                 return record;
@@ -61,13 +126,16 @@ angular.module('snakeEnvenomation.services', ['angular-md5'])
                 record["systemic_bleeding"] = bleeding;
                 record["respiratory_failure"] = resFail;
                 record["snake_type"] = snakeType;
+                
+                $http.put(api_host_url + "/treatment-record/" + record.record_id + "?"
+                    + "systemic_bleeding=" + (bleeding ? 1 : 0)
+                    + "&respiratory_failure=" + (resFail ? 1 : 0)
+                    + "&snake_type=" + snakeType);
             }
         }
     })
 
     .factory('SnakeService', function ($q, $http) {
-
-        var snakes = [];
 
         return {
             getAllSnakes: function () {
@@ -106,14 +174,65 @@ angular.module('snakeEnvenomation.services', ['angular-md5'])
         var bloodTests = [];
 
         return {
-            addBloodTest: function (bloodTest) {
-                bloodTests.push(bloodTest);
+            addBloodTest: function (bloodTest) {     
+                bloodTest["date_time"] = dateTimeFormat(new Date());
+                bloodTests.push(bloodTest)
+                /*$http({
+                    url: api_host_url + "/treatment-record/" + record.record_id + "/blood-tests",
+                    method: "POST",
+                    data: bloodTest,
+                    headers: {'Content-Type': 'application/json'}
+                })*/
             },
             getBloodTests: function () {
-                return bloodTests;
+                if (bloodTests.length > 0) {
+                    return bloodTests;
+                } else {
+                    $http.get(api_host_url + "/treatment-record/" + record.record_id + "/blood-tests")
+                        .success(function (data, status, headers, config) {
+                            bloodTests = data;
+                            angular.forEach(bloodTests, function(value, index) {     
+                                value["date_time"] = dateTimeFormat(new Date(value.date_time));
+                            })
+                        });
+                }
             },
             getLatestBloodTest: function () {
                 return bloodTests[bloodTests.length - 1]
+            }
+        }
+    })
+    
+    .factory('MotorWeaknessService', function ($q, $http) {
+
+        var motorWeaknesses = [];
+
+        return {
+            addMotorWeakness: function (value) {   
+                var date = dateTimeFormat(new Date());
+                var motorWeakness = {};
+                motorWeakness["date_time"] = date;
+                motorWeakness["motor_weakness"] = value;
+                motorWeaknesses.push(motorWeakness);
+                /*$http.post(api_host_url + "/treatment-record/" + record.record_id + "/weakness-tests?"
+                    + "date_time=" + date
+                    + "&motor_weakness=" + motorWeakness);*/
+            },
+            getMotorWeaknesses: function () {
+                if (motorWeaknesses.length > 0) {
+                    return motorWeaknesses;
+                } else {
+                    $http.get(api_host_url + "/treatment-record/" + record.record_id + "/weakness-tests")
+                        .success(function (data, status, headers, config) {
+                            motorWeaknesses = data;
+                            angular.forEach(motorWeaknesses, function(value, index) {     
+                                value["date_time"] = dateTimeFormat(new Date(value.date_time));
+                            })
+                        });
+                }
+            },
+            getLatestMotorWeakness: function () {
+                return motorWeaknesses[motorWeaknesses.length - 1]
             }
         }
     })
@@ -358,8 +477,9 @@ angular.module('snakeEnvenomation.services', ['angular-md5'])
                 });
                 return stage;
             },
-            checkCondition: function (stage, data) {
-                var pass = false
+            checkCondition: function (stage, data, times) {
+                var nextStage = 0
+                var pass = false;
                 angular.forEach(stage.condition, function (value, key) {
                     switch (value.compare) {
                         case 'lt':
@@ -375,8 +495,30 @@ angular.module('snakeEnvenomation.services', ['angular-md5'])
                                 pass = true;
                             break;
                     }
+                    if (pass && value.next_yes_stage != null) {
+                        nextStage = value.next_yes_stage
+                    }
                 });
-                return pass;
+                if (pass && nextStage == 0) {
+                    nextStage = stage.next_yes_stage;
+                } else if (nextStage == 0) {
+                   if (times >= stage.times) {
+                        nextStage = stage.next_no_stage;
+                    } else {
+                        nextStage = stage.stage_num // still in the same stage if test isn't completed
+                        times += 1;
+                    } 
+                }
+                return nextStage;
             }
         }
     })
+    
+    
+    function dateTimeFormat(date) {
+        var month = (date.getMonth() + 1 < 10) ? "0" + (date.getMonth() + 1) : (date.getMonth() + 1);    
+        var day = (date.getDate() < 10) ? "0" + date.getDate() : date.getDate(); 
+        var hour = (date.getHours() < 10) ? "0" + date.getHours() : date.getHours(); 
+        var minute = (date.getMinutes() < 10) ? "0" + date.getMinutes() : date.getMinutes();
+        return date.getFullYear() + "-" + month + "-" + day + " " + hour + ":" + minute;      
+    }

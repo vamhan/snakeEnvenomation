@@ -17,10 +17,73 @@ INSERT INTO snake VALUES (5,"Banded Krait","งูสามเหลี่ยม
 INSERT INTO snake VALUES (6,"Malayan Krait","งูทับสมิงคลา","img/snake.jpg,img/snake.jpg","งูทับสมิงคลา");
 INSERT INTO snake VALUES (7,"unknown","งูไม่ทราบชนิด","img/unknown.jpg,img/unknown.jpg","");
 
-INSERT INTO `stage` (`stage_num`, `snake_id`, `action_text`, `frequent`, `times`, `condition_id`, `next_yes_stage`, `next_no_stage`, `action_type`,`additonal_action`, `relate_to`) VALUES ('41', '3', 'Observe motor weakness q 1 hr for 24 hr', '3600', '24', '3', '44', '42', 'alert', '', 'respiratory');
-INSERT INTO `stage` (`stage_num`, `snake_id`, `action_text`, `frequent`,`times`, `condition_id`, `next_yes_stage`, `next_no_stage`,`action_type`, `additonal_action`, `relate_to`) VALUES ('42', '3','', '0', '1', '2', '45','43', 'none', '', 'motor weakness');
-INSERT INTO `stage` (`stage_num`, `snake_id`, `action_text`, `frequent`,`times`, `condition_id`, `next_yes_stage`, `next_no_stage`,`action_type`, `additonal_action`, `relate_to`) VALUES ('43', '3','Done + tetanus prophylaxis', '0', '1', '0', '0','0', 'none', '', '');
-INSERT INTO `stage` (`stage_num`, `snake_id`, `action_text`, `frequent`,`times`, `condition_id`, `next_yes_stage`, `next_no_stage`,`action_type`, `additonal_action`, `relate_to`) VALUES ('44', '3','Intubalation and ventilation support. Consult PC', '0', '1', '0', '0','0', 'call', '1367', '');
-INSERT INTO `stage` (`stage_num`, `snake_id`, `action_text`, `frequent`,`times`, `condition_id`, `next_yes_stage`, `next_no_stage`,`action_type`, `additonal_action`, `relate_to`) VALUES ('45', '3','Antivenom for Cobra 10 vials. Observe motor weakness q 1 hr for 24 hr', '3600', '12', '2', '47','46', 'alert', '', 'motor weakness');
-INSERT INTO `stage` (`stage_num`, `snake_id`, `action_text`, `frequent`,`times`, `condition_id`, `next_yes_stage`, `next_no_stage`,`action_type`, `additonal_action`, `relate_to`) VALUES ('46', '3','At 12 hr, any motor weakness', '43200', '1', '2', '47','43', 'alert', '', 'motor weakness');
-INSERT INTO `stage` (`stage_num`, `snake_id`, `action_text`, `frequent`,`times`, `condition_id`, `next_yes_stage`, `next_no_stage`,`action_type`, `additonal_action`, `relate_to`) VALUES ('47', '3','Consult PC', '0', '1', '0', '0','0', 'call', '1367', '');
+INSERT INTO `stage` (`stage_num`, `snake_id`, `action_text`, `frequent`, `times`, `condition_id`, `next_yes_stage`, `next_no_stage`, `action_type`, `additonal_action`, `relate_to`) VALUES
+(1, 0, 'CBC, PT, INR, 20 min WBCT, BUN, Creatinine, UA', 0, 1, 1, 5, 2, 'none', '', 'blood test'),
+(2, 0, 'CBC, PT, INR, 20 min WBCT q 6 hr for 2 times (6, 12)', 21600, 2, 1, 5, 3, 'alert', '', 'blood test'),
+(3, 0, 'D/C CBC, PT, INR, 20 min WBCT, Creatinine Once daily for 3 days (24 - 36, 48 - 60, 72 - 84)', 86400, 3, 1, 5, 4, 'alert', '', 'blood test'),
+(4, 0, 'Done + tetanus prophylaxis', 0, 1, 0, 0, 0, 'none', '', ''),
+(5, 0, 'Activenom for Russell Viper 5 vials. Repeat CBC, PT, INR, 20 min WBCT q 4 hr for 3 times', 14400, 3, 1, 6, 3, 'alert', '', 'blood test'),
+(6, 0, 'Activenom for Russel Viper 5 vials. Consult PC', 0, 1, 0, 0, 0, 'call', '1367', ''),
+(11, 1, 'CBC, PT, INR, 20 min WBCT', 0, 1, 1, 15, 12, 'none', '', 'blood test'),
+(12, 1, 'CBC, PT, INR, 20 min WBCT q 6 hr for 2 times (6, 12)', 21600, 2, 1, 15, 13, 'alert', '', 'blood test'),
+(13, 1, 'D/C CBC, PT, INR, 20 min WBCT Once daily for 3 days (24 - 36, 48 - 60, 72 - 84)', 86400, 3, 1, 15, 4, 'alert', '', 'blood test'),
+(15, 1, 'Activenom for Green Pit Viper 3 vials. Repeat CBC, PT, INR, 20 min WBCT q 4 hr for 3 times', 14400, 3, 1, 16, 13, 'alert', '', 'blood test'),
+(16, 1, 'Activenom for Green Pit Viper 5 vials. Consult PC', 0, 1, 0, 0, 0, 'call', '1367', ''),
+(21, 2, 'CBC, PT, INR, 20 min WBCT', 0, 1, 1, 25, 22, 'none', '', 'blood test'),
+(22, 2, 'CBC, PT, INR, 20 min WBCT q 6 hr for 2 times (6, 12)', 21600, 2, 1, 25, 23, 'alert', '', 'blood test'),
+(23, 2, 'D/C CBC, PT, INR, 20 min WBCT Once daily for 3 days (24 - 36, 48 - 60, 72 - 84)', 86400, 3, 1, 25, 4, 'alert', '', 'blood test'),
+(25, 2, 'Activenom for Malayan Pit Viper 5 vials. Repeat CBC, PT, INR, 20 min WBCT q 4 hr for 3 times', 14400, 3, 1, 26, 23, 'alert', '', 'blood test'),
+(26, 2, 'Activenom for Malayan Pit Viper 5 vials. Consult PC', 0, 1, 0, 0, 0, 'call', '1367', ''),
+(31, 3, 'Observe motor weakness q 1 hr for 24 hr', 3600, 24, 3, 34, 4, 'alert', '', 'respiratory'),
+(33, 3, 'Intubalation and ventilation support. Consult PC', 0, 1, 0, 34, 0, 'call', '1367', ''),
+(34, 3, 'Antivenom for Cobra 10 vials. Observe motor weakness q 1 hr for 12 hr', 3600, 12, 2, 36, 35, 'alert', '', 'motor weakness'),
+(35, 3, 'At 12 hr, any motor weakness', 43200, 1, 2, 36, 4, 'alert', '', 'motor weakness'),
+(36, 3, 'Consult PC', 0, 1, 0, 0, 0, 'call', '1367', ''),
+(41, 4, 'Observe motor weakness q 1 hr for 24 hr', 3600, 24, 4, 44, 4, 'alert', '', 'respiratory'),
+(43, 4, 'Intubalation and ventilation support. Consult PC', 0, 1, 0, 44, 0, 'call', '1367', ''),
+(44, 4, 'Antivenom for King Cobra 10 vials. Observe motor weakness q 1 hr for 12 hr', 3600, 12, 2, 36, 45, 'alert', '', 'motor weakness'),
+(45, 4, 'At 12 hr, any motor weakness', 43200, 1, 2, 36, 4, 'alert', '', 'motor weakness'),
+(51, 5, 'Antivenom for Banded Krait 10 vials. Observe motor weakness q 1 hr for 12 hr', 3600, 12, 2, 36, 45, 'alert', '', 'motor weakness'),
+(61, 6, 'Antivenom for Malayan Krait 10 vials. Observe motor weakness q 1 hr for 24 hr', 3600, 24, 2, 36, 45, 'alert', '', 'motor weakness'),
+(71, 7, 'Observe weakness and neuro sign q 1 hr for 24 hr\nObserve bleeding and bleeding precaution\nCBC, PT, INR, 20 min WBCT every 6 hr for 4 times (0, 6, 12, 18, 24)\nInitial creatinine and then next 24 hr (0, 24)', 3600, 24, 2, 77, 75, 'alert', '', 'motor weakness'),
+(72, 7, 'Observe weakness and neuro sign q 1 hr for 24 hr\nObserve bleeding and bleeding precaution\nCBC, PT, INR, 20 min WBCT every 6 hr for 4 times (0, 6, 12, 18, 24)\nInitial creatinine and then next 24 hr (0, 24)', 21600, 4, 1, 76, 75, 'alert', '', 'blood test'),
+(75, 7, 'CBC, PT, INR, 20 min WBCT, creatinine once daily for 2 times (48, 72)', 86400, 2, 1, 76, 4, 'alert', '', 'blood test'),
+(76, 7, '', 0, 1, 5, 78, 1, 'none', '', 'snake type'),
+(77, 7, '', 0, 1, 6, 36, 36, 'none', '', 'snake type'),
+(78, 7, 'Consult PC (งูเขียวหางไหม้ / งูกะปะ แยกด้วยระบาดวิทยา)', 0, 1, 0, 0, 0, 'call', '1367', ''),
+(79, 7, 'Consult PC (งูกะปะ / งูสามเหลี่ยม แยกด้วยระบาดวิทยา)', 0, 1, 0, 0, 0, 'call', '1367', ''),
+(81, 8, '1. Resuscitation\n2. Give antivenom ไม่ต้องรอผล lab\n3. Check CBC, PT, INR, 20 min WBCT, BUN, Creatinine\n4. G/M blood component และให้ตามความเหมาะสม\n5. ปรึกษาศูนย์พิษวิทยา โทร 1367', 0, 1, 0, 82, 0, 'none', '', ''),
+(82, 8, 'Give Russell Viper antivenom 5 vials', 0, 1, 0, 36, 0, 'none', '', ''),
+(83, 8, '1. Resuscitation\n2. Give antivenom ไม่ต้องรอผล lab\n3. Check CBC, PT, INR, 20 min WBCT, BUN, Creatinine\n4. G/M blood component และให้ตามความเหมาะสม\n5. ปรึกษาศูนย์พิษวิทยา โทร 1367', 0, 1, 0, 84, 0, 'none', '', ''),
+(84, 8, 'Give Green Pit Viper antivenom 5 vials', 0, 1, 0, 36, 0, 'none', '', ''),
+(85, 8, '1. Resuscitation\n2. Give antivenom ไม่ต้องรอผล lab\n3. Check CBC, PT, INR, 20 min WBCT, BUN, Creatinine\n4. G/M blood component และให้ตามความเหมาะสม\n5. ปรึกษาศูนย์พิษวิทยา โทร 1367', 0, 1, 0, 86, 0, 'none', '', ''),
+(86, 8, 'Give Malayan Pit Viper antivenom 5 vials', 0, 1, 0, 36, 0, 'none', '', ''),
+(87, 8, '1. Resuscitation\n2. Give antivenom ไม่ต้องรอผล lab\n3. Check CBC, PT, INR, 20 min WBCT, BUN, Creatinine\n4. G/M blood component และให้ตามความเหมาะสม\n5. ปรึกษาศูนย์พิษวิทยา โทร 1367', 0, 1, 0, 88, 0, 'none', '', ''),
+(88, 8, 'Give Polyvalent Hematotoxic snake', 0, 1, 0, 36, 0, 'none', '', ''),
+(91, 9, 'Intubalation and ventilation support. Consult PC', 0, 1, 0, 92, 0, 'call', '1367', ''),
+(92, 9, 'Give Cobra antivenom 10 vials', 0, 1, 0, 31, 0, 'none', '', ''),
+(93, 9, 'Intubalation and ventilation support. Consult PC', 0, 1, 0, 94, 0, 'call', '1367', ''),
+(94, 9, 'Give King Cobra antivenom 10 vials', 0, 1, 0, 41, 0, 'none', '', ''),
+(95, 9, 'Intubalation and ventilation support. Consult PC', 0, 1, 0, 96, 0, 'call', '1367', ''),
+(96, 9, 'Give Banded Krait antivenom 10 vials', 0, 1, 0, 51, 0, 'none', '', ''),
+(97, 9, 'Intubalation and ventilation support. Consult PC', 0, 1, 0, 98, 0, 'call', '1367', ''),
+(98, 9, 'Give Malayan Krait antivenom 10 vials', 0, 1, 0, 61, 0, 'none', '', ''),
+(99, 9, 'Intubalation and ventilation support. Consult PC', 0, 1, 0, 100, 0, 'call', '1367', ''),
+(100, 9, 'Give Polyvalent Neurotoxic snake antivenom 10 vials', 0, 1, 0, 36, 0, 'none', '', '');
+
+
+
+INSERT INTO `stage_condition` (`stage_condition_id`, `condition_id`, `indicator`, `compare`, `value`, `next_yes_stage`, `next_no_stage`) VALUES
+(1, 1, 'platelets', 'lt', '50000', NULL, NULL),
+(2, 1, 'INR', 'gt', '1.2', NULL, NULL),
+(3, 1, 'WBCT', 'eq', 'Unclotted', NULL, NULL),
+(4, 2, 'motor_weakness', 'eq', '1', NULL, NULL),
+(5, 3, 'respiratory_failure', 'eq', '1', 33, NULL),
+(6, 3, 'motor_weakness', 'eq', '1', NULL, NULL),
+(7, 4, 'respiratory_failure', 'eq', '1', 43, NULL),
+(8, 4, 'motor_weakness', 'eq', '1', NULL, NULL),
+(9, 5, 'acute_renal_failure', 'eq', '1', 1, NULL),
+(10, 5, 'local_edema', 'eq', '1', NULL, NULL),
+(11, 6, 'local_edema', 'eq', '1', 12, 13),
+(12, 6, 'locked_jaw', 'eq', '1', 41, 31),
+(13, 6, 'indoor', 'eq', '1', 61, 79);

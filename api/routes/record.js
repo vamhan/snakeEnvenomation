@@ -2,10 +2,17 @@ var appRouter = function(app, db) {
     app.post("/treatment-record", function(req, res) {
         
         db.query("SELECT record_id FROM treatmentRecord WHERE user_id = " + req.query.user_id + " and patient_id = " + req.query.patient_id + " and status='active'", function(err, rows) {
-            if (!err && rows.length > 0) { // if there is already a record of this patient
-                return res.status(200).send({ "record_id": rows[0].record_id });
+            var data = req.query;
+            if (!err && rows.length > 0) { // if there is already a record of this patient, update it
+                var record_id = rows[0].record_id
+                db.query("UPDATE treatmentRecord SET ? where record_id=" + record_id, data, function(err, rows) {
+                    if (err) {
+                        return res.status(400).send({ "message": "Saving record failed, missing parameter or malformed syntax" });
+                    } else {
+                        return res.status(200).send({ "record_id": record_id });
+                    }
+                });
             } else {
-                var data = req.query;
                 var record_id = Math.floor(Date.now() / 1000);
                 data["record_id"] = record_id;
                 db.query("INSERT INTO treatmentRecord SET ?", data, function(err, rows) {
@@ -30,23 +37,19 @@ var appRouter = function(app, db) {
         });
     });
 
-    app.post("/treatment-record/:record_id", function(req, res) {
-        if (!req.query.systemic_bleeding || !req.query.respiratory_failure || !req.query.snake_type) {
-            return res.status(400).send({ "message": "Saving record failed, missing parameter" });
-        } else {
-            var data = req.query;
-            db.query("UPDATE treatmentRecord SET ? where record_id=" + req.params.record_id, data, function(err, rows) {
-                if (err) {
-                    return res.status(400).send({ "message": "Saving data failed, malformed syntax" });
+    app.put("/treatment-record/:record_id", function(req, res) {
+        var data = req.query;
+        db.query("UPDATE treatmentRecord SET ? where record_id=" + req.params.record_id, data, function(err, rows) {
+            if (err) {
+                return res.status(400).send({ "message": "Saving data failed, malformed syntax" });
+            } else {
+                if (rows.affectedRows > 0) {
+                    return res.status(200).send({ "message": "Data is saved successfully" });
                 } else {
-                    if (rows.affectedRows > 0) {
-                        return res.status(200).send({ "message": "Data is saved successfully" });
-                    } else {
-                        return res.status(404).send({ "message": "Saving data failed, record_id not found" });
-                    }
+                    return res.status(404).send({ "message": "Saving data failed, record_id not found" });
                 }
-            });
-        }
+            }
+        });
     });
 
     app.get("/treatment-record/:record_id/blood-tests", function(req, res) {
@@ -140,8 +143,6 @@ var appRouter = function(app, db) {
             if (err) {
                 console.log(err)
                 return res.status(500).send({ "message": "internal server error" });
-            } else if (rows.length == 0) {
-                return res.status(404).send({ "message": "user_id not found" });
             } else {
                 return res.status(200).send(rows);
             }

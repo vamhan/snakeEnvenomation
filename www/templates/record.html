@@ -4,7 +4,7 @@
             <div class="item item-divider">Physician's information</div>
             <div class="item item-input">
                 <span class="input-label">Physician ID</span>
-                <input type="text" placeholder="Physician ID" ng-model="user.username">
+                <input type="text" placeholder="Physician ID" ng-model="user.username" ng-readonly="true">
             </div>
             <div class="item item-input">
                 <span class="input-label">Name</span>
@@ -23,7 +23,7 @@
             <div class="item item-divider">Patient's information</div>
             <div class="item item-input">
                 <span class="input-label">National ID</span>
-                <input type="text" placeholder="National ID" ng-model="patient.patient_national_id">
+                <input type="text" placeholder="National ID" ng-model="patient.patient_national_id" ng-readonly="true">
             </div>
             <div class="item item-input">
                 <span class="input-label">Patient Name</span>
@@ -32,7 +32,7 @@
             <div class="item item-select">
                 <div class="input-label">Patient Gender</div>
                 <select ng-model="patient.patient_gender">
-                    <option>Male</option>
+                    <option selected>Male</option>
                     <option>Female</option>
                 </select>
             </div>
@@ -41,7 +41,7 @@
                 <span class="input-label" ng-bind-html="age"></span>
                 <div class="item-icon-right" style="padding-top:10px;padding-left:20px">
                     <div class="input-label" style="float:left;color:grey;font-size:14px;padding-top:9px">Birthdate</div>
-                    <input type="text" ng-disabled="true" style="float:right;width:160px;text-align:right;color:grey;font-size:14px;padding-right:30px" ng-model="patient.patient_birthdate" />
+                    <input type="text" ng-readonly="true" style="float:right;width:160px;text-align:right;color:grey;font-size:14px;padding-right:30px" ng-model="patient.patient_birthdate" />
                     <ion-select ng-click="openDatePicker('patient.patient_birthdate')" class="icon ion-ios-calendar-outline" style="padding-top:40px;"
                     />
                 </div>
@@ -51,13 +51,13 @@
             <div class="item item-divider">Date and time of incident</div>
             <div class="item item-icon-right">
                 <div class="input-label" style="float:left">Date of incident</div>
-                <input type="text" ng-disabled="true" style="float:right;width:140px;text-align:right" ng-model="incident.incident_date" />
+                <input type="text" ng-readonly="true" style="float:right;width:140px;text-align:right" ng-model="incident.incident_date" />
                 <ion-select ng-click="openDatePicker('incident.incident_date')" class="icon ion-ios-calendar-outline"
                 />
             </div>
             <div class="item item-icon-right">
                 <div class="input-label" style="float:left">Time of incident</div>
-                <input type="text" ng-disabled="true" style="float:right;width:100px;text-align:right" ng-model="incident.incident_time" />
+                <input type="text" ng-readonly="true" style="float:right;width:100px;text-align:right" ng-model="incident.incident_time" />
                 <ion-select ng-click="openTimePicker('incident.incident_time')" class="icon ion-ios-calendar-outline"
                 />
             </div>
@@ -66,11 +66,11 @@
             <div class="item item-divider">Location of Incident</div>
             <div class="item item-input">
                 <span class="input-label">District</span>
-                <input type="text" id="incident_district" placeholder="District" ng-model="incident.incident_district">
+                <input type="text" placeholder="District" ng-model="incident.incident_district">
             </div>
             <div class="item item-input">
                 <span class="input-label">Province</span>
-                <input type="text" id="incident_province" placeholder="Province" ng-model="incident.incident_province">
+                <input type="text" placeholder="Province" ng-model="incident.incident_province">
             </div>
         </div>
         <div class="padding">
