@@ -46,7 +46,6 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
     })
 
     .config(function ($stateProvider, $urlRouterProvider) {
-        alert("noon")
         $stateProvider
             .state('signin', {
                 url: '/sign-in',

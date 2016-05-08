@@ -1,5 +1,5 @@
 
-var skipInput = false;
+var skipInput = true;
 //var divide = 720;
 var divide = 3600;
 
