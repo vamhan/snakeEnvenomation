@@ -7,8 +7,11 @@
 
 angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', 'snakeEnvenomation.services'])
 
-    .run(function($ionicPlatform) {
-        $ionicPlatform.ready(function() {
+    .run(function ($ionicPlatform) {
+        $ionicPlatform.ready(function () {
+            /*if(device.platform === "iOS") {
+                window.plugin.notification.local.registerPermission();
+            }*/
             if (window.cordova && window.cordova.plugins.Keyboard) {
                 // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
                 // for form inputs)
@@ -22,23 +25,41 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
             if (window.StatusBar) {
                 StatusBar.styleDefault();
             }
+            cordova.plugins.notification.local.cancelAll();
+            /*window.cordova.plugins.notification.local.on('schedule', function (notification, state) {
+                $timeout(function () {
+                    $rootScope.$broadcast('$cordovaLocalNotification:schedule', notification, state);
+                });
+            });*/
+            /*window.plugin.notification.local.onadd = function (id, state, json) {
+                var notification = {
+                    id: id,
+                    state: state,
+                    json: json
+                };
+                $timeout(function() {
+                    alert("abc")
+                    $rootScope.$broadcast("$cordovaLocalNotification:added", notification);
+                });
+            };*/
         });
     })
 
-    .config(function($stateProvider, $urlRouterProvider) {
-
+    .config(function ($stateProvider, $urlRouterProvider) {
+        alert("noon")
         $stateProvider
             .state('signin', {
                 url: '/sign-in',
-                templateUrl: 'sign-in.html',
-                controller: 'SignInCtrl'
+                templateUrl: "sign-in.html"
             })
             .state('record', {
+                cache: false,
                 url: '/record',
                 templateUrl: 'templates/record.html',
                 controller: 'RecordCtrl'
             })
             .state('patientPUtil', {
+                cache: false,
                 url: '/patientPUtil',
                 templateUrl: 'templates/patientPUtil.html',
                 controller: 'PatientPUtilCtrl'
@@ -55,6 +76,7 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                 }
             })
             .state('hmanagement', {
+                cache: false,
                 url: '/hematotoxic/management',
                 templateUrl: 'templates/hematotoxic/management.html',
                 controller: 'HManagementCtrl',
@@ -90,6 +112,7 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                 }
             })
             .state('nmanagement', {
+                cache: false,
                 url: '/neurotoxic/management',
                 templateUrl: 'templates/neurotoxic/management.html',
                 controller: 'NManagementCtrl',
@@ -117,6 +140,7 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                 }
             })
             .state('umanagement', {
+                cache: false,
                 url: '/unknown/management',
                 templateUrl: 'templates/unknown/management.html',
                 controller: 'UManagementCtrl',

@@ -15,8 +15,8 @@ app.use(function (req, res, next) {
 // DataBase 
 var mysql = require("mysql");
 var con = mysql.createConnection({
-  host: "cdss.topwork.asia",
-  //host: "localhost",
+  //host: "cdss.topwork.asia",
+  host: "localhost",
   user: "cdss",
   password: "cdss1q2w3e",
   database: "cdss"

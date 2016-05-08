@@ -107,12 +107,12 @@ var appRouter = function(app, db) {
     });
     
     app.get("/treatment-record/:record_id/current-stage", function(req, res) {
-        db.query("SELECT s.* FROM transaction t, stage s where t.record_id=" + req.params.record_id + " and t.stage_num = s.stage_num "
+        db.query("SELECT s.*, t.times as transaction_times FROM transaction t, stage s where t.record_id=" + req.params.record_id + " and t.stage_num = s.stage_num "
         + "and t.date_time = (select MAX(t2.date_time) from transaction t2 where t.record_id = t2.record_id)", function(err, rows) {
             if (err) {
                 return res.status(500).send({ "message": "internal server error" });
             } else if (rows.length == 0) {
-                return res.status(404).send({ "message": "record_id not found" });
+                return res.status(200).send({});
             } else {
                 var stage = rows[0]
                 db.query("SELECT * FROM stage_condition where condition_id=" + stage.condition_id, function(err, rows) {
@@ -129,8 +129,10 @@ var appRouter = function(app, db) {
                 console.log(err);
                 if (err.code == 'ER_NO_REFERENCED_ROW_2') {
                     return res.status(404).send({ "message": "Saving log failed, record_id or stage_num not found" });
-                } else {
+                } else if (err.code != "ER_DUP_ENTRY") {
                     return res.status(400).send({ "message": "Saving log failed, malformed syntax" });
+                } else {
+                    return res.status(200).send({ "message": "Transaction log is saved successfully" });
                 }
             } else {
                 return res.status(200).send({ "message": "Transaction log is saved successfully" });
@@ -144,7 +146,18 @@ var appRouter = function(app, db) {
                 console.log(err)
                 return res.status(500).send({ "message": "internal server error" });
             } else {
-                return res.status(200).send(rows);
+                var promises = rows.map(function(record) {
+                        return new Promise(function(resolve, reject) {
+                            db.query("SELECT * FROM patient where patient_id=" + record.patient_id, function(err, rows) {
+                                if (err) { return reject(err); }
+                                record["patient"] = rows[0];
+                                resolve();
+                            });
+                        });
+                    });   
+                    Promise.all(promises)
+                        .then(function() { return res.status(200).send(rows); })
+                        .catch(console.error);
             }
         });
     });

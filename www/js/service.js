@@ -46,13 +46,19 @@ angular.module('snakeEnvenomation.services', ['angular-md5'])
             getPatientInfo: function () {
                 return patient;
             },
-            updateUserInfo: function (user) {
+            updateUserInfo: function (entry) {
+                user.physician_name = entry.physician_name;
+                user.hospital_name = entry.hospital_name;
+                user.hospital_province = entry.hospital_province;
                 $http.put(api_host_url + "/physician/" + user.user_id + "?"
                     + "physician_name=" + user.physician_name
                     + "&hospital_name=" + user.hospital_name
                     + "&hospital_province=" + user.hospital_province);
             },
-            updatePatientInfo: function (patient) {
+            updatePatientInfo: function (entry) {
+                patient.patient_name = entry.patient_name;
+                patient.patient_gender = entry.patient_gender;
+                patient.patient_birthdate = entry.patient_birthdate;
                 var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
                 angular.forEach(monthNames, function(value, index) {
                     if (patient.patient_birthdate.indexOf(value) > -1) {
@@ -65,6 +71,9 @@ angular.module('snakeEnvenomation.services', ['angular-md5'])
                     + "&patient_gender=" + patient.patient_gender
                     + "&patient_birthdate=" + formatDate);
             },
+            setCurrentPatient: function (currentPatient) {
+                patient = currentPatient;
+            }
         }
     })
 
@@ -77,7 +86,21 @@ angular.module('snakeEnvenomation.services', ['angular-md5'])
                 $http.get(api_host_url + "/treatment-record/active?user_id=" + user.user_id)
                     .success(function (data, status, headers, config) {
                         activeRecords = data;
-                        deferred.resolve();
+                        angular.forEach(activeRecords, function(record, index) {
+                            record["snake"] = snakes[record.snake_type]
+                            $http.get(api_host_url + "/treatment-record/" + record.record_id + "/current-stage")
+                                .success(function (data, status, headers, config) {
+                                    if (data.transaction_times) {
+                                        record.transaction = {};
+                                        record.transaction.stage = data;
+                                        record.transaction.times = data.transaction_times;
+                                        deferred.resolve(activeRecords);
+                                    } else {
+                                        record.transaction = null;
+                                    }
+                                });
+                        });
+                        deferred.resolve(activeRecords);
                     });
                     
                 promise.success = function (fn) {
@@ -91,14 +114,26 @@ angular.module('snakeEnvenomation.services', ['angular-md5'])
                 return promise;
             },
             getRecordOfPatient: function () {
+                var flag = false
                 angular.forEach(activeRecords, function(value, index) {
                     if (value.patient_id == patient.patient_id) {
                         record = value;
+                        flag = true;
                     }   
                 });
+                if (!flag) {
+                    record = {};
+                }
                 return record;
             },
             addRecord: function (incident) {
+                record.user_id = user.user_id;
+                record.patient_id = patient.patient_id;
+                record.patient = patient;
+                record.incident_date = incident.incident_date;
+                record.incident_time = incident.incident_time;
+                record.incident_district = incident.incident_district;
+                record.incident_province = incident.incident_province;
                 
                 var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
                 angular.forEach(monthNames, function(value, index) {
@@ -116,21 +151,38 @@ angular.module('snakeEnvenomation.services', ['angular-md5'])
                     + "&incident_district=" + incident.incident_district
                     + "&incident_province=" + incident.incident_province)
                     .success(function (data, status, headers, config) {
-                        record["record_id"] = data.record_id;
+                        record.record_id = data.record_id;
                     })
+                
+                if (activeRecords.indexOf(record) < 0) {    
+                    activeRecords.push(record);
+                }
+                return activeRecords;
             },
             getRecord: function () {
                 return record;
             },
             updateRecord: function (bleeding, resFail, snakeType) {
-                record["systemic_bleeding"] = bleeding;
-                record["respiratory_failure"] = resFail;
-                record["snake_type"] = snakeType;
+                record.systemic_bleeding = bleeding;
+                record.respiratory_failure = resFail;
+                record.snake_type = snakeType;
+                record.snake = snakes[record.snake_type]
                 
                 $http.put(api_host_url + "/treatment-record/" + record.record_id + "?"
                     + "systemic_bleeding=" + (bleeding ? 1 : 0)
                     + "&respiratory_failure=" + (resFail ? 1 : 0)
                     + "&snake_type=" + snakeType);
+            },
+            closeCase: function () {
+                $http.post(api_host_url + "/treatment-record/" + record.record_id + "/closed");
+                var index = 0;
+                angular.forEach(activeRecords, function(value, i) {
+                    if (value === record) {
+                        index = i
+                    }   
+                });
+                activeRecords.splice(index, 1);
+                return activeRecords
             }
         }
     })
@@ -139,29 +191,32 @@ angular.module('snakeEnvenomation.services', ['angular-md5'])
 
         return {
             getAllSnakes: function () {
+                var deferred = $q.defer();
+                var promise = deferred.promise;
                 if (snakes.length > 0) {
-                    return snakes;
+                    deferred.resolve(snakes);
                 } else {
-                    var deferred = $q.defer();
-                    var promise = deferred.promise;
                     $http.get(api_host_url + "/snakes")
                         .success(function (data, status, headers, config) {
                             snakes = data;
+                            angular.forEach(snakes, function (value, key) {
+                                value["imgs"] = value.snake_images_url.split(",");
+                            });
                             deferred.resolve(snakes);
                         })
                         .error(function (data, status, headers, config) {
                             deferred.reject(status);
                         });
-                    promise.success = function (fn) {
-                        promise.then(fn);
-                        return promise;
-                    }
-                    promise.error = function (fn) {
-                        promise.then(null, fn);
-                        return promise;
-                    }
+                }
+                promise.success = function (fn) {
+                    promise.then(fn);
                     return promise;
                 }
+                promise.error = function (fn) {
+                    promise.then(null, fn);
+                    return promise;
+                }
+                return promise;
             },
             getSnakeByID: function (snakeId) {
                 return snakes[snakeId]
@@ -477,6 +532,26 @@ angular.module('snakeEnvenomation.services', ['angular-md5'])
                 });
                 return stage;
             },
+            logTransaction: function(stage, times) {
+                record.transaction = {};
+                record.transaction.stage = stage;
+                record.transaction.times = times;
+                
+                /*$http.post(api_host_url + "/treatment-record/" + record.record_id + "/transaction?"
+                    + "stage_num=" + stage.stage_num
+                    + "&times=" + times
+                    + "&date_time=" + dateTimeFormat(new Date()))*/
+            },
+            updateTransaction: function(action) {
+                record.transaction.action = action;
+            },
+            updateTransactionOfPatient: function(patient, action) {
+                angular.forEach(activeRecords, function(value, index) {
+                    if (value.patient_id == patient.patient_id) {
+                        value.transaction.action = action;
+                    }   
+                });
+            },
             checkCondition: function (stage, data, times) {
                 var nextStage = 0
                 var pass = false;
@@ -520,5 +595,6 @@ angular.module('snakeEnvenomation.services', ['angular-md5'])
         var day = (date.getDate() < 10) ? "0" + date.getDate() : date.getDate(); 
         var hour = (date.getHours() < 10) ? "0" + date.getHours() : date.getHours(); 
         var minute = (date.getMinutes() < 10) ? "0" + date.getMinutes() : date.getMinutes();
-        return date.getFullYear() + "-" + month + "-" + day + " " + hour + ":" + minute;      
+        var second = (date.getSeconds() < 10) ? "0" + date.getSeconds() : date.getSeconds();
+        return date.getFullYear() + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;      
     }
