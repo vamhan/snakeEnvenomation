@@ -1,7 +1,8 @@
 
-var skipInput = true;
-//var divide = 720;
-var divide = 3600;
+var skipInput = false;
+var divide = 720;
+//var divide = 3600;
+//var divide = 1;
 
 angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
@@ -57,7 +58,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         // listen for notification
         $rootScope.$on("$cordovaLocalNotification:trigger", function(event, notification, state) {
             var data = JSON.parse(notification.data);
-            StageService.updateTransactionOfPatient(data.patient, data.transaction.stage.relate_to);
+            StageService.updateTransactionOfPatient(data.patient, "a");
             $timeout(function () {
                 $scope.activeRecords
             });
@@ -81,7 +82,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         })
     })
 
-    .controller('RecordCtrl', function ($scope, $state, $ionicHistory, $cordovaDatePicker, $parse, UserService, RecordService, $cordovaGeolocation, $timeout) {
+    .controller('RecordCtrl', function ($scope, $state, $ionicHistory, $cordovaDatePicker, $parse, UserService, RecordService, $cordovaGeolocation, $timeout, $ionicPopup) {
         
         $scope.user = UserService.getUserInfo();
         $scope.patient = UserService.getPatientInfo();
@@ -104,7 +105,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
             $scope.incident.incident_time = timeFormat(incidentDate);
 
             var hasData = false
-            var posOptions = { timeout: 10000, enableHighAccuracy: false };
+            var posOptions = { timeout: 10000, enableHighAccuracy: true };
             $cordovaGeolocation.getCurrentPosition(posOptions)
                 .then(function (position) {
                     var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
@@ -131,7 +132,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                 });
         }
 
-
+        var selectedDate = new Date()
         $scope.openDatePicker = function (element) {
             var date;
             if (element == 'patient.patient_birthdate') {
@@ -150,11 +151,20 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                 cancelButtonColor: '#000000'
             };
             $cordovaDatePicker.show(options).then(function (date) {
-                var dateS = dateLongFormat(date)
-                var model = $parse(element)
-                model.assign($scope, dateS)
-                if (element == 'patient.patient_birthdate')
-                    $scope.age = getAge(new Date($scope.patient.patient_birthdate))
+                var today = new Date();
+                if (date.getTime() > today.getTime()) {
+                    $ionicPopup.alert({
+                        title: 'Invalid',
+                        template: "Selected date greater than today is not allow"
+                    });
+                } else {
+                    selectedDate = date;
+                    var dateS = dateLongFormat(date)
+                    var model = $parse(element)
+                    model.assign($scope, dateS)
+                    if (element == 'patient.patient_birthdate')
+                        $scope.age = getAge(new Date($scope.patient.patient_birthdate))
+                }
             });
         }
 
@@ -170,9 +180,18 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                 cancelButtonColor: '#000000'
             };
             $cordovaDatePicker.show(options).then(function (date) {
-                var timeS = timeFormat(date)
-                var model = $parse(element)
-                model.assign($scope, timeS)
+                /*var selectedTime = selectedDate.getTime() + (date.getHours() * 3600000) + (date.getMinutes * 60000)
+                alert(selectedTime)
+                if (selectedTime > today.getTime()) {
+                    $ionicPopup.alert({
+                        title: 'Invalid',
+                        template: "Selected date greater than today is not allow"
+                    });
+                } else {*/
+                    var timeS = timeFormat(date)
+                    var model = $parse(element)
+                    model.assign($scope, timeS)
+                //}
             });
         }
 
@@ -365,7 +384,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                     StageService.getAllStagesOfSnakeType(selectedSnake).success(function (stage) {
                         if (record.transaction) { // already start management process
                             if (record.snake_type == selectedSnake) {
-                                if (record.transaction.action && record.transaction.action == "blood test") { // come back after click on notification
+                                if (record.transaction.action) { // come back after click on notification
                                     $state.go('bloodSample', { snake: selectedSnake, stage: record.transaction.stage.stage_num, times: record.transaction.times }, {reload: true});
                                 } else {
                                     $state.go('hmanagement', { snake: selectedSnake, stage: record.transaction.stage.stage_num, times: record.transaction.times }, {reload: true});
@@ -622,7 +641,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                 data: RecordService.getRecord()
             };
             $cordovaLocalNotification.schedule(option).then(function () {
-                alert("notification add")
+                //alert("notification add")
             });
         }
         
@@ -773,7 +792,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                 data: RecordService.getRecord()
             };
             $cordovaLocalNotification.schedule(option).then(function () {
-                alert("notification add")
+                //alert("notification add")
             });
         }
         
@@ -1059,7 +1078,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                 data: RecordService.getRecord()
             };
             $cordovaLocalNotification.schedule(option).then(function () {
-                alert("notification add")
+                //alert("notification add")
             });
         }
         
