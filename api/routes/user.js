@@ -59,22 +59,18 @@ var appRouter = function(app, db) {
     });
     
     app.put("/patient/:patient_id", function(req, res) {
-        if (req.query.patient_name || req.query.patient_gender || req.query.patient_birthdate) {
-            db.query("UPDATE patient SET ? where patient_id='" + req.params.patient_id + "'", req.query, function(err, rows) {
-                if (err) {
-                    console.log(err)
-                    return res.status(400).send({ "message": "Saving data failed, malformed syntax" });
+        db.query("UPDATE patient SET ? where patient_id='" + req.params.patient_id + "'", req.query, function(err, rows) {
+            if (err) {
+                console.log(err)
+                return res.status(400).send({ "message": "Saving data failed, malformed syntax" });
+            } else {
+                if (rows.affectedRows > 0) {
+                    return res.status(200).send({ "message": "New information is saved successfully" });
                 } else {
-                    if (rows.affectedRows > 0) {
-                        return res.status(200).send({ "message": "New information is saved successfully" });
-                    } else {
-                        return res.status(404).send({ "message": "Saving new information failed, wrong patient_id" });
-                    }
+                    return res.status(404).send({ "message": "Saving new information failed, wrong patient_id" });
                 }
-            });
-        } else {
-            return res.status(400).send({ "message": "Saving new information failed, missing parameters" });
-        }
+            }
+        });
     });
 }
 

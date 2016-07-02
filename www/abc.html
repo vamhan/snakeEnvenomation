@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html ng-app="snakeEnvenomation">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title></title>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/svg.js/1.0.1/svg.min.js"></script>
+    <script src="lib/flowsvg.min.js"></script>
+
+
+</head>
+
+<body>
+
+
+    <div id="drawing"></div>
+
+    <script>
+        flowSVG.draw(SVG('drawing').size(1000, 1500));
+    flowSVG.config({
+        interactive: false,
+        showButtons: false,
+        connectorLength: 90,
+        defaultFontSize: 10
+    });
+    flowSVG.shapes(
+      [
+        {
+        label: 'checkGreen1',
+        type: 'process',
+        text: [
+                'การดูแลผู้ป่วยถูกงูแมวเซากัด',
+            ],
+        next: 'checkGreen11',
+        processFill: 'navajowhite'
+      },
+      {
+      label: 'checkGreen11',
+      type: 'process',
+      text: [
+              'CBC,PT,INR, 20 min WBCT',
+              'BUN,Creatinine,UA',
+          ],
+      next: 'indication1',
+    },
+        {
+  label: 'indication1',
+  type: 'decision',
+  text: [
+    'Indication for antivenom',
+  ],
+  yes: 'checkGreen4',
+  no: 'checkGreen2',
+
+  },
+  {
+  label: 'checkGreen2',
+  type: 'process',
+  text: [
+          'CBC,PT,INR, 20 min WBCT',
+          'Q 6 hr for 2 times (6,12)',
+
+      ],
+  next: 'indication2',
+  },
+  {
+  label: 'indication2',
+  type: 'decision',
+  text: [
+  'Indication for antivenom',
+  ],
+  yes: '',
+  no: 'checkGreen3'
+  },
+  {
+  label: 'checkGreen3',
+  type: 'process',
+  text: [
+          'D/C CBC,PT,INR,20minWBCT',
+          'Creatinine Once daily',
+          'for 3 day',
+          '(24-36,48-60,72-84)',
+      ],
+  next: 'indication3',
+  },
+  {
+  label: 'indication3',
+  type: 'decision',
+  text: [
+  'Indication for antivenom',
+  ],
+  yes: '',
+  no: 'canComply'
+  },
+  {
+      label: 'canComply',
+      type: 'finish',
+      text: [
+          'Done'
+
+      ],
+
+
+  },
+  {
+  label: 'checkGreen4',
+  type: 'process',
+  text: [
+          'Antivenom for Russell Viper 5 vials',
+          'BUN,Creatinine,UA',
+      ],
+  next: 'indication4',
+  },
+  {
+  label: 'indication4',
+  type: 'decision',
+  text: [
+  'Indication for antivenom',
+  ],
+  yes: 'canComply2',
+  no: ''
+  },
+  {
+      label: 'canComply2',
+      type: 'finish',
+      text: [
+          'Antivenom for',
+          'Russell Viper 5 vials',
+          'Consult PC',
+
+      ],
+
+
+  }
+
+
+      ]
+
+        );
+    </script>
+
+</body>
+
+</html>

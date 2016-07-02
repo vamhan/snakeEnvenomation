@@ -25,23 +25,8 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
             if (window.StatusBar) {
                 StatusBar.styleDefault();
             }
-            cordova.plugins.notification.local.cancelAll();
-            /*window.cordova.plugins.notification.local.on('schedule', function (notification, state) {
-                $timeout(function () {
-                    $rootScope.$broadcast('$cordovaLocalNotification:schedule', notification, state);
-                });
-            });*/
-            /*window.plugin.notification.local.onadd = function (id, state, json) {
-                var notification = {
-                    id: id,
-                    state: state,
-                    json: json
-                };
-                $timeout(function() {
-                    alert("abc")
-                    $rootScope.$broadcast("$cordovaLocalNotification:added", notification);
-                });
-            };*/
+            
+            //cordova.plugins.notification.local.cancelAll();
         });
     })
 
@@ -63,7 +48,20 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                 templateUrl: 'templates/patientPUtil.html',
                 controller: 'PatientPUtilCtrl'
             })
+            .state('hematotoxic', {
+                cache: false,
+                url: '/hematotoxic/main',
+                templateUrl: 'templates/hematotoxic/main.html',
+                controller: 'hematotoxicCtrl',
+                params: {
+                    'snake': null,
+                    'stage': null,
+                    'record': null,
+                    'times': null
+                }
+            })
             .state('bloodSample', {
+                cache: false,
                 url: '/hematotoxic/bloodSample',
                 templateUrl: 'templates/hematotoxic/bloodSample.html',
                 controller: 'BloodSampleCtrl',
@@ -128,6 +126,7 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                 controller: 'WeaknessResultCtrl'
             })
             .state('unknownTest', {
+                cache: false,
                 url: '/unknown/unknownTest',
                 templateUrl: 'templates/unknown/unknownTest.html',
                 controller: 'UnknownTestCtrl',

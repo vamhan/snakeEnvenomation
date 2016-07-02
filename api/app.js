@@ -15,8 +15,8 @@ app.use(function (req, res, next) {
 // DataBase 
 var mysql = require("mysql");
 var con = mysql.createConnection({
-  //host: "cdss.topwork.asia",
-  host: "localhost",
+  host: "cdss.topwork.asia",
+  //host: "localhost",
   user: "cdss",
   password: "cdss1q2w3e",
   database: "cdss"
@@ -43,6 +43,6 @@ var routes = require("./routes/record.js")(router, con);
 var routes = require("./routes/snake.js")(router, con);
 app.use('/snake-envenomation/api', router);
  
-var server = app.listen(9080, function () {
+var server = app.listen(9081, function () {
     console.log("Listening on port %s...", server.address().port);
 });

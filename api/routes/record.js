@@ -107,7 +107,7 @@ var appRouter = function(app, db) {
     });
     
     app.get("/treatment-record/:record_id/current-stage", function(req, res) {
-        db.query("SELECT s.*, t.times as transaction_times FROM transaction t, stage s where t.record_id=" + req.params.record_id + " and t.stage_num = s.stage_num "
+        db.query("SELECT s.*, t.times as transaction_times, t.date_time as transaction_datetime, t.notification as notification FROM transaction t, stage s where t.record_id=" + req.params.record_id + " and t.stage_num = s.stage_num "
         + "and t.date_time = (select MAX(t2.date_time) from transaction t2 where t.record_id = t2.record_id)", function(err, rows) {
             if (err) {
                 return res.status(500).send({ "message": "internal server error" });
@@ -137,6 +137,12 @@ var appRouter = function(app, db) {
             } else {
                 return res.status(200).send({ "message": "Transaction log is saved successfully" });
             }
+        });
+    });
+
+    app.put("/treatment-record/:record_id/transaction/notification", function(req, res) {
+        db.query("UPDATE transaction SET notification=1 where record_id=" + req.params.record_id, function(err, rows) {
+            return res.status(200).send({ "message": "Transaction log is saved successfully" });
         });
     });
     
