@@ -55,12 +55,52 @@
             <ion-nav-view></ion-nav-view>
         </ion-side-menu-content>
 
+        <ion-side-menu side="right">
+            <ion-header-bar class="bar bar-header bar-dark"></ion-header-bar>
+            <ion-content style="background-image:none">
+                <ion-list ng-show="my.show_h_menu">
+                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="toBloodTest()">
+                        Blood Test
+                        <i class="icon ion-arrow-right-b"></i>
+                    </ion-item>
+                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="toHManagement()">
+                        Management
+                        <i class="icon ion-arrow-right-b"></i>
+                    </ion-item>
+                </ion-list>
+                <ion-list ng-show="my.show_n_menu">
+                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="toMotorWeaknessTest()">
+                        Motor Weakness
+                        <i class="icon ion-arrow-right-b"></i>
+                    </ion-item>
+                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="toNManagement()">
+                        Management
+                        <i class="icon ion-arrow-right-b"></i>
+                    </ion-item>
+                </ion-list>
+                <ion-list ng-show="my.show_u_menu">
+                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="toUBloodTest()">
+                        Blood Test
+                        <i class="icon ion-arrow-right-b"></i>
+                    </ion-item>
+                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="toUMotorWeaknessTest()">
+                        Motor Weakness
+                        <i class="icon ion-arrow-right-b"></i>
+                    </ion-item>
+                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="toUManagement()">
+                        Management
+                        <i class="icon ion-arrow-right-b"></i>
+                    </ion-item>
+                </ion-list>
+            </ion-content>
+        </ion-side-menu>
+
     </ion-side-menus>
 
     <script id="sign-in.html" type="text/ng-template">
         <ion-view>
             <ion-nav-buttons side="left">
-                <button class="button button-icon button-clear ion-navicon" menu-toggle="left"></button>
+                <button class="button button-icon button-clear ion-folder" menu-toggle="left"></button>
             </ion-nav-buttons>
             <ion-content>
                 <div style="float:right" class="light">V 1.1</div>
@@ -73,9 +113,10 @@
                 <form name="signinForm" novalidate="" ng-submit="login(signinForm, user, patient)">
                     <div class="list list-inset">
                         <label class="item item-input" ng-class="{ 'has-error' : signinForm.username.$invalid && signinForm.$submitted}">
-                            <input type="text" placeholder="Physician ID" name="username" ng-model="user.username" required>
+                            <input type="text" placeholder="Physician ID" name="username" ng-model="user.username" ng-pattern="/^[0-9]{5}$/" required>
                         </label>
                         <div class="form-error" ng-show="signinForm.username.$error.required && signinForm.$submitted">This field is required.</div>
+                        <div class="form-error" ng-show="signinForm.username.$error.pattern && signinForm.$submitted">This field should be only number with length 5</div>
                         <label class="item item-input" ng-class="{ 'has-error' : signinForm.patientID.$invalid && signinForm.$submitted}">
                             <input type="text" placeholder="Patient ID" name="patientID" ng-model="patient.id" ng-pattern="/^[0-9]{13}$/" required>
                         </label>

@@ -41,6 +41,37 @@ var appRouter = function(app, db) {
         var data = req.query;
         db.query("UPDATE treatmentRecord SET ? where record_id=" + req.params.record_id, data, function(err, rows) {
             if (err) {
+                console.log(err)
+                return res.status(400).send({ "message": "Saving data failed, malformed syntax" });
+            } else {
+                if (rows.affectedRows > 0) {
+                    return res.status(200).send({ "message": "Data is saved successfully" });
+                } else {
+                    return res.status(404).send({ "message": "Saving data failed, record_id not found" });
+                }
+            }
+        });
+    });
+
+    app.put("/treatment-record/:record_id/setnull_notif", function(req, res) {
+        db.query("UPDATE treatmentRecord SET notif_stage=0, notif_datetime=NULL, notif_times=NULL where record_id=" + req.params.record_id, function(err, rows) {
+            if (err) {
+                console.log(err)
+                return res.status(400).send({ "message": "Saving data failed, malformed syntax" });
+            } else {
+                if (rows.affectedRows > 0) {
+                    return res.status(200).send({ "message": "Data is saved successfully" });
+                } else {
+                    return res.status(404).send({ "message": "Saving data failed, record_id not found" });
+                }
+            }
+        });
+    });
+
+    app.put("/treatment-record/:record_id/setnull_notif2", function(req, res) {
+        db.query("UPDATE treatmentRecord SET notif_datetime2=NULL, notif_times2=NULL where record_id=" + req.params.record_id, function(err, rows) {
+            if (err) {
+                console.log(err)
                 return res.status(400).send({ "message": "Saving data failed, malformed syntax" });
             } else {
                 if (rows.affectedRows > 0) {
@@ -107,9 +138,27 @@ var appRouter = function(app, db) {
     });
     
     app.get("/treatment-record/:record_id/current-stage", function(req, res) {
-        db.query("SELECT s.*, t.times as transaction_times, t.date_time as transaction_datetime, t.notification as notification FROM transaction t, stage s where t.record_id=" + req.params.record_id + " and t.stage_num = s.stage_num "
+        db.query("SELECT s.*, t.times as transaction_times, t.date_time as transaction_datetime FROM transaction t, stage s where t.record_id=" + req.params.record_id + " and t.stage_num = s.stage_num "
         + "and t.date_time = (select MAX(t2.date_time) from transaction t2 where t.record_id = t2.record_id)", function(err, rows) {
             if (err) {
+                return res.status(500).send({ "message": "internal server error" });
+            } else if (rows.length == 0) {
+                return res.status(200).send({});
+            } else {
+                var stage = rows[0]
+                db.query("SELECT * FROM stage_condition where condition_id=" + stage.condition_id, function(err, rows) {
+                    stage["condition"] = rows;
+                    return res.status(200).send(stage);
+                });
+            }
+        });
+    });
+
+    app.get("/treatment-record/:record_id/current-stage/:stage", function(req, res) {
+        db.query("SELECT s.*, t.times as transaction_times, t.date_time as transaction_datetime FROM transaction t, stage s where t.record_id=" + req.params.record_id + " and t.stage_num=" + req.params.stage + " and t.stage_num = s.stage_num "
+        + "and t.date_time = (select MAX(t2.date_time) from transaction t2 where t.record_id = t2.record_id and t2.stage_num=" + req.params.stage + ")", function(err, rows) {
+            if (err) {
+                console.log(err)
                 return res.status(500).send({ "message": "internal server error" });
             } else if (rows.length == 0) {
                 return res.status(200).send({});
@@ -137,12 +186,6 @@ var appRouter = function(app, db) {
             } else {
                 return res.status(200).send({ "message": "Transaction log is saved successfully" });
             }
-        });
-    });
-
-    app.put("/treatment-record/:record_id/transaction/notification", function(req, res) {
-        db.query("UPDATE transaction SET notification=1 where record_id=" + req.params.record_id, function(err, rows) {
-            return res.status(200).send({ "message": "Transaction log is saved successfully" });
         });
     });
     

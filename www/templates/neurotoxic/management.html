@@ -1,6 +1,9 @@
 <ion-view view-title="Management">
     <ion-nav-buttons side="left">
-        <button class="button button-icon button-clear ion-navicon" menu-toggle="left"></button>
+        <button class="button button-icon button-clear ion-folder" menu-toggle="left"></button>
+    </ion-nav-buttons>
+    <ion-nav-buttons side="right">
+        <button class="button button-icon button-clear ion-navicon" menu-toggle="right"></button>
     </ion-nav-buttons>
     <ion-content>
         <div class="header_title">
@@ -34,7 +37,7 @@
             <div class="item item-divider" style="background-color:lightcoral">
                 <span style="float:left">Current State</span>
             </div>
-            <div class="item" style="white-space:pre-line;padding-bottom: 0px">{{stage.action_text}}
+            <div class="item" style="white-space:pre-line;padding-bottom: 0px">{{stage.action_text}} {{times}} {{consult_reason}}
                 <div style="white-space:normal;">
                     <button class="button button-assertive" ng-click="navigateToNextStage()" ng-show="show_next_process" style="height:50px;margin-top:15px;margin-right:10px">Go to next process</button>
                     <a ng-href="tel:{{stage.additonal_action}}" class="button button-balanced" style="width:162px;height:50px;margin-top:15px;" ng-show="show_call">call {{stage.additonal_action}}</a>
@@ -42,7 +45,7 @@
             </div>
         </div>
         
-        <div class="card info-list">
+        <!--<div class="card info-list">
             <div class="item item-divider">
                 <span style="float:left">Lestest Motor Weakness Result</span>
                 <a ng-click="navigateToWeaknessResultList()" style="float:right">View all results</a>
@@ -51,7 +54,7 @@
                 <div class="col">Motor weakness :</div>
                 <div class="col">{{latest_weakness}}</div>
             </div>
-        </div>
+        </div>-->
         
     </ion-content>
 </ion-view>

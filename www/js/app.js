@@ -48,18 +48,6 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                 templateUrl: 'templates/patientPUtil.html',
                 controller: 'PatientPUtilCtrl'
             })
-            .state('hematotoxic', {
-                cache: false,
-                url: '/hematotoxic/main',
-                templateUrl: 'templates/hematotoxic/main.html',
-                controller: 'hematotoxicCtrl',
-                params: {
-                    'snake': null,
-                    'stage': null,
-                    'record': null,
-                    'times': null
-                }
-            })
             .state('bloodSample', {
                 cache: false,
                 url: '/hematotoxic/bloodSample',
@@ -98,6 +86,7 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                 }
             })
             .state('motorWeakness', {
+                cache: false,
                 url: '/neurotoxic/motorWeakness',
                 templateUrl: 'templates/neurotoxic/motorWeakness.html',
                 controller: 'MotorWeaknessCtrl',
@@ -136,6 +125,12 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                     'record': null,
                     'times': null
                 }
+            })
+            .state('identification', {
+                cache: false,
+                url: '/unknown/identification',
+                templateUrl: 'templates/unknown/identification.html',
+                controller: 'IdentificationCtrl'
             })
             .state('umanagement', {
                 cache: false,

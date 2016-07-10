@@ -1,10 +1,13 @@
 <ion-view view-title="Management">
     <ion-nav-buttons side="left">
-        <button class="button button-icon button-clear ion-navicon" menu-toggle="left"></button>
+        <button class="button button-icon button-clear ion-folder" menu-toggle="left"></button>
+    </ion-nav-buttons>
+    <ion-nav-buttons side="right">
+        <button class="button button-icon button-clear ion-navicon" menu-toggle="right"></button>
     </ion-nav-buttons>
     <ion-content>
         <div class="header_title">
-            <h3 class="light" style="font-weight:600">Management of Snake {{snake.snake_name}}</h3>
+            <h3 class="light" style="font-weight:600">Management of Unknown Snake</h3>
         </div>
         <div class="card info-list">
             <div class="item item-divider">Information</div>
@@ -34,7 +37,8 @@
             <div class="item item-divider" style="background-color:lightcoral">
                 <span style="float:left">Current State</span>
             </div>
-            <div class="item" style="white-space:pre-line;padding-bottom: 0px">{{stage.action_text}}
+            <div class="item" style="white-space:pre-line;padding-bottom: 0px">{{stage.action_text}} {{consult_reason}}
+                {{times}}
                 <div style="white-space:normal;">
                     <button class="button button-assertive" ng-click="navigateToNextStage()" ng-show="show_next_process" style="height:50px;margin-top:15px;margin-right:10px">Go to next process</button>
                     <a ng-href="tel:{{stage.additonal_action}}" class="button button-balanced" style="width:162px;height:50px;margin-top:15px;" ng-show="show_call">call {{stage.additonal_action}}</a>

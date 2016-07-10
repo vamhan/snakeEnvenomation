@@ -1,21 +1,24 @@
 <ion-view>
     <ion-nav-buttons side="left">
-        <button class="button button-icon button-clear ion-navicon" menu-toggle="left"></button>
+        <button class="button button-icon button-clear ion-folder" menu-toggle="left"></button>
+    </ion-nav-buttons>
+    <ion-nav-buttons side="right">
+        <button class="button button-icon button-clear ion-navicon" menu-toggle="right"></button>
     </ion-nav-buttons>
     <ion-content>
         <div class="header_title">
             <h3 class="light" style="font-weight:600">Management of Neurotoxic Snake {{snake.snake_name}}</h3>
         </div>
         <div class="padding border">
-            <div class="header_title" ng-show="show_respiratory">
-                <h3 style="font-weight:600">Does the patient has impending respiratory failure?</h2>
-                <button class="button" ng-class="r_y_class" style="width:40%;margin-right:20px" ng-click="toggleYesSelection('r_y_class', 'r_n_class')">Yes</button>
-                <button class="button" ng-class="r_n_class" style="width:40%" ng-click="toggleNoSelection('r_n_class', 'r_y_class')">No</button>
-            </div>
             <div class="header_title">
                 <h3 style="font-weight:600">Does the patient has any motor weakness?</h2>
                 <button class="button" ng-class="m_y_class" style="width:40%;margin-right:20px" ng-click="toggleYesSelection('m_y_class', 'm_n_class')">Yes</button>
                 <button class="button" ng-class="m_n_class" style="width:40%" ng-click="toggleNoSelection('m_n_class', 'm_y_class')">No</button>
+            </div>
+            <div class="header_title" ng-show="show_progression">
+                <h3 style="font-weight:600">Does the patient has progression of weakness?</h2>
+                <button class="button" ng-class="r_y_class" style="width:40%;margin-right:20px" ng-click="toggleYesSelection('r_y_class', 'r_n_class')">Yes</button>
+                <button class="button" ng-class="r_n_class" style="width:40%" ng-click="toggleNoSelection('r_n_class', 'r_y_class')">No</button>
             </div>
         </div>
         

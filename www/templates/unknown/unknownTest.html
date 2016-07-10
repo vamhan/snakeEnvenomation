@@ -1,10 +1,13 @@
 <ion-view view-title="Blood Test" id="blood_view">
     <ion-nav-buttons side="left">
-        <button class="button button-icon button-clear ion-navicon" menu-toggle="left"></button>
+        <button class="button button-icon button-clear ion-folder" menu-toggle="left"></button>
+    </ion-nav-buttons>
+    <ion-nav-buttons side="right">
+        <button class="button button-icon button-clear ion-navicon" menu-toggle="right"></button>
     </ion-nav-buttons>
     <ion-content>
         <div class="header_title">
-            <h3 class="light" style="font-weight:600">Management of Snake {{snake.snake_name}}</h3>
+            <h3 class="light" style="font-weight:600">Management of Unknown Snake</h3>
         </div>
         <div class="padding border">
             <div class="header_title" ng-show="show_weakness">
@@ -30,32 +33,10 @@
                     <input type="text" placeholder="Platelet" ng-model="bloodTest.platelets">
                     <span class="input-label">/mcl</span>
                 </div>
-                <div class="item item-input" ng-show="show_creatinine">
+                <div class="item item-input">
                     <span class="input-label">Creatinine</span>
                     <input type="text" placeholder="Creatinine" ng-model="bloodTest.creatinine">
                     <span class="input-label">mg/dl</span>
-                </div>
-            </div>
-            <div ng-show="show_unknown">
-                <div class="header_title">
-                    <h3 style="font-weight:600">Acute renal failure</h3>
-                    <button class="button" ng-class="ar_y_class" style="width:40%;margin-right:20px" ng-click="toggleYesSelection('ar_y_class', 'ar_n_class')">Yes</button>
-                    <button class="button" ng-class="ar_n_class" style="width:40%" ng-click="toggleNoSelection('ar_n_class', 'ar_y_class')">No</button>
-                </div>
-                <div class="header_title">
-                    <h3 style="font-weight:600">Local edema</h3>
-                    <button class="button" ng-class="le_y_class" style="width:40%;margin-right:20px" ng-click="toggleYesSelection('le_y_class', 'le_n_class')">Yes</button>
-                    <button class="button" ng-class="le_n_class" style="width:40%" ng-click="toggleNoSelection('le_n_class', 'le_y_class')">No</button>
-                </div>
-                <div class="header_title">
-                    <h3 style="font-weight:600">Snakebites occurred indoor (e.g. house, factory)</h3>
-                    <button class="button" ng-class="in_y_class" style="width:40%;margin-right:20px" ng-click="toggleYesSelection('in_y_class', 'in_n_class')">Yes</button>
-                    <button class="button" ng-class="in_n_class" style="width:40%" ng-click="toggleNoSelection('in_n_class', 'in_y_class')">No</button>
-                </div>
-                <div class="header_title">
-                    <h3 style="font-weight:600">Locked-jaw snakebite</h3>
-                    <button class="button" ng-class="j_y_class" style="width:40%;margin-right:20px" ng-click="toggleYesSelection('j_y_class', 'j_n_class')">Yes</button>
-                    <button class="button" ng-class="j_n_class" style="width:40%" ng-click="toggleNoSelection('j_n_class', 'j_y_class')">No</button>
                 </div>
             </div>
         </div>

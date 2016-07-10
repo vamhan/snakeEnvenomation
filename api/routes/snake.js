@@ -17,7 +17,7 @@ var appRouter = function(app, db) {
                 return res.status(500).send({ "message": "internal server error" });
             } else {
                 var stages = rows;
-                db.query("SELECT * FROM stage where stage_num=4 or stage_num=36 or stage_num=45",function(err,rows){
+                db.query("SELECT * FROM stage where stage_num=4 or stage_num=33 or stage_num=36 or stage_num=45",function(err,rows){
                     rows.map(function(row) {
                         stages.push(row);
                     });    
