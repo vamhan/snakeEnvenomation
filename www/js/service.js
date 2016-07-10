@@ -7,8 +7,8 @@ var record = {};
 var snakes = [];
 
 
-//var api_host_url = "http://localhost:9081/snake-envenomation/api"
-var api_host_url = "http://cdss.topwork.asia:9081/snake-envenomation/api"
+var api_host_url = "http://localhost:9081/snake-envenomation/api"
+//var api_host_url = "http://cdss.topwork.asia:9081/snake-envenomation/api"
 
 angular.module('snakeEnvenomation.services', [])
 
