@@ -1,4 +1,4 @@
-<ion-view>
+<ion-view view-title="Motor Weakness (#4.2)">
     <ion-nav-buttons side="left">
         <button class="button button-icon button-clear ion-folder" menu-toggle="left"></button>
     </ion-nav-buttons>
@@ -7,8 +7,21 @@
     </ion-nav-buttons>
     <ion-content>
         <div class="header_title">
-            <h3 class="light" style="font-weight:600">Management of Neurotoxic Snake {{snake.snake_name}}</h3>
+            <h3 class="light" style="font-weight:600">Management of Neurotoxic Snake <span style="color:red">{{snake.snake_name}}<span></h3>
         </div>
+
+        <div class="card info-list">
+            <div class="item item-divider">Information</div>
+            <div class="item row">
+                <div class="col">Physician Name :</div>
+                <div class="col">{{user.physician_name}}</div>
+            </div>
+            <div class="item row">
+                <div class="col">Patient Name :</div>
+                <div class="col">{{patient.patient_name}}</div>
+            </div>
+        </div>
+
         <div class="padding border">
             <div class="header_title">
                 <h3 style="font-weight:600">Does the patient has any motor weakness?</h2>

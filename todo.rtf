@@ -1,29 +1,30 @@
 {\rtf1\ansi\ansicpg1252\cocoartf1348\cocoasubrtf170
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;\f2\fmodern\fcharset0 CourierNewPSMT;
 \f3\fnil\fcharset222 Thonburi;}
-{\colortbl;\red255\green255\blue255;\red85\green142\blue40;\red102\green177\blue50;\red43\green39\blue19;
+{\colortbl;\red255\green255\blue255;\red102\green177\blue50;\red85\green142\blue40;\red43\green39\blue19;
 \red234\green234\blue234;\red42\green47\blue60;\red217\green232\blue255;\red45\green68\blue134;}
-\paperw11900\paperh16840\margl1440\margr1440\vieww12680\viewh8400\viewkind0
+\paperw11900\paperh16840\margl1440\margr1440\vieww20560\viewh11300\viewkind0
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
 
-\f0\fs24 \cf0 - near: at 12 hour any motor weakness\
+\f0\fs24 \cf0 - datepicker\
+- birthdate\
 - notification\
-- conflict state\
-- call\
 - snake images\
 \
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
-\cf2 - incident date\cf0 \
-\cf2 - age\cf0 \
-\cf2 - api: save unknown var in record\cf0 \
-\cf2 - close case\cf0 \
-\cf2 - record page: edit personal info - Is national ID editable?\cf0 \
-\cf2 - motor weakness list page\cf0 \
-\cf2 - adjust motor weakness page -> don\'92t ask for respiratory failure every time (same as)\cf0 \
-\cf2 - login\cf0 \
-\cf2 - navigation\cf3 \
-\cf2 - check number field validation\cf0 \
-\cf2 - login page: patient_id validation\
+\cf2 - conflict state\
+- call\cf0 \
+\cf3 - incident date\cf0 \
+\cf3 - age\cf0 \
+\cf3 - api: save unknown var in record\cf0 \
+\cf3 - close case\cf0 \
+\cf3 - record page: edit personal info - Is national ID editable?\cf0 \
+\cf3 - motor weakness list page\cf0 \
+\cf3 - adjust motor weakness page -> don\'92t ask for respiratory failure every time (same as)\cf0 \
+\cf3 - login\cf0 \
+\cf3 - navigation\cf2 \
+\cf3 - check number field validation\cf0 \
+\cf3 - login page: patient_id validation\
 - record page: date and time & location of incident\
 \
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
@@ -60,7 +61,10 @@ password : admin1q2w3e\
 \
 \
 root = 63a9f0ea7bb98050796b649e85481845\
-1234567891011 = 204b5003e97662ca4258ab593ec0360b
+1234567891011 = 204b5003e97662ca4258ab593ec0360b\
+\
+\
+SELECT s.*, t.times as transaction_times, t.date_time as transaction_datetime FROM transaction t, stage s where t.record_id=1467553227 and t.stage_num = s.stage_num and t.date_time = (select MAX(t2.date_time) from transaction t2 where t.record_id = t2.record_id)
 \f2\fs26 \cf0 \cb5 \expnd0\expndtw0\kerning0
 \
 }

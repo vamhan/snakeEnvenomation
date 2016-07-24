@@ -1,4 +1,4 @@
-<ion-view view-title="Management">
+<ion-view view-title="Management (5.10)">
     <ion-nav-buttons side="left">
         <button class="button button-icon button-clear ion-folder" menu-toggle="left"></button>
     </ion-nav-buttons>
@@ -40,7 +40,10 @@
             <div class="item" style="white-space:pre-line;padding-bottom: 0px">{{stage.action_text}} {{consult_reason}}
                 {{times}}
                 <div style="white-space:normal;">
-                    <button class="button button-assertive" ng-click="navigateToNextStage()" ng-show="show_next_process" style="height:50px;margin-top:15px;margin-right:10px">Go to next process</button>
+                    <button class="button button-calm" ng-click="closeCase()" ng-show="show_close_case" style="height:50px;margin-top:15px;margin-right:10px">Close case</button>
+                    <button class="button button-assertive" ng-click="skipN()" ng-show="show_skip_n" style="height:50px;margin-top:15px;margin-right:10px">Motor Weakness</button>
+                    <button class="button button-assertive" ng-click="skipH()" ng-show="show_skip_h" style="height:50px;margin-top:15px;margin-right:10px">Blood Test</button>
+                    <button class="button button-assertive" ng-click="skipI()" ng-show="show_skip_i" style="height:50px;margin-top:15px;margin-right:10px">Skip</button>
                     <a ng-href="tel:{{stage.additonal_action}}" class="button button-balanced" style="width:162px;height:50px;margin-top:15px;" ng-show="show_call">call {{stage.additonal_action}}</a>
                 </div>
             </div>

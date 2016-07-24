@@ -4,7 +4,8 @@
             
             <div class="item item-icon-right" ng-repeat="(index, weakness) in motorWeaknesses">
                 <span style="float:left">ครั้งที่ {{(index + 1)}} {{weakness.date_time}}</span>
-                <span style="float:right">{{(weakness.motor_weakness == 0) ? 'no' : 'yes'}}</span>
+                <span style="float:right">motor weakness: {{(weakness.motor_weakness == 0) ? 'no' : 'yes'}}
+                <br>progression of weakness: {{(weakness.progression == null) ? '-' : weakness.progression == 0 ? 'no' : 'yes'}}</span>
             </div>
 
         </div>

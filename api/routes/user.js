@@ -12,11 +12,11 @@ var appRouter = function(app, db) {
                 } else {
                     if (rows.length == 0) {
                         //return res.status(401).send({ "message": "Login failed, wrong username" });
-                        var user_id = Math.floor(Date.now() / 1000);
+                        var user_id = Date.now();
                         user["user_id"] = user_id;
                         user["physician_name"] = "";
-                        user["hospital_name"] = null;
-                        user["hospital_province"] = null;
+                        user["hospital_name"] = "";
+                        user["hospital_province"] = "";
                         console.log("INSERT INTO physician SET user_id='" + user_id + "', physician_id='" + req.query.username + "'");
                         db.query("INSERT INTO physician SET user_id='" + user_id + "', physician_id='" + req.query.username + "'");
                     } else {
@@ -27,9 +27,9 @@ var appRouter = function(app, db) {
                     db.query("SELECT * FROM patient where patient_national_id='" + req.query.patient_national_id + "'",function(err,rows){
                         var patient = {};
                         if (rows.length == 0) {
-                            var patient_id = Math.floor(Date.now() / 1000);
+                            var patient_id = Date.now();
                             patient["patient_id"] = patient_id
-                            patient["patient_name"] = null;
+                            patient["patient_name"] = "";
                             patient["patient_gender"] = null;
                             patient["patient_birthdate"] = null;
                             db.query("INSERT INTO patient SET patient_id='" + patient_id + "', patient_national_id='" + req.query.patient_national_id + "'");
@@ -45,17 +45,13 @@ var appRouter = function(app, db) {
     });
 
     app.put("/physician/:user_id", function(req, res) {
-        if (req.query.physician_name || req.query.hospital_name || req.query.hospital_province) {
-            db.query("UPDATE physician SET ? where user_id='" + req.params.user_id + "'", req.query, function(err, rows) {
-                if (rows.affectedRows > 0) {
-                    return res.status(200).send({ "message": "New information is saved successfully" });
-                } else {
-                    return res.status(404).send({ "message": "Saving new information failed, wrong user_id" });
-                }
-            });
-        } else {
-            return res.status(400).send({ "message": "Saving new information failed, missing parameters" });
-        }
+        db.query("UPDATE physician SET ? where user_id='" + req.params.user_id + "'", req.query, function(err, rows) {
+            if (rows.affectedRows > 0) {
+                return res.status(200).send({ "message": "New information is saved successfully" });
+            } else {
+                return res.status(404).send({ "message": "Saving new information failed, wrong user_id" });
+            }
+        });
     });
     
     app.put("/patient/:patient_id", function(req, res) {

@@ -46,7 +46,10 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                 cache: false,
                 url: '/patientPUtil',
                 templateUrl: 'templates/patientPUtil.html',
-                controller: 'PatientPUtilCtrl'
+                controller: 'PatientPUtilCtrl',
+                params: {
+                    'totest': null
+                }
             })
             .state('bloodSample', {
                 cache: false,
@@ -144,10 +147,28 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                     'times': null
                 }
             })
+            .state('flowchart', {
+                cache: false,
+                url: '/flowchart',
+                templateUrl: 'templates/flowchart.html',
+                controller: 'FlowchartCtrl',
+                params: {
+                    'snake': null,
+                    'stage': null
+                }
+            })
+            .state('generalInfo', {
+                cache: false,
+                url: '/generalInfo',
+                templateUrl: 'templates/generalInfo.html',
+                controller: 'GeneralInfoCtrl',
+                params: {
+                    'type': null
+                }
+            })
 
 
 
         $urlRouterProvider.otherwise('/sign-in');
 
-    })
-
+    });

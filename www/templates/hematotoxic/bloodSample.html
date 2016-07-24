@@ -1,4 +1,4 @@
-<ion-view view-title="Blood Test" id="blood_view">
+<ion-view view-title="Blood Test (#4.1)">
     <ion-nav-buttons side="left">
         <button class="button button-icon button-clear ion-folder" menu-toggle="left"></button>
     </ion-nav-buttons>
@@ -7,14 +7,28 @@
     </ion-nav-buttons>
     <ion-content>
         <div class="header_title">
-            <h3 class="light" style="font-weight:600">Management of Hematotoxic Snake {{snake.snake_name}}</h3>
+            <h3 class="light" style="font-weight:600">Management of Hematotoxic Snake <span style="color:red">{{snake.snake_name}}<span></h3>
         </div>
+
+        <div class="card info-list">
+            <div class="item item-divider">Information</div>
+            <div class="item row">
+                <div class="col">Physician Name :</div>
+                <div class="col">{{user.physician_name}}</div>
+            </div>
+            <div class="item row">
+                <div class="col">Patient Name :</div>
+                <div class="col">{{patient.patient_name}}</div>
+            </div>
+        </div>
+
         <div class="card unit-list">
-            <label class="item item-input" style="background-color:lightblue">
+            <div class="item item-input" style="background-color:lightblue">
                 <span class="input-label">INR</span>
                 <input type="text" placeholder="INR" ng-model="bloodTest.INR">
-                <span class="input-label"></span>
-            </label>
+                <span class="input-label" style="width:100px"></span>
+                <button class="button button-outline" ng-click="toggleINRValue(0.8)" style="margin-right:10px;background-color:lightgrey;color:black;width:180px">Default > 1.2</button>
+            </div>
         </div>
         <div class="card unit-list">
             <div class="item item-select" style="background-color:lightblue">
@@ -30,17 +44,20 @@
             <div class="item item-input">
                 <span class="input-label">WBC</span>
                 <input type="text" placeholder="WBC" ng-model="bloodTest.WBC">
-                <span class="input-label">cells/mcl</span>
+                <span class="input-label" style="width:100px">cells/mcl</span>
+                <span class="input-label" style="width:180px"></span>
             </div>
             <div class="item item-input">
                 <span class="input-label">Hct</span>
                 <input type="text" placeholder="Hct" ng-model="bloodTest.Hct">
-                <span class="input-label">%</span>
+                <span class="input-label" style="width:100px">%</span>
+                <span class="input-label" style="width:180px"></span>
             </div>
             <div class="item item-input" style="background-color:lightblue">
                 <span class="input-label">Platelet</span>
                 <input type="text" placeholder="Platelet" ng-model="bloodTest.platelets">
-                <span class="input-label">/mcl</span>
+                <span class="input-label" style="width:100px">/mcl</span>
+                <button class="button button-outline" ng-click="togglePlateletValue(150000)" style="margin-right:10px;background-color:lightgrey;color:black;width:180px">Default >= 100,000</button>
             </div>
         </div>
         <div class="card unit-list" ng-show="snake.snake_id == 0">
@@ -65,7 +82,8 @@
             <div class="item item-input">
                 <span class="input-label">Creatinine</span>
                 <input type="text" placeholder="Creatinine" ng-model="bloodTest.creatinine">
-                <span class="input-label">mg/dl</span>
+                <span class="input-label" style="width:100px">mg/dl</span>
+                <span class="input-label" style="width:180px"></span>
             </div>
         </div>
         <div class="padding">

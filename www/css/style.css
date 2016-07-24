@@ -113,3 +113,7 @@ label.item.has-error {
   color: red;
   margin: 5px 0;
 }
+
+.ui-datepicker {
+	pointer-events: auto;
+}

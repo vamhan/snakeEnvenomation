@@ -9,6 +9,7 @@
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
 
+
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="css/ionic.app.css" rel="stylesheet">
     -->
@@ -26,6 +27,7 @@
     <script src="js/controller.js"></script>
     <script src="js/service.js"></script>
 
+
 </head>
 
 <body>
@@ -42,7 +44,7 @@
                         <img ng-src="{{record.snake.imgs[0]}}">
                         <h2>{{record.patient.patient_name}}</h2>
                         <p>{{record.dateFormat + " " + record.incident_time}}</p>
-                        <span class="badge badge-assertive" style="right:10px" ng-show="record.transaction.action">1</span>
+                        <span class="badge badge-assertive" style="right:10px" ng-show="record.notif_active == 1">1</span>
                     </ion-item>
                 </ion-list>
             </ion-content>
@@ -58,40 +60,54 @@
         <ion-side-menu side="right">
             <ion-header-bar class="bar bar-header bar-dark"></ion-header-bar>
             <ion-content style="background-image:none">
-                <ion-list ng-show="my.show_h_menu">
-                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="toBloodTest()">
-                        Blood Test
+                <div class="list">
+                    <div class="item item-divider" style="background-color:lightgrey">Important Info</div>
+                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="viewAnaphylaxis()">
+                        Management for anaphylaxis
                         <i class="icon ion-arrow-right-b"></i>
                     </ion-item>
-                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="toHManagement()">
-                        Management
+                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="viewWoundCare()">
+                        Wound care
                         <i class="icon ion-arrow-right-b"></i>
                     </ion-item>
-                </ion-list>
-                <ion-list ng-show="my.show_n_menu">
-                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="toMotorWeaknessTest()">
-                        Motor Weakness
+                </div>
+                <div class="list" ng-show="my.show_h_menu">
+                    <div class="item item-divider" style="background-color:lightgrey">Current Process</div>
+                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="navigateToBloodResultList()">
+                        View blood test results
                         <i class="icon ion-arrow-right-b"></i>
                     </ion-item>
-                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="toNManagement()">
-                        Management
+                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="viewFlowChart()">
+                        View flow chart
                         <i class="icon ion-arrow-right-b"></i>
                     </ion-item>
-                </ion-list>
-                <ion-list ng-show="my.show_u_menu">
-                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="toUBloodTest()">
-                        Blood Test
+                </div>
+                <div class="list" ng-show="my.show_n_menu">
+                    <div class="item item-divider" style="background-color:lightgrey">Current Process</div>
+                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="navigateToWeaknessResultList()">
+                        View motor weakness results
                         <i class="icon ion-arrow-right-b"></i>
                     </ion-item>
-                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="toUMotorWeaknessTest()">
-                        Motor Weakness
+                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="viewFlowChart()">
+                        View flow chart
                         <i class="icon ion-arrow-right-b"></i>
                     </ion-item>
-                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="toUManagement()">
-                        Management
+                </div>
+                <div class="list" ng-show="my.show_u_menu">
+                    <div class="item item-divider" style="background-color:lightgrey">Current Process</div>
+                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="navigateToBloodResultList()">
+                        View blood test results
                         <i class="icon ion-arrow-right-b"></i>
                     </ion-item>
-                </ion-list>
+                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="navigateToWeaknessResultList()">
+                        View motor weakness results
+                        <i class="icon ion-arrow-right-b"></i>
+                    </ion-item>
+                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="viewFlowChart()">
+                        View flow chart
+                        <i class="icon ion-arrow-right-b"></i>
+                    </ion-item>
+                </div>
             </ion-content>
         </ion-side-menu>
 
@@ -103,7 +119,7 @@
                 <button class="button button-icon button-clear ion-folder" menu-toggle="left"></button>
             </ion-nav-buttons>
             <ion-content>
-                <div style="float:right" class="light">V 1.1</div>
+                <div style="float:right" class="light">V 2.0</div>
                 <div style="text-align:center">
                     <img ng-src="img/logo.png" width="250px">
                 </div>
