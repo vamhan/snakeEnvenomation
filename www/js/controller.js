@@ -1,6 +1,6 @@
 
-var skipInput = true;
-var divide = 360;
+var skipInput = false;
+var divide = 720;
 //var divide = 3600;
 //var divide = 1;
 var sDevide = 12;

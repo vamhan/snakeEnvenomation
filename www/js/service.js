@@ -273,7 +273,7 @@ angular.module('snakeEnvenomation.services', [])
                     + "notif_active=" + isActive);
             },
             closeCase: function (activeRecs) {
-                //$http.post(api_host_url + "/treatment-record/" + record.record_id + "/closed");
+                $http.post(api_host_url + "/treatment-record/" + record.record_id + "/closed");
                 var index = 0;
                 angular.forEach(activeRecs, function(value, i) {
                     if (value.record_id == record.record_id) {
