@@ -78,14 +78,14 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
             .state('bloodResultList', {
                 url: '/hematotoxic/bloodResultList',
                 templateUrl: 'templates/hematotoxic/bloodResultList.html',
-                controller: 'bloodResultCtrl'
+                controller: 'bloodResultListCtrl'
             })
             .state('bloodResult', {
                 url: '/hematotoxic/bloodResult',
                 templateUrl: 'templates/hematotoxic/bloodResult.html',
                 controller: 'bloodResultCtrl',
                 params: {
-                    'index': null
+                    'data': null
                 }
             })
             .state('motorWeakness', {

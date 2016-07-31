@@ -1,10 +1,8 @@
-
-var skipInput = false;
-var divide = 720;
-//var divide = 3600;
+//var divide = 720;
+var divide = 60;
 //var divide = 1;
-var sDevide = 12;
-//var sDevide = 60;
+//var sDevide = 12;
+var sDevide = 1;
 
 angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
@@ -16,13 +14,31 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         $scope.my = {};
         $scope.my.show_h_menu = false;
         $scope.my.show_n_menu = false;
-        $scope.my.show_u_menu = false;
+        $scope.my.show_f_menu = false;
+        $scope.my.search = "";
 
-        if (skipInput) {
+        if (testMode) {
             $scope.user.username = "12345"
             $scope.patient.id = "1100700764035"
         }
         SnakeService.getAllSnakes();
+
+        $scope.searchCases = function() {
+            var filteredList = [];
+
+            angular.forEach(RecordService.getStaticClosedRecords(), function(record, index) {
+                var searchTerm = $scope.my.search.toLowerCase();
+                var incidentDate = dateShortFormat(new Date(record.incident_date));
+                if (record.patient.patient_name.toLowerCase().indexOf(searchTerm) != -1 
+                    || incidentDate.indexOf(searchTerm) != -1
+                    || record.snake.snake_name.toLowerCase().indexOf(searchTerm) != -1) {
+                    filteredList.push(record);
+                }
+            });
+            $timeout(function () {
+                $scope.closedRecords = filteredList;
+            });
+        }
         
         $scope.newCase = function () {
             $ionicHistory.nextViewOptions({
@@ -32,11 +48,29 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         }
         
         $scope.selectRecord = function (record) {
-            UserService.setCurrentPatient(record.patient)
+            UserService.setCurrentPatient(record.patient);
             $ionicHistory.nextViewOptions({
                 historyRoot: true
             });
             $state.go('record', {}, {reload: true});
+        }
+
+        $scope.selectClosedRecord = function (record) {
+            UserService.setCurrentPatient(record.patient);
+            RecordService.getClosedRecordOfPatient();
+            var snakeType = record.respiratory_failure == 1 ? 9 : record.systemic_bleeding == 1 ? 8 : record.snake_type;
+            var toPage = 'hmanagement';
+            if (record.snake_type == 3 || record.snake_type == 4 || record.snake_type == 5 || record.snake_type == 6) {
+                toPage = 'nmanagement';
+            } else if (record.snake_type == 7) {
+                toPage = 'umanagement';
+            }
+            StageService.getAllStagesOfSnakeType(snakeType).success(function (stage) {
+                $ionicHistory.nextViewOptions({
+                    historyRoot: true
+                });
+                $state.go(toPage, { snake: record.snake_type, stage: record.transaction.stage.stage_num, times: 1 }, {reload: true});
+            });
         }
 
         $scope.navigateToBloodResultList = function () {
@@ -48,7 +82,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         };
 
         $scope.viewFlowChart = function () {
-            var record = RecordService.getRecordOfPatient($scope.activeRecords);
+            var record = RecordService.getRecord();
             $state.go('flowchart', {snake: record.snake_type, stage: record.transaction.stage.stage_num});
         };
 
@@ -78,6 +112,15 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
                             $state.go('record');
                         });
+                    });
+                    RecordService.getAllClosedRecords().success(function (data) {
+                        $timeout(function () {
+                            $scope.closedRecords = data;
+                            angular.forEach($scope.closedRecords, function(record, index) {
+                                var incidentDate = new Date(record.incident_date);
+                                record.dateFormat = dateShortFormat(incidentDate);
+                            });
+                        });
                     })
                 }).error(function (data) {
                     var alertPopup = $ionicPopup.alert({
@@ -106,7 +149,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         $rootScope.$on('$cordovaLocalNotification:click', function(event, notification, state) {
             var data = JSON.parse(notification.data);
             UserService.setCurrentPatient(data.patient);
-            RecordService.getRecordOfPatient($scope.activeRecords);
+            RecordService.getRecordOfPatient();
             $ionicHistory.nextViewOptions({
                 historyRoot: true
             });
@@ -118,7 +161,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         
         $scope.my.show_h_menu = false;
         $scope.my.show_n_menu = false;
-        $scope.my.show_u_menu = false;
+        $scope.my.show_f_menu = false;
 
         $scope.user = UserService.getUserInfo();
         $scope.patient = UserService.getPatientInfo();
@@ -130,7 +173,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         $scope.patient.age_day = age.day;
         
         $scope.incident = {}
-        var record = RecordService.getRecordOfPatient($scope.activeRecords);
+        var record = RecordService.getRecordOfPatient();
         var incidentDate = new Date();
         var incidentTime = new Date();
         if (record.incident_date) {
@@ -401,7 +444,25 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                     $scope.activeRecords
                 });
 
-                if ($scope.r_y_class == "button-positive") { // to respiratory failure management
+                if (($scope.r_y_class == "button-positive" && $scope.b_y_class == "button-positive") || (record.transaction && record.snake_type != selectedSnake)) {
+                    StageService.getAllStagesOfSnakeType(selectedSnake).success(function (stage) {
+                        if (record.transaction) {
+                            selectedSnake = record.snake_type
+                        }
+                        var toPage = 'hmanagement';
+                        if (selectedSnake == 3 || selectedSnake == 4 || selectedSnake == 5 || selectedSnake == 6) {
+                            toPage = 'nmanagement';
+                        } else if (selectedSnake == 7) {
+                            toPage = 'umanagement';
+                        }
+                        // log current transaction
+                        var nStage = StageService.getStage(36);
+                        StageService.updateTransactionPCReason(nStage, 1, "Data Discordance");
+
+                        $state.go(toPage, { snake: selectedSnake, stage: 36, times: 1 }, {reload: true});
+                        RecordService.updateRecord($scope.b_y_class == "button-positive", $scope.r_y_class == "button-positive", selectedSnake)
+                    });
+                } else if ($scope.r_y_class == "button-positive") { // to respiratory failure management
                     StageService.getAllStagesOfSnakeType(9).success(function (stage) {
                         if (record.transaction && record.respiratory_failure) { // already start management process and if it was respiratory_failure previously
                             /*if (record.transaction.stage.stage_num < 90) {
@@ -450,10 +511,18 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                             StageService.logTransaction(nStage, 1)
 
                             if (nextStage == 36) {
-                                StageService.updateTransactionPCReason("Data Disconcordance")
-                            }
+                                var toPage = 'hmanagement';
+                                if (selectedSnake == 7) {
+                                    toPage = 'umanagement';
+                                }
+                                // log current transaction
+                                var nStage = StageService.getStage(36);
+                                StageService.updateTransactionPCReason(nStage, 1, "Data Discordance");
 
-                            $state.go('nmanagement', { snake: selectedSnake, stage: nextStage, times: 1});
+                                $state.go(toPage, { snake: selectedSnake, stage: 36, times: 1 }, {reload: true});
+                            } else {
+                                $state.go('nmanagement', { snake: selectedSnake, stage: nextStage, times: 1});
+                            }
                         }
                         RecordService.updateRecord($scope.b_y_class == "button-positive", $scope.r_y_class == "button-positive", selectedSnake)
                         
@@ -498,10 +567,18 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                             StageService.logTransaction(nStage, 1)
 
                             if (nextStage == 36) {
-                                StageService.updateTransactionPCReason("Data Disconcordance")
-                            }
+                                var toPage = 'nmanagement';
+                                if (selectedSnake == 7) {
+                                    toPage = 'umanagement';
+                                }
+                                // log current transaction
+                                var nStage = StageService.getStage(36);
+                                StageService.updateTransactionPCReason(nStage, 1, "Data Discordance");
 
-                            $state.go('hmanagement', { snake: selectedSnake, stage: nextStage, times: 1 });
+                                $state.go(toPage, { snake: selectedSnake, stage: 36, times: 1 }, {reload: true});
+                            } else {
+                                $state.go('hmanagement', { snake: selectedSnake, stage: nextStage, times: 1});
+                            }
                         }
                         RecordService.updateRecord($scope.b_y_class == "button-positive", $scope.r_y_class == "button-positive", selectedSnake)
                     });
@@ -509,19 +586,10 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                     BloodTestService.getBloodTests();
                     StageService.getAllStagesOfSnakeType(selectedSnake).success(function (stage) {
                         if (record.transaction) {
-                            if (record.snake_type == selectedSnake) {
-                                if ($state.params.totest == 1) {
-                                    $state.go('bloodSample', { snake: selectedSnake, stage: record.transaction.stage.stage_num, times: record.transaction.times }, {reload: true});
-                                } else {
-                                    $state.go('hmanagement', { snake: selectedSnake, stage: record.transaction.stage.stage_num, times: record.transaction.times }, {reload: true});
-                                }
+                            if ($state.params.totest == 1) {
+                                $state.go('bloodSample', { snake: selectedSnake, stage: record.transaction.stage.stage_num, times: record.transaction.times }, {reload: true});
                             } else {
-                                // log current transaction
-                                var nStage = StageService.getStage(36);
-                                StageService.logTransaction(nStage, 1);
-
-                                StageService.updateTransactionPCReason("Data Disconcordance")
-                                $state.go('hmanagement', { snake: selectedSnake, stage: 36, times: 1 }, {reload: true});
+                                $state.go('hmanagement', { snake: selectedSnake, stage: record.transaction.stage.stage_num, times: record.transaction.times }, {reload: true});
                             }
                         } else {
                             // log current transaction
@@ -534,19 +602,10 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                 } else if (selectedSnake == 3 || selectedSnake == 4 || selectedSnake == 5 || selectedSnake == 6) { // to neurotoxic snake management
                     StageService.getAllStagesOfSnakeType(selectedSnake).success(function (stage) {
                         if (record.transaction) { // already start management process
-                            if (record.snake_type == selectedSnake) {
-                                if ($state.params.totest == 1) {
-                                    $state.go('motorWeakness', { snake: selectedSnake, stage: record.transaction.stage.stage_num, times: record.transaction.times}, {reload: true});
-                                } else {
-                                    $state.go('nmanagement', { snake: selectedSnake, stage: record.transaction.stage.stage_num, times: record.transaction.times}, {reload: true});
-                                }
+                            if ($state.params.totest == 1) {
+                                $state.go('motorWeakness', { snake: selectedSnake, stage: record.transaction.stage.stage_num, times: record.transaction.times}, {reload: true});
                             } else {
-                                // log current transaction
-                                var nStage = StageService.getStage(36);
-                                StageService.logTransaction(nStage, 1);
-
-                                StageService.updateTransactionPCReason("Data Disconcordance")
-                                $state.go('nmanagement', { snake: selectedSnake, stage: 36, times: 1}, {reload: true});
+                                $state.go('nmanagement', { snake: selectedSnake, stage: record.transaction.stage.stage_num, times: record.transaction.times}, {reload: true});
                             }
                         } else {
                             // log current transaction
@@ -560,21 +619,12 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                     BloodTestService.getBloodTests();
                     StageService.getAllStagesOfSnakeType(selectedSnake).success(function (stage) {
                         if (record.transaction) { // already start management process
-                            if (record.snake_type == 7) {
-                                if ($state.params.totest == 1) {
-                                    $state.go('unknownTest', { snake: selectedSnake, stage: record.transaction.stage.stage_num, times: record.transaction.times }, {reload: true});
-                                } else if ($state.params.totest == 2) {
-                                    $state.go('unknownTest', { snake: selectedSnake, stage: 71, times: record.transaction2.times }, {reload: true});
-                                } else {
-                                    $state.go('umanagement', { snake: selectedSnake, stage: record.transaction.stage.stage_num, times: record.transaction.times }, {reload: true});
-                                }
+                            if ($state.params.totest == 1) {
+                                $state.go('unknownTest', { snake: selectedSnake, stage: record.transaction.stage.stage_num, times: record.transaction.times }, {reload: true});
+                            } else if ($state.params.totest == 2) {
+                                $state.go('unknownTest', { snake: selectedSnake, stage: 71, times: record.transaction2.times }, {reload: true});
                             } else {
-                                // log current transaction
-                                var nStage = StageService.getStage(36);
-                                StageService.logTransaction(nStage, 1);
-
-                                StageService.updateTransactionPCReason("Data Disconcordance")
-                                $state.go('nmanagement', { snake: selectedSnake, stage: 36, times: 1}, {reload: true});
+                                $state.go('umanagement', { snake: selectedSnake, stage: record.transaction.stage.stage_num, times: record.transaction.times }, {reload: true});
                             }
                         } else {
                             // log current transaction
@@ -593,14 +643,15 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
     .controller('BloodSampleCtrl', function ($scope, $state, $ionicHistory, BloodTestService, SnakeService, StageService, RecordService, UserService, $ionicPopup, $cordovaLocalNotification, $timeout) {
 
-        $scope.bloodTest = {}
-        $scope.bloodTest.WBCT = "Clotted"
-        //$scope.bloodTest.INR = 0.8
-        //$scope.bloodTest.platelets = 150000
-
         $scope.my.show_h_menu = true;
         $scope.my.show_n_menu = false;
-        $scope.my.show_u_menu = false;
+        $scope.my.show_f_menu = true;
+
+        $scope.bloodTest = {}
+        $scope.bloodTest.WBCT = "Clotted"
+
+        $scope.inr_class = "button-outline button-dark";
+        $scope.p_class = "button-outline button-dark";
 
         $scope.snake = SnakeService.getSnakeByID($state.params.snake);
         $scope.user = UserService.getUserInfo();
@@ -608,15 +659,21 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         var stage = StageService.getStage($state.params.stage);
 
         $scope.toggleINRValue = function (value) {
-            $timeout(function () {
-                $scope.bloodTest.INR = value;
-            });
+            if ($scope.inr_class == "button-outline button-dark") {
+                $scope.inr_class = "button-balanced";
+                $scope.bloodTest.INR = null;
+            } else {
+                $scope.inr_class = "button-outline button-dark";
+            }
         }
 
         $scope.togglePlateletValue = function (value) {
-            $timeout(function () {
-                $scope.bloodTest.platelets = value;
-            });
+            if ($scope.p_class == "button-outline button-dark") {
+                $scope.p_class = "button-balanced";
+                $scope.bloodTest.platelets = null;
+            } else {
+                $scope.p_class = "button-outline button-dark";
+            }
         }
 
         $scope.confirm = function (scopeBloodTest) {
@@ -628,7 +685,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
             // validate input
             var valid = true;
-            if (!('INR' in scopeBloodTest)) {
+            if (!('INR' in scopeBloodTest) && $scope.inr_class == "button-outline button-dark") {
                 valid = false;
                 $ionicPopup.alert({
                     title: "INR is Require",
@@ -636,7 +693,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                 });
             }
 
-            if (!('platelets' in scopeBloodTest)) {
+            if (!('platelets' in scopeBloodTest) && $scope.p_class == "button-outline button-dark") {
                 valid = false;
                 $ionicPopup.alert({
                     title: "Platelets is Require",
@@ -708,6 +765,14 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
             
                 BloodTestService.addBloodTest(scopeBloodTest, $state.params.stage, $state.params.times);
 
+                // check for default value
+                if ($scope.inr_class == "button-balanced") {
+                    bloodTest.INR = 0.8
+                }
+                if ($scope.p_class == "button-balanced") {
+                    bloodTest.platelets = 150000
+                }
+
                 var times = $state.params.times;
                 var nextStage = StageService.checkCondition(stage, bloodTest, times);
                 if (nextStage == stage.stage_num) {
@@ -751,7 +816,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
         $scope.my.show_h_menu = true;
         $scope.my.show_n_menu = false;
-        $scope.my.show_u_menu = false;
+        $scope.my.show_f_menu = true;
 
         $scope.snake = SnakeService.getSnakeByID($state.params.snake);
         $scope.user = UserService.getUserInfo();
@@ -777,16 +842,20 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         $scope.show_skip = stage.relate_to == "blood test";
         //$scope.show_next_process = stage.condition_id == 0 && stage.next_yes_stage != 0
         $scope.show_call = stage.action_type == "call";
-        $scope.show_close_case = stage.relate_to == "close";
+        //$scope.show_close_case = stage.relate_to == "close";
 
-        if (stage.relate_to == "close") {
+        if (stage.relate_to == "close" && record.status == "active") {
             RecordService.updateNotifActive(record, 0);
+            RecordService.closeCase();
             $timeout(function () {
+                var index = 0;
                 angular.forEach($scope.activeRecords, function(value, i) {
                     if (value.record_id == record.record_id) {
+                        index = i;
                         value.notif_active = 0;
                     }   
                 });
+                $scope.activeRecords.splice(index, 1);
             });
         }
 
@@ -797,7 +866,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
             $state.go('patientPUtil', { totest:1 }, {reload: true});
         }
 
-        $scope.closeCase = function () {
+        /*$scope.closeCase = function () {
             $timeout(function () {
                 RecordService.closeCase($scope.activeRecords);
             });
@@ -805,7 +874,9 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                 historyRoot: true
             });
             $state.go('signin');
-        };
+        };*/
+
+        
 
 
         $scope.showPopup = function (type) {
@@ -880,26 +951,32 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
     })
 
-    .controller('bloodResultCtrl', function ($scope, $state, BloodTestService, $timeout) {
+    .controller('bloodResultListCtrl', function ($scope, $state, BloodTestService, $timeout, $ionicLoading) {
+        $ionicLoading.show({
+            template: 'Loading...'
+        })
         BloodTestService.getBloodTests().success(function (data) {
+            $ionicLoading.hide()
             $timeout(function () {
                 $scope.bloodTests = data;
 
-                $scope.bloodTest = $scope.bloodTests[$state.params.index];
-
                 $scope.navigateToBloodResult = function (index) {
-                    $state.go('bloodResult', { index: index });
+                    $state.go('bloodResult', { data: $scope.bloodTests[index] });
                 };
             });
         })
     })
 
+    .controller('bloodResultCtrl', function ($scope, $state, BloodTestService, $timeout, $ionicLoading) {
+        $scope.bloodTest = $state.params.data;
+    })
 
-    .controller('MotorWeaknessCtrl', function ($scope, $state, $ionicHistory, SnakeService, StageService, MotorWeaknessService, RecordService, UserService, $ionicPopup, $cordovaLocalNotification) {
+
+    .controller('MotorWeaknessCtrl', function ($scope, $state, $ionicHistory, SnakeService, StageService, MotorWeaknessService, RecordService, UserService, $ionicPopup, $cordovaLocalNotification, $timeout) {
 
         $scope.my.show_h_menu = false;
         $scope.my.show_n_menu = true;
-        $scope.my.show_u_menu = false;
+        $scope.my.show_f_menu = true;
 
         $scope.r_y_class = "button-dark";
         $scope.r_n_class = "button-positive";
@@ -971,7 +1048,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
                 // log current transaction
                 var nStage = StageService.getStage(nextStage);
-                StageService.logTransaction(nStage, times)
+                StageService.logTransaction(nStage, times);
 
                 // update notification schedule
                 if (times == 1) {
@@ -1003,7 +1080,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
         $scope.my.show_h_menu = false;
         $scope.my.show_n_menu = true;
-        $scope.my.show_u_menu = false;
+        $scope.my.show_f_menu = true;
 
         $scope.snake = SnakeService.getSnakeByID($state.params.snake);
         $scope.user = UserService.getUserInfo();
@@ -1034,16 +1111,20 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         $scope.show_skip = stage.relate_to == "motor weakness" || stage.relate_to == "progression";
         //$scope.show_next_process = stage.condition_id == 0 && stage.next_yes_stage != 0
         $scope.show_call = stage.action_type == "call";
-        $scope.show_close_case = stage.relate_to == "close";
+        //$scope.show_close_case = stage.relate_to == "close";
 
-        if (stage.relate_to == "close") {
+        if (stage.relate_to == "close" && record.status == "active") {
             RecordService.updateNotifActive(record, 0);
+            RecordService.closeCase();
             $timeout(function () {
+                var index = 0;
                 angular.forEach($scope.activeRecords, function(value, i) {
                     if (value.record_id == record.record_id) {
+                        index = i;
                         value.notif_active = 0;
                     }   
                 });
+                $scope.activeRecords.splice(index, 1);
             });
         }
 
@@ -1054,7 +1135,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
             $state.go('patientPUtil', { totest:1 }, {reload: true});
         }
 
-        $scope.closeCase = function () {
+        /*$scope.closeCase = function () {
             $timeout(function () {
                 RecordService.closeCase($scope.activeRecords);
             });
@@ -1062,7 +1143,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                 historyRoot: true
             });
             $state.go('signin');
-        };
+        };*/
 
         /*$scope.navigateToNextStage = function () {
             var nStage = StageService.getStage(stage.next_yes_stage);
@@ -1113,8 +1194,12 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
     })
 
-    .controller('WeaknessResultCtrl', function ($scope, $state, MotorWeaknessService, $timeout) {
+    .controller('WeaknessResultCtrl', function ($scope, $state, MotorWeaknessService, $timeout, $ionicLoading) {
+        $ionicLoading.show({
+            template: 'Loading...'
+        })
         MotorWeaknessService.getMotorWeaknesses().success(function (data) {
+            $ionicLoading.hide();
             $timeout(function () {
                 $scope.motorWeaknesses = data;
             });
@@ -1124,17 +1209,17 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
     .controller('UnknownTestCtrl', function ($scope, $state, $ionicHistory, SnakeService, StageService, RecordService, BloodTestService, MotorWeaknessService, UserService, $ionicPopup, $cordovaLocalNotification, $timeout) {
 
-        $scope.my.show_h_menu = false;
-        $scope.my.show_n_menu = false;
-        $scope.my.show_u_menu = true;
+        $scope.my.show_h_menu = true;
+        $scope.my.show_n_menu = true;
+        $scope.my.show_f_menu = true;
 
         $scope.m_y_class = "button-dark";
         $scope.m_n_class = "button-positive";
 
         $scope.bloodTest = {}
         $scope.bloodTest.WBCT = "Clotted"
-        //$scope.bloodTest.INR = 0.8
-        //$scope.bloodTest.platelets = 150000
+        $scope.inr_class = "button-outline button-dark";
+        $scope.p_class = "button-outline button-dark";
 
         $scope.toggleYesSelection = function (ybuttonS, nbuttonS) {
             if ($scope[ybuttonS] == "button-dark") {
@@ -1155,15 +1240,21 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         };
 
         $scope.toggleINRValue = function (value) {
-            $timeout(function () {
-                $scope.bloodTest.INR = value;
-            });
+            if ($scope.inr_class == "button-outline button-dark") {
+                $scope.inr_class = "button-balanced";
+                $scope.bloodTest.INR = null;
+            } else {
+                $scope.inr_class = "button-outline button-dark";
+            }
         }
 
         $scope.togglePlateletValue = function (value) {
-            $timeout(function () {
-                $scope.bloodTest.platelets = value;
-            });
+            if ($scope.p_class == "button-outline button-dark") {
+                $scope.p_class = "button-balanced";
+                $scope.bloodTest.platelets = null;
+            } else {
+                $scope.p_class = "button-outline button-dark";
+            }
         }
 
         $scope.show_weakness = $state.params.stage == 71
@@ -1302,6 +1393,14 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                     var stage = StageService.getStage(72);
 
                     BloodTestService.addBloodTest(scopeBloodTest, 72, times);
+
+                    // check for default value
+                    if ($scope.inr_class == "button-balanced") {
+                        bloodTest.INR = 0.8
+                    }
+                    if ($scope.p_class == "button-balanced") {
+                        bloodTest.platelets = 150000
+                    }
                     var nextStage = StageService.checkCondition(stage, bloodTest, times);
 
                     if (nextStage == 76) { // to identification
@@ -1388,9 +1487,9 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
     .controller('IdentificationCtrl', function ($scope, $state, $ionicHistory, SnakeService, StageService, RecordService, BloodTestService, MotorWeaknessService, UserService, $ionicPopup, $cordovaLocalNotification, $timeout) {
 
-        $scope.my.show_h_menu = false;
-        $scope.my.show_n_menu = false;
-        $scope.my.show_u_menu = true;
+        $scope.my.show_h_menu = true;
+        $scope.my.show_n_menu = true;
+        $scope.my.show_f_menu = true;
 
         $scope.m_y_class = "button-dark";
         $scope.m_n_class = "button-positive";
@@ -1533,9 +1632,9 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
     .controller('UManagementCtrl', function ($scope, $state, $ionicHistory, $ionicPopup, UserService, RecordService, SnakeService, StageService, $timeout, $cordovaLocalNotification) {
 
-        $scope.my.show_h_menu = false;
-        $scope.my.show_n_menu = false;
-        $scope.my.show_u_menu = true;
+        $scope.my.show_h_menu = true;
+        $scope.my.show_n_menu = true;
+        $scope.my.show_f_menu = true;
 
         $scope.snake = SnakeService.getSnakeByID($state.params.snake);
         $scope.user = UserService.getUserInfo();
@@ -1583,16 +1682,20 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         $scope.show_skip_h = stage.relate_to == "motor weakness" || stage.relate_to == "blood test";
         $scope.show_skip_i = stage.action_type == "identification";
         $scope.show_call = stage.action_type == "call";
-        $scope.show_close_case = stage.relate_to == "close";
+        //$scope.show_close_case = stage.relate_to == "close";
 
-        if (stage.relate_to == "close") {
+        if (stage.relate_to == "close" && record.status == "active") {
             RecordService.updateNotifActive(record, 0);
+            RecordService.closeCase();
             $timeout(function () {
+                var index = 0;
                 angular.forEach($scope.activeRecords, function(value, i) {
                     if (value.record_id == record.record_id) {
+                        index = i;
                         value.notif_active = 0;
                     }   
                 });
+                $scope.activeRecords.splice(index, 1);
             });
         }
 
@@ -1617,7 +1720,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
             $state.go('identification', {}, {reload: true});
         }
 
-        $scope.closeCase = function () {
+        /*$scope.closeCase = function () {
             $timeout(function () {
                 RecordService.closeCase($scope.activeRecords);
             });
@@ -1625,7 +1728,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                 historyRoot: true
             });
             $state.go('signin');
-        };
+        };*/
         
         // schedule notification
         /*if (stage.action_type == "alert" && (!$scope.record.transaction 
@@ -1699,12 +1802,20 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                 imageN = 80;
             } 
         } else if ($state.params.stage == 36) {
-            if ($state.params.snake == 4) {
+            if ($state.params.snake == 0) {
+                imageN = 6;
+            } else if ($state.params.snake == 1) {
+                imageN = 16;
+            } else if ($state.params.snake == 2) {
+                imageN = 26;
+            } else if ($state.params.snake == 4) {
                 imageN = 46;
             } else if ($state.params.snake == 5) {
                 imageN = 53;
             } else if ($state.params.snake == 6) {
                 imageN = 63;
+            } else if ($state.params.snake == 7) {
+                imageN = 171;
             }
         }
         var stage = StageService.getStage($state.params.stage);
@@ -1747,6 +1858,7 @@ function scheduleCheck(RecordService, timeout, ionicPopup, UserService, ionicHis
 }
 
 function checkNotification(RecordService, timeout, ionicPopup, UserService, ionicHistory, state, scope) {
+    scope.preventClick = "click-block";
     RecordService.getAllActiveRecords().success(function (activeRecords) {
         angular.forEach(activeRecords, function(record, index) {
             if (record.notif_stage != 0 && record.transaction.stage.action_type == "alert") {
@@ -1770,7 +1882,7 @@ function checkNotification(RecordService, timeout, ionicPopup, UserService, ioni
                         confirmPopup.then(function(res) {
                             if(res) {
                                 UserService.setCurrentPatient(record.patient);
-                                RecordService.getRecordOfPatient(activeRecords);
+                                RecordService.getRecordOfPatient();
                                 ionicHistory.nextViewOptions({
                                     historyRoot: true
                                 });
@@ -1813,7 +1925,7 @@ function checkNotification(RecordService, timeout, ionicPopup, UserService, ioni
                         confirmPopup.then(function(res) {
                             if(res) {
                                 UserService.setCurrentPatient(record.patient);
-                                RecordService.getRecordOfPatient(activeRecords);
+                                RecordService.getRecordOfPatient();
                                 ionicHistory.nextViewOptions({
                                     historyRoot: true
                                 });
@@ -1845,7 +1957,7 @@ function checkNotification(RecordService, timeout, ionicPopup, UserService, ioni
                     }
                 }
             }
-            if (record.notif_datetime2 != null) {
+            if (record.notif_datetime2 != null && record.transaction2 != null) {
                 var lastNotifTime = new Date(record.notif_datetime2).getTime();
                 var frequent = ((record.transaction2.stage.frequent / divide) * 1000)
                 var now = new Date().getTime();
@@ -1861,7 +1973,7 @@ function checkNotification(RecordService, timeout, ionicPopup, UserService, ioni
                     confirmPopup.then(function(res) {
                         if(res) {
                             UserService.setCurrentPatient(record.patient);
-                            RecordService.getRecordOfPatient(activeRecords);
+                            RecordService.getRecordOfPatient();
                             ionicHistory.nextViewOptions({
                                 historyRoot: true
                             });
@@ -1882,6 +1994,7 @@ function checkNotification(RecordService, timeout, ionicPopup, UserService, ioni
                 }
             }
         });
+        scope.preventClick = "";
         scheduleCheck(RecordService, timeout, ionicPopup, UserService, ionicHistory, state, scope)
     })
 }

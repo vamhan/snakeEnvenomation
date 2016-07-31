@@ -4,12 +4,9 @@
 var user = {};
 var patient = {};
 var activeRecords = [];
+var closedRecords = [];
 var record = {};
 var snakes = [];
-
-
-//var api_host_url = "http://localhost:9081/snake-envenomation/api"
-var api_host_url = "http://cdss.topwork.asia:9081/snake-envenomation/api"
 
 angular.module('snakeEnvenomation.services', [])
 
@@ -149,9 +146,60 @@ angular.module('snakeEnvenomation.services', [])
                 }
                 return promise;
             },
+            getAllClosedRecords: function () {
+                var deferred = $q.defer();
+                var promise = deferred.promise;
+                $http.get(api_host_url + "/treatment-record/close?user_id=" + user.user_id)
+                    .success(function (data, status, headers, config) {
+                        closedRecords = data;
+                        var promises = closedRecords.map(function(record) {
+                            return new Promise(function(resolve, reject) {
+                                record.snake = snakes[record.snake_type]
+                                $http.get(api_host_url + "/treatment-record/" + record.record_id + "/current-stage")
+                                    .success(function (data, status, headers, config) {
+                                        record.transaction = {};
+                                        record.transaction.stage = data;
+                                        record.transaction.times = data.transaction_times;
+                                        record.transaction.datetime = new Date(data.transaction_datetime);
+                                        record.transaction.consult_reason = data.consult_reason;
+                                        resolve();
+                                    });
+                            });
+                        });   
+                        Promise.all(promises)
+                            .then(function() { deferred.resolve(closedRecords); })
+                            .catch(console.error);
+                    });
+                    
+                promise.success = function (fn) {
+                    promise.then(fn);
+                    return promise;
+                }
+                promise.error = function (fn) {
+                    promise.then(null, fn);
+                    return promise;
+                }
+                return promise;
+            },
+            getStaticClosedRecords:function() {
+                return closedRecords;
+            },
             getRecordOfPatient: function () {
                 var flag = false;
                 angular.forEach(activeRecords, function(value, index) {
+                    if (value.patient_id == patient.patient_id) {
+                        record = value;
+                        flag = true;
+                    }   
+                });
+                if (!flag) {
+                    record = {};
+                }
+                return record;
+            },
+            getClosedRecordOfPatient: function () {
+                var flag = false;
+                angular.forEach(closedRecords, function(value, index) {
                     if (value.patient_id == patient.patient_id) {
                         record = value;
                         flag = true;
@@ -168,8 +216,9 @@ angular.module('snakeEnvenomation.services', [])
                 record.patient = patient;
                 record.incident_date = dateShortFormat(incident.incident_date);
                 record.incident_time = timeFormat(incident.incident_time)
-                record.incident_district = incident.incident_district;
-                record.incident_province = incident.incident_province;
+                record.incident_district = incident.incident_district === undefined ? "" : incident.incident_district;
+                record.incident_province = incident.incident_province === undefined ? "" : incident.incident_province;
+                record.status = "active";
                 
                 /*var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
                 angular.forEach(monthNames, function(value, index) {
@@ -184,8 +233,8 @@ angular.module('snakeEnvenomation.services', [])
                     + "&patient_id=" + patient.patient_id
                     + "&incident_date=" + dateShortFormat(incident.incident_date)
                     + "&incident_time=" + timeFormat(incident.incident_time)
-                    + "&incident_district=" + incident.incident_district
-                    + "&incident_province=" + incident.incident_province)
+                    + "&incident_district=" + (incident.incident_district === undefined ? "" : incident.incident_district)
+                    + "&incident_province=" + (incident.incident_province === undefined ? "" : incident.incident_province))
                     .success(function (data, status, headers, config) {
                         record.record_id = data.record_id;
                     })
@@ -272,22 +321,18 @@ angular.module('snakeEnvenomation.services', [])
                 $http.put(api_host_url + "/treatment-record/" + rec.record_id + "?"
                     + "notif_active=" + isActive);
             },
-            closeCase: function (activeRecs) {
+            closeCase: function () {
+                record.status = "closed";
                 $http.post(api_host_url + "/treatment-record/" + record.record_id + "/closed");
                 var index = 0;
-                angular.forEach(activeRecs, function(value, i) {
-                    if (value.record_id == record.record_id) {
-                        index = i
-                    }   
-                });
-                activeRecs.splice(index, 1);
-
                 angular.forEach(activeRecords, function(value, i) {
                     if (value.record_id == record.record_id) {
                         index = i
                     }   
                 });
                 activeRecords.splice(index, 1);
+
+                closedRecords.push(record);
             }
         }
     })
@@ -336,7 +381,7 @@ angular.module('snakeEnvenomation.services', [])
         return {
             addBloodTest: function (bloodTest, stage, times) {     
                 bloodTest.stage = stage;
-                bloodTest.times = times;
+                bloodTest.stage_times = times;
                 bloodTest.date_time = dateTimeFormat(new Date());
                 bloodTests.push(bloodTest)
                 $http({
@@ -382,7 +427,7 @@ angular.module('snakeEnvenomation.services', [])
                 $http.post(api_host_url + "/treatment-record/" + record.record_id + "/weakness-tests?"
                     + "date_time=" + dateTimeFormat(new Date())
                     + "&stage=" + stage
-                    + "&times=" + times
+                    + "&stage_times=" + times
                     + "&motor_weakness=" + weakness
                     + (progression != null ? "&progression=" + progression : ""));
             },
@@ -466,8 +511,18 @@ angular.module('snakeEnvenomation.services', [])
                     + "&times=" + times
                     + "&date_time=" + dateTimeFormat(now))
             },
-            updateTransactionPCReason: function(consult_reason) {
+            updateTransactionPCReason: function(stage, times, consult_reason) {
+                record.transaction = {};
+                record.transaction.stage = stage;
+                record.transaction.times = times;
+                var now = new Date()
+                record.transaction.datetime = now;
                 record.transaction.consult_reason = consult_reason;
+                $http.post(api_host_url + "/treatment-record/" + record.record_id + "/transaction?"
+                    + "stage_num=" + stage.stage_num
+                    + "&times=" + times
+                    + "&date_time=" + dateTimeFormat(now)
+                    + "&consult_reason=" + consult_reason)
             },
             checkCondition: function (stage, data, times) {
                 var nextStage = 0

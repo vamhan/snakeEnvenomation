@@ -27,7 +27,7 @@
                 <span class="input-label">INR</span>
                 <input type="text" placeholder="INR" ng-model="bloodTest.INR">
                 <span class="input-label" style="width:100px"></span>
-                <button class="button button-outline" ng-click="toggleINRValue(0.8)" style="margin-right:10px;background-color:lightgrey;color:black;width:180px">Default > 1.2</button>
+                <button class="button" ng-class="inr_class" ng-click="toggleINRValue(0.8)" style="margin-right:10px;width:180px">Default < 1.2</button>
             </div>
         </div>
         <div class="card unit-list">
@@ -57,7 +57,7 @@
                 <span class="input-label">Platelet</span>
                 <input type="text" placeholder="Platelet" ng-model="bloodTest.platelets">
                 <span class="input-label" style="width:100px">/mcl</span>
-                <button class="button button-outline" ng-click="togglePlateletValue(150000)" style="margin-right:10px;background-color:lightgrey;color:black;width:180px">Default >= 100,000</button>
+                <button class="button" ng-class="p_class" ng-click="togglePlateletValue(150000)" style="margin-right:10px;width:180px">Default >= 100,000</button>
             </div>
         </div>
         <div class="card unit-list" ng-show="snake.snake_id == 0">

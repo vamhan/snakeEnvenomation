@@ -23,6 +23,7 @@
     <script src="cordova.js"></script>
 
     <!-- your app's js -->
+    <script src="js/config.js"></script>
     <script src="js/app.js"></script>
     <script src="js/controller.js"></script>
     <script src="js/service.js"></script>
@@ -32,15 +33,29 @@
 
 <body>
     <ion-side-menus ng-controller="SignInCtrl">
+        <div ng-class="preventClick"></div>
         <ion-side-menu side="left">
-            <ion-header-bar class="bar bar-header bar-dark"></ion-header-bar>
-            <ion-content style="background-image:none">
+            <ion-header-bar class="bar bar-header bar-dark">
+            </ion-header-bar>
+            <ion-content style="background-image:none">       
                 <ion-list>
                     <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="newCase()">
                         Add new case
                         <i class="icon ion-ios-plus-outline"></i>
                     </ion-item>
+                    <div class="item item-divider" style="background-color:lightgrey">Active Cases</div>
                     <ion-item nav-clear menu-close href="#" class="item-avatar" ng-click="selectRecord(record)" ng-repeat="(index, record) in activeRecords">
+                        <img ng-src="{{record.snake.imgs[0]}}">
+                        <h2>{{record.patient.patient_name}}</h2>
+                        <p>{{record.dateFormat + " " + record.incident_time}}</p>
+                        <span class="badge badge-assertive" style="right:10px" ng-show="record.notif_active == 1">1</span>
+                    </ion-item>
+                    <div class="item item-divider" style="background-color:lightgrey">History Cases</div>
+                    <label class="item item-input">
+                        <i class="icon ion-search placeholder-icon"></i>
+                        <input type="search" placeholder="Search" ng-change="searchCases()" ng-model="my.search">
+                    </label>
+                    <ion-item nav-clear menu-close href="#" class="item-avatar" ng-click="selectClosedRecord(record)" ng-repeat="(index, record) in closedRecords">
                         <img ng-src="{{record.snake.imgs[0]}}">
                         <h2>{{record.patient.patient_name}}</h2>
                         <p>{{record.dateFormat + " " + record.incident_time}}</p>
@@ -71,39 +86,17 @@
                         <i class="icon ion-arrow-right-b"></i>
                     </ion-item>
                 </div>
-                <div class="list" ng-show="my.show_h_menu">
+                <div class="list">
                     <div class="item item-divider" style="background-color:lightgrey">Current Process</div>
-                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="navigateToBloodResultList()">
+                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-show="my.show_h_menu" ng-click="navigateToBloodResultList()">
                         View blood test results
                         <i class="icon ion-arrow-right-b"></i>
                     </ion-item>
-                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="viewFlowChart()">
-                        View flow chart
-                        <i class="icon ion-arrow-right-b"></i>
-                    </ion-item>
-                </div>
-                <div class="list" ng-show="my.show_n_menu">
-                    <div class="item item-divider" style="background-color:lightgrey">Current Process</div>
-                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="navigateToWeaknessResultList()">
+                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-show="my.show_n_menu" ng-click="navigateToWeaknessResultList()">
                         View motor weakness results
                         <i class="icon ion-arrow-right-b"></i>
                     </ion-item>
-                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="viewFlowChart()">
-                        View flow chart
-                        <i class="icon ion-arrow-right-b"></i>
-                    </ion-item>
-                </div>
-                <div class="list" ng-show="my.show_u_menu">
-                    <div class="item item-divider" style="background-color:lightgrey">Current Process</div>
-                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="navigateToBloodResultList()">
-                        View blood test results
-                        <i class="icon ion-arrow-right-b"></i>
-                    </ion-item>
-                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="navigateToWeaknessResultList()">
-                        View motor weakness results
-                        <i class="icon ion-arrow-right-b"></i>
-                    </ion-item>
-                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-click="viewFlowChart()">
+                    <ion-item nav-clear menu-close href="#" class="item-icon-right" ng-show="my.show_f_menu" ng-click="viewFlowChart()">
                         View flow chart
                         <i class="icon ion-arrow-right-b"></i>
                     </ion-item>
@@ -114,7 +107,7 @@
     </ion-side-menus>
 
     <script id="sign-in.html" type="text/ng-template">
-        <ion-view>
+        <ion-view view-title="">
             <ion-nav-buttons side="left">
                 <button class="button button-icon button-clear ion-folder" menu-toggle="left"></button>
             </ion-nav-buttons>

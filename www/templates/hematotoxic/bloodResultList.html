@@ -3,7 +3,8 @@
         <div class="list">
             
             <a class="item item-icon-right" ng-click="navigateToBloodResult(index)" ng-repeat="(index, blood) in bloodTests">
-                ครั้งที่ {{(index + 1)}} {{blood.date_time}}
+                <p>{{blood.action_text}}</p>
+                <p>ครั้งที่ {{blood.stage_times}} {{blood.date_time}}</p>
                 <i class="icon ion-chevron-right"></i>
             </a>
 

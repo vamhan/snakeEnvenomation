@@ -84,11 +84,9 @@ var appRouter = function(app, db) {
     });
 
     app.get("/treatment-record/:record_id/blood-tests", function(req, res) {
-        db.query("SELECT * FROM bloodTest where record_id=" + req.params.record_id, function(err, rows) {
+        db.query("SELECT * FROM bloodTest b, stage s where b.stage = s.stage_num and record_id=" + req.params.record_id, function(err, rows) {
             if (err) {
                 return res.status(500).send({ "message": "internal server error" });
-            } else if (rows.length == 0) {
-                return res.status(404).send({ "message": "record_id not found" });
             } else {
                 return res.status(200).send(rows);
             }
@@ -111,11 +109,9 @@ var appRouter = function(app, db) {
     });
     
     app.get("/treatment-record/:record_id/weakness-tests", function(req, res) {
-        db.query("SELECT * FROM motorWeakness where record_id=" + req.params.record_id, function(err, rows) {
+        db.query("SELECT * FROM motorWeakness m, stage s where m.stage = s.stage_num and record_id=" + req.params.record_id, function(err, rows) {
             if (err) {
                 return res.status(500).send({ "message": "internal server error" });
-            } else if (rows.length == 0) {
-                return res.status(404).send({ "message": "record_id not found" });
             } else {
                 return res.status(200).send(rows);
             }
@@ -138,7 +134,7 @@ var appRouter = function(app, db) {
     });
     
     app.get("/treatment-record/:record_id/current-stage", function(req, res) {
-        db.query("SELECT s.*, t.times as transaction_times, t.date_time as transaction_datetime FROM transaction t, stage s where t.record_id=" + req.params.record_id + " and t.stage_num = s.stage_num "
+        db.query("SELECT s.*, t.times as transaction_times, t.date_time as transaction_datetime, t.consult_reason as consult_reason FROM transaction t, stage s where t.record_id=" + req.params.record_id + " and t.stage_num = s.stage_num "
         + "and t.transaction_id = (select MAX(t2.transaction_id) from transaction t2 where t.record_id = t2.record_id)", function(err, rows) {
             if (err) {
                 return res.status(500).send({ "message": "internal server error" });
@@ -190,7 +186,29 @@ var appRouter = function(app, db) {
     });
     
     app.get("/treatment-record/active", function(req, res) {
-        db.query("SELECT * FROM treatmentRecord where user_id=" + req.query.user_id + " and status = 'active' ", function(err, rows) {
+        db.query("SELECT * FROM treatmentRecord where user_id=" + req.query.user_id + " and status = 'active' order by incident_date DESC, incident_time DESC", function(err, rows) {
+            if (err) {
+                console.log(err)
+                return res.status(500).send({ "message": "internal server error" });
+            } else {
+                var promises = rows.map(function(record) {
+                        return new Promise(function(resolve, reject) {
+                            db.query("SELECT * FROM patient where patient_id=" + record.patient_id, function(err, rows) {
+                                if (err) { return reject(err); }
+                                record["patient"] = rows[0];
+                                resolve();
+                            });
+                        });
+                    });   
+                    Promise.all(promises)
+                        .then(function() { return res.status(200).send(rows); })
+                        .catch(console.error);
+            }
+        });
+    });
+
+    app.get("/treatment-record/close", function(req, res) {
+        db.query("SELECT * FROM treatmentRecord where user_id=" + req.query.user_id + " and status = 'closed' order by incident_date DESC, incident_time DESC", function(err, rows) {
             if (err) {
                 console.log(err)
                 return res.status(500).send({ "message": "internal server error" });

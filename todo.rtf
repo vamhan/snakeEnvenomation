@@ -1,17 +1,22 @@
 {\rtf1\ansi\ansicpg1252\cocoartf1348\cocoasubrtf170
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;\f2\fmodern\fcharset0 CourierNewPSMT;
-\f3\fnil\fcharset222 Thonburi;}
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset222 Thonburi;\f2\fnil\fcharset0 Menlo-Regular;
+\f3\fmodern\fcharset0 CourierNewPSMT;}
 {\colortbl;\red255\green255\blue255;\red102\green177\blue50;\red85\green142\blue40;\red43\green39\blue19;
-\red234\green234\blue234;\red42\green47\blue60;\red217\green232\blue255;\red45\green68\blue134;}
+\red234\green234\blue234;\red42\green47\blue60;\red217\green232\blue255;\red45\green68\blue134;\red28\green71\blue110;
+\red255\green255\blue255;\red52\green52\blue52;}
 \paperw11900\paperh16840\margl1440\margr1440\vieww20560\viewh11300\viewkind0
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
 
-\f0\fs24 \cf0 - datepicker\
-- birthdate\
+\f0\fs24 \cf0 - 
+\f1 bug page \'a4\'e9\'d2\'a7 \'b5\'cd\'b9\'b7\'d5\'e8\'e4\'c1\'e8\'c1\'d5 active case\
+- display of number of test and notification times
+\f0 \
 - notification\
 - snake images\
 \
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf2 - datepicker\
+- birthdate\cf0 \
 \cf2 - conflict state\
 - call\cf0 \
 \cf3 - incident date\cf0 \
@@ -30,11 +35,11 @@
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
 \cf0 \'97 Android\'97\
 - location crash
-\f1\fs26 \cf4 \cb5 \expnd0\expndtw0\kerning0
+\f2\fs26 \cf4 \cb5 \expnd0\expndtw0\kerning0
 \
 \pard\pardeftab720\sl360
 
-\f2 \cf0 \expnd0\expndtw0\kerning0
+\f3 \cf0 \expnd0\expndtw0\kerning0
 \
 \
 \pard\pardeftab720\sl307
@@ -56,7 +61,7 @@ username : cdss\
 password : admin1q2w3e\
 \pard\pardeftab720\sl307
 
-\f3 \cf6 \'e4\'c7\'e9\'c7\'d2\'a7
+\f1 \cf6 \'e4\'c7\'e9\'c7\'d2\'a7
 \f0  file php\
 \
 \
@@ -64,7 +69,20 @@ root = 63a9f0ea7bb98050796b649e85481845\
 1234567891011 = 204b5003e97662ca4258ab593ec0360b\
 \
 \
-SELECT s.*, t.times as transaction_times, t.date_time as transaction_datetime FROM transaction t, stage s where t.record_id=1467553227 and t.stage_num = s.stage_num and t.date_time = (select MAX(t2.date_time) from transaction t2 where t.record_id = t2.record_id)
-\f2\fs26 \cf0 \cb5 \expnd0\expndtw0\kerning0
+SELECT s.*, t.times as transaction_times, t.date_time as transaction_datetime FROM transaction t, stage s where t.record_id=1467553227 and t.stage_num = s.stage_num and t.date_time = (select MAX(t2.date_time) from transaction t2 where t.record_id = t2.record_id)\
 \
+\pard\pardeftab720
+
+\fs26 \cf9 \cb10 \expnd0\expndtw0\kerning0
+\ul \ulc9 \outl0\strokewidth0 \strokec9 \
+\{\
+    "host": "cdss.topwork.asia",\
+    "username": "noon",\
+    "password": "noon1q2w3e",\
+    "database": "cdss_test"\
+\}\cf11 \cb1 \expnd0\expndtw0\kerning0
+\ulnone \outl0\strokewidth0 \strokec11 \shad\shadx0\shady-20\shadr0\shado255 \shadc0 \
+
+\f3 \cf0 \cb5 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \shad0 \
 }

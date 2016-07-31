@@ -21,11 +21,11 @@
             </div>
             <div class="item row">
                 <div class="col">Has systemic bleeding :</div>
-                <div class="col">{{record.systemic_bleeding}}</div>
+                <div class="col">{{record.systemic_bleeding == 0 ? "No" : "Yes"}}</div>
             </div>
             <div class="item row">
                 <div class="col">Have impending respiratory failure :</div>
-                <div class="col">{{record.respiratory_failure}}</div>
+                <div class="col">{{record.respiratory_failure == 0 ? "No" : "Yes"}}</div>
             </div>
             <div class="item row">
                 <div class="col">Snake Type :</div>
@@ -39,8 +39,8 @@
             </div>
             <div class="item" style="white-space:pre-line;padding-bottom: 0px">{{stage.action_text}} {{times}} {{consult_reason}}
                 <div style="white-space:normal;">
-                    <button class="button button-calm" ng-click="closeCase()" ng-show="show_close_case" style="height:50px;margin-top:15px;margin-right:10px">Close case</button>
-                    <button class="button button-assertive" ng-click="skip()" ng-show="show_skip" style="height:50px;margin-top:15px;margin-right:10px">Skip</button>
+                    <!--<button class="button button-calm" ng-click="closeCase()" ng-show="show_close_case" style="height:50px;margin-top:15px;margin-right:10px">Close case</button>-->
+                    <button class="button button-assertive" ng-click="skip()" ng-show="show_skip" style="height:50px;margin-top:15px;margin-right:10px">Next</button>
                     <a ng-href="tel:{{stage.additonal_action}}" class="button button-balanced" style="width:162px;height:50px;margin-top:15px;" ng-show="show_call">call {{stage.additonal_action}}</a>
                 </div>
             </div>

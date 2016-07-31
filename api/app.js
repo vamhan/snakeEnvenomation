@@ -1,6 +1,10 @@
+var nconf = require('nconf')
 var express = require("express");
 var bodyParser = require("body-parser");
 var app = express();
+
+nconf.file('default', 'config.json');
+var config = nconf.get();
  
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -15,11 +19,10 @@ app.use(function (req, res, next) {
 // DataBase 
 var mysql = require("mysql");
 var con = mysql.createConnection({
-  //host: "cdss.topwork.asia",
-  host: "localhost",
-  user: "cdss",
-  password: "cdss1q2w3e",
-  database: "cdss"
+  host: config.host,
+  user: config.username,
+  password: config.password,
+  database: config.database
 });
 /*var con = mysql.createConnection({
   host: "localhost",

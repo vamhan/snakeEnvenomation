@@ -3,7 +3,10 @@
         <div class="list">
             
             <div class="item item-icon-right" ng-repeat="(index, weakness) in motorWeaknesses">
-                <span style="float:left">ครั้งที่ {{(index + 1)}} {{weakness.date_time}}</span>
+                <span style="float:left">
+                <p>{{weakness.action_text}}</p>
+                <p>ครั้งที่ {{weakness.stage_times}} {{weakness.date_time}}</p>
+                </span>
                 <span style="float:right">motor weakness: {{(weakness.motor_weakness == 0) ? 'no' : 'yes'}}
                 <br>progression of weakness: {{(weakness.progression == null) ? '-' : weakness.progression == 0 ? 'no' : 'yes'}}</span>
             </div>
