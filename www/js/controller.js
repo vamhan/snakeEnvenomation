@@ -219,7 +219,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                         }
                     });
                 }, function (err) {
-                    alert("Current location cannot be retrieved")
+                    //alert("Current location cannot be retrieved")
                 });
         }
 
