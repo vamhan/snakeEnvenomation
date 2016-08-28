@@ -884,6 +884,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
             $state.go('signin');
         };*/
 
+        $scope.show_checktime = stage.action_type == "alert"
         $scope.totalCheckTimes = [];
         for (var i = 1; i <= stage.times; i++) {
             var item = {};
@@ -1152,6 +1153,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
             $state.go('patientPUtil', { totest:1 }, {reload: true});
         }
 
+        $scope.show_checktime = stage.action_type == "alert"
         $scope.totalCheckTimes = [];
         for (var i = 1; i <= stage.times; i++) {
             var item = {};
