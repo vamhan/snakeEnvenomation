@@ -117,3 +117,27 @@ label.item.has-error {
 .ui-datepicker {
 	pointer-events: auto;
 }
+
+
+.indicate-circle li {
+  width: 2em;
+  height: 2em;
+  text-align: center;
+  line-height: 2em;
+  border-radius: 1em;
+  background: lightcyan;
+  margin: 1px;
+  color: lightblue;
+  position: relative;
+  float: left;
+}
+
+.indicate-circle .active {
+  background: #40ff00;
+  color: green;
+}
+
+.indicate-circle .notif {
+  background: darkmagenta;
+  color: white;
+}

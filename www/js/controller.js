@@ -57,7 +57,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
         $scope.selectClosedRecord = function (record) {
             UserService.setCurrentPatient(record.patient);
-            RecordService.getClosedRecordOfPatient();
+            RecordService.getClosedRecordOfRecordId(record.record_id);
             var snakeType = record.respiratory_failure == 1 ? 9 : record.systemic_bleeding == 1 ? 8 : record.snake_type;
             var toPage = 'hmanagement';
             if (record.snake_type == 3 || record.snake_type == 4 || record.snake_type == 5 || record.snake_type == 6) {
@@ -177,6 +177,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         var incidentDate = new Date();
         var incidentTime = new Date();
         if (record.incident_date) {
+            $scope.disable_date = true;
             incidentDate = new Date(record.incident_date);
             incidentTime.setHours(record.incident_time.split(":")[0])
             incidentTime.setMinutes(record.incident_time.split(":")[1])
@@ -187,6 +188,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
             $scope.incident.incident_district = record.incident_district;
             $scope.incident.incident_province = record.incident_province;
         } else {
+            $scope.disable_date = false;
             $scope.incident.incident_date = incidentDate;
             $scope.incident.incident_time = new Date(incidentTime.getTime() - (incidentTime.getTime() % 60000));
             //$scope.incident.incident_date = dateLongFormat(incidentDate)
@@ -362,9 +364,12 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         };
     })
 
-    .controller('PatientPUtilCtrl', function ($scope, $state, $ionicHistory, SnakeService, RecordService, StageService, BloodTestService, MotorWeaknessService, $ionicPopover, $ionicPopup, $timeout, $cordovaLocalNotification) {
+    .controller('PatientPUtilCtrl', function ($scope, $state, $ionicHistory, UserService, SnakeService, RecordService, StageService, BloodTestService, MotorWeaknessService, $ionicPopover, $ionicPopup, $timeout, $cordovaLocalNotification) {
 
         var record = RecordService.getRecord();
+        $scope.user = UserService.getUserInfo();
+        $scope.patient = UserService.getPatientInfo();
+
         $scope.b_y_class = record.systemic_bleeding ? "button-positive" : "button-dark";
         $scope.b_n_class = !record.systemic_bleeding ? "button-positive" : "button-dark";
         $scope.r_y_class = record.respiratory_failure ? "button-positive" : "button-dark";
@@ -814,18 +819,21 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
     .controller('HManagementCtrl', function ($scope, $state, $ionicHistory, $ionicPopup, UserService, RecordService, BloodTestService, SnakeService, StageService, $cordovaLocalNotification, $timeout) {
 
+        var record = RecordService.getRecord();
         $scope.my.show_h_menu = true;
-        $scope.my.show_n_menu = false;
+        $scope.my.show_n_menu = record.status == "active" ? false : true;
         $scope.my.show_f_menu = true;
 
         $scope.snake = SnakeService.getSnakeByID($state.params.snake);
         $scope.user = UserService.getUserInfo();
         $scope.patient = UserService.getPatientInfo();
-        var record = RecordService.getRecord();
         $scope.record = record;
 
         var stage = StageService.getStage($state.params.stage);
         $scope.stage = stage;
+
+        $scope.action_text = (stage.addition_text != null && $state.params.times == 1) ? stage.addition_text + "\n" + stage.action_text : stage.action_text;
+
         if (stage.action_type == "alert") {
             var nextCheckText = "";
             if ($state.params.times > 1) {
@@ -876,7 +884,13 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
             $state.go('signin');
         };*/
 
-        
+        $scope.totalCheckTimes = [];
+        for (var i = 1; i <= stage.times; i++) {
+            var item = {};
+            item.number = i;
+            item.class = $state.params.times - 1 >= i ? "active" : record.notif_times - 1 >= i ? "notif" : "";
+            $scope.totalCheckTimes.push(item);
+        }
 
 
         $scope.showPopup = function (type) {
@@ -1078,14 +1092,14 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
     .controller('NManagementCtrl', function ($scope, $state, $ionicHistory, $ionicPopup, UserService, RecordService, SnakeService, StageService, MotorWeaknessService, $timeout, $cordovaLocalNotification) {
 
-        $scope.my.show_h_menu = false;
+        var record = RecordService.getRecord();
+        $scope.my.show_h_menu = record.status == "active" ? false : true;;
         $scope.my.show_n_menu = true;
         $scope.my.show_f_menu = true;
 
         $scope.snake = SnakeService.getSnakeByID($state.params.snake);
         $scope.user = UserService.getUserInfo();
         $scope.patient = UserService.getPatientInfo();
-        var record = RecordService.getRecord();
         $scope.record = record;
         var latestMotorWeakness = MotorWeaknessService.getLatestMotorWeakness();
         if (latestMotorWeakness) {
@@ -1095,6 +1109,9 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
         var stage = StageService.getStage($state.params.stage);
         $scope.stage = stage;
+
+        $scope.action_text = (stage.addition_text != null && $state.params.times == 1) ? stage.addition_text + "\n" + stage.action_text : stage.action_text;
+
         if (stage.action_type == "alert") {
             var nextCheckText = "";
             if ($state.params.times > 1) {
@@ -1133,6 +1150,14 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
                 historyRoot: true
             });
             $state.go('patientPUtil', { totest:1 }, {reload: true});
+        }
+
+        $scope.totalCheckTimes = [];
+        for (var i = 1; i <= stage.times; i++) {
+            var item = {};
+            item.number = i;
+            item.class = $state.params.times - 1 >= i ? "active" : record.notif_times - 1 >= i ? "notif" : "";
+            $scope.totalCheckTimes.push(item);
         }
 
         /*$scope.closeCase = function () {
@@ -1719,6 +1744,17 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
             });
             $state.go('identification', {}, {reload: true});
         }
+
+        /*if (record.transaction.stage.stage_num == 72) {
+            var stage = StageService.getStage(72);
+            $scope.totalCheckTimes1 = [];
+            for (var i = 1; i <= stage.times; i++) {
+                var item = {};
+                item.number = i;
+                item.class = $state.params.times - 1 >= i ? "active" : record.notif_times - 1 >= i ? "notif" : "";
+                $scope.totalCheckTimes.push(item);
+            }
+        }*/
 
         /*$scope.closeCase = function () {
             $timeout(function () {

@@ -77,11 +77,11 @@
             </div>-->
             <div class="item item-input">
                 <div class="input-label">Date of incident</div>
-                <label><input type="date" ng-model="incident.incident_date"></label>
+                <label><input type="date" ng-model="incident.incident_date" ng-readonly="disable_date"></label>
             </div>
             <div class="item item-input">
                 <div class="input-label">Time of incident</div>
-                <label><input type="time" ng-model="incident.incident_time"></label>
+                <label><input type="time" ng-model="incident.incident_time" ng-readonly="disable_date"></label>
             </div>
         </div>
         <div class="card">

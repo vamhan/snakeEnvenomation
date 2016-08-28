@@ -1,6 +1,17 @@
 <ion-view title="General Symptom (#3)">
     <ion-content>
         <div class="padding border">
+             <div class="card info-list">
+                <div class="item item-divider">Information</div>
+                <div class="item row">
+                    <div class="col">Physician Name :</div>
+                    <div class="col">{{user.physician_name}}</div>
+                </div>
+                <div class="item row">
+                    <div class="col">Patient Name :</div>
+                    <div class="col">{{patient.patient_name}}</div>
+                </div>
+            </div>
             <div class="header_title">
                 <h3 style="font-weight:600">Does the patient has systemic bleeding?</h2>
                 <button class="button" ng-class="b_y_class" style="width:40%;margin-right:20px" ng-click="toggleYesSelection('b_y_class', 'b_n_class')">Yes</button>

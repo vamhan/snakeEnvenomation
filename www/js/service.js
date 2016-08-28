@@ -197,10 +197,10 @@ angular.module('snakeEnvenomation.services', [])
                 }
                 return record;
             },
-            getClosedRecordOfPatient: function () {
+            getClosedRecordOfRecordId: function (record_id) {
                 var flag = false;
                 angular.forEach(closedRecords, function(value, index) {
-                    if (value.patient_id == patient.patient_id) {
+                    if (value.record_id == record_id) {
                         record = value;
                         flag = true;
                     }   
@@ -219,6 +219,8 @@ angular.module('snakeEnvenomation.services', [])
                 record.incident_district = incident.incident_district === undefined ? "" : incident.incident_district;
                 record.incident_province = incident.incident_province === undefined ? "" : incident.incident_province;
                 record.status = "active";
+
+                activeRecords.push(record);
                 
                 /*var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
                 angular.forEach(monthNames, function(value, index) {
