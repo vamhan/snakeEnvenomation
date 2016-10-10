@@ -1,6 +1,7 @@
 <ion-view view-title="Flow chart">
-    <ion-content>
-        <div style="text-align:center">
-        <img ng-src="{{stageImage}}" width="50%"/>
+    <ion-content class="padding" scroll="false">
+        <ion-scroll zooming="true" direction="xy" class="zoom-pane" min-zoom="1" scrollbar-x="false" scrollbar-y="false">  
+            <img ng-src="{{stageImage}}"/>
+        </ion-scroll>
     </ion-content>
 </ion-view>

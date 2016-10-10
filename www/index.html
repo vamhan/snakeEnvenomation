@@ -45,7 +45,7 @@
                     </ion-item>
                     <div class="item item-divider" style="background-color:lightgrey">Active Cases</div>
                     <ion-item nav-clear menu-close href="#" class="item-avatar" ng-click="selectRecord(record)" ng-repeat="(index, record) in activeRecords">
-                        <img ng-src="{{record.snake.imgs[0]}}">
+                        <img ng-src="img/snake/{{record.snake.imgs[0]}}">
                         <h2>{{record.patient.patient_name}}</h2>
                         <p>{{record.dateFormat + " " + record.incident_time}}</p>
                         <span class="badge badge-assertive" style="right:10px" ng-show="record.notif_active == 1">1</span>
@@ -56,7 +56,7 @@
                         <input type="search" placeholder="Search" ng-change="searchCases()" ng-model="my.search">
                     </label>
                     <ion-item nav-clear menu-close href="#" class="item-avatar" ng-click="selectClosedRecord(record)" ng-repeat="(index, record) in closedRecords">
-                        <img ng-src="{{record.snake.imgs[0]}}">
+                        <img ng-src="img/snake/{{record.snake.imgs[0]}}">
                         <h2>{{record.patient.patient_name}}</h2>
                         <p>{{record.dateFormat + " " + record.incident_time}}</p>
                         <span class="badge badge-assertive" style="right:10px" ng-show="record.notif_active == 1">1</span>
@@ -112,7 +112,7 @@
                 <button class="button button-icon button-clear ion-folder" menu-toggle="left"></button>
             </ion-nav-buttons>
             <ion-content>
-                <div style="float:right" class="light">V 2.1</div>
+                <div style="float:right" class="light">V 2.2</div>
                 <div style="text-align:center">
                     <img ng-src="img/logo.png" width="250px">
                 </div>

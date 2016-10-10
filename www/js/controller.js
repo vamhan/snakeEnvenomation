@@ -364,7 +364,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         };
     })
 
-    .controller('PatientPUtilCtrl', function ($scope, $state, $ionicHistory, UserService, SnakeService, RecordService, StageService, BloodTestService, MotorWeaknessService, $ionicPopover, $ionicPopup, $timeout, $cordovaLocalNotification) {
+    .controller('PatientPUtilCtrl', function ($scope, $state, $ionicHistory, UserService, SnakeService, RecordService, StageService, BloodTestService, MotorWeaknessService, $ionicPopover, $ionicPopup, $timeout, $cordovaLocalNotification, $ionicModal) {
 
         var record = RecordService.getRecord();
         $scope.user = UserService.getUserInfo();
@@ -409,8 +409,21 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
             $scope.snakeCheckbox[selectedSnake] = true;
         };
 
+        $ionicModal.fromTemplateUrl('templates/modal.html', {
+            scope: $scope
+        }).then(function(modal) {
+            $scope.modal = modal;
+        });
+        
+        $scope.openModal = function(pic) {
+            if (pic.indexOf("unknown") <= -1) {
+                $scope.modal.show()
+                $scope.imgUrl = "img/snake/" + pic
+            }
+        }
+
         $scope.openPopover = function ($event, id) {
-            var template = '<ion-popover-view><ion-header-bar> <h1 class="title">' + $scope.snakes[id].snake_thai_name + '</h1> </ion-header-bar> <ion-content>' + $scope.snakes[id].info + '</ion-content></ion-popover-view>';
+            var template = '<ion-popover-view><ion-header-bar> <h1 class="title">' + $scope.snakes[id].snake_thai_name + '</h1> </ion-header-bar> <ion-content class="padding" scroll="false">' + $scope.snakes[id].info + '</ion-content></ion-popover-view>';
             $scope.popover = $ionicPopover.fromTemplate(template, {
                 scope: $scope
             });

@@ -32,16 +32,14 @@
                         <input type="checkbox" ng-model="snakeCheckbox[snake.snake_id]" ng-change="snakeTypeSelect(snake.snake_id)">
                     </div>
                     <div class="text-center">
-                        <a ng-click="openPopover($event, snake.snake_id)" style="word-wrap: break-word;white-space:normal">{{snake.snake_thai_name}}</a> 
+                        <span style="font-size:18px">{{snake.snake_thai_name}}&nbsp;&nbsp;&nbsp;</span><a href="#" ng-click="openPopover($event, snake.snake_id)" ng-hide="$last"/>คลิ้กเพื่อดูรายละเอียด</a> 
                     </div>
                     <div class="row">
-                        <div class="col">
-                            <img ng-src="{{snake.imgs[0]}}" width="100%"/>
-                        </div>
-                        <div class="col">
-                            <img ng-src="{{snake.imgs[1]}}" width="100%"/>
+                        <div class="col" ng-repeat="pic in snake.imgs">
+                            <img ng-src="img/snake/{{pic}}" width="100%" ng-click="openModal(pic)"/>
                         </div>
                     </div>
+                    <p style="margin-bottom:0px;text-align:right" ng-hide="$last">กดที่รูปภาพเพื่อดูภาพขนาดใหญ่</p>
                 </div> 
             </ion-list>
         </div>
@@ -53,3 +51,20 @@
         </div>
     </ion-content>
 </ion-view>
+
+
+<script id="templates/modal.html" type="text/ng-template">
+    <ion-modal-view>
+        <ion-header-bar class="bar bar-header bar-stable">
+            <h1 class="title">View Image</h1>
+            <button class="button button-clear button-primary" ng-click="modal.hide()">Close</button>
+        </ion-header-bar>
+        <ion-content class="padding" scroll="false" style="background-image:none">
+            
+            <ion-scroll zooming="true" direction="xy" delegate-handle="zoom-pane" class="zoom-pane" min-zoom="1" scrollbar-x="false" scrollbar-y="false">   
+            <img ng-src="{{imgUrl}}">
+        </ion-scroll>
+            
+        </ion-content>
+    </ion-modal-view>
+</script>
