@@ -5,9 +5,9 @@
 // the 2nd parameter is an array of 'requires'
 
 
-angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', 'snakeEnvenomation.services'])
+angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', 'snakeEnvenomation.services', 'ngCookies'])
 
-    .run(function ($ionicPlatform) {
+    .run(function ($ionicPlatform, $cookies, $rootScope, $ionicModal) {
         $ionicPlatform.ready(function () {
             /*if(device.platform === "iOS") {
                 window.plugin.notification.local.registerPermission();
@@ -28,25 +28,43 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
             
             //cordova.plugins.notification.local.cancelAll();
         });
+
+        $rootScope.$on('$stateChangeStart', function (event, toState, toParams) {
+            var userCookie = $cookies.get('user');
+            if (toState.authRequired && userCookie == null) {
+                $ionicModal.fromTemplateUrl('templates/account/sign-in.html', {
+                    
+                }).then(function(modal) {
+                    modal.show()
+                });
+            }
+        });
     })
 
     .config(function ($stateProvider, $urlRouterProvider) {
         $stateProvider
-            .state('signin', {
-                url: '/sign-in',
-                templateUrl: "sign-in.html"
+            .state('activateAccount', {
+                url: '/activateAccount/:user_id',
+                templateUrl: "templates/account/activateAccount.html",
+                controller: 'ActivateAccountCtrl',
+                authRequired: false
             })
             .state('record', {
                 cache: false,
                 url: '/record',
                 templateUrl: 'templates/record.html',
-                controller: 'RecordCtrl'
+                controller: 'RecordCtrl',
+                authRequired: true,
+                params: {
+                    'isNew': true
+                }
             })
             .state('patientPUtil', {
                 cache: false,
                 url: '/patientPUtil',
                 templateUrl: 'templates/patientPUtil.html',
                 controller: 'PatientPUtilCtrl',
+                authRequired: true,
                 params: {
                     'totest': null
                 }
@@ -56,6 +74,7 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                 url: '/hematotoxic/bloodSample',
                 templateUrl: 'templates/hematotoxic/bloodSample.html',
                 controller: 'BloodSampleCtrl',
+                authRequired: true,
                 params: {
                     'snake': null,
                     'stage': null,
@@ -68,6 +87,7 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                 url: '/hematotoxic/management',
                 templateUrl: 'templates/hematotoxic/management.html',
                 controller: 'HManagementCtrl',
+                authRequired: true,
                 params: {
                     'snake': null,
                     'stage': null,
@@ -78,12 +98,14 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
             .state('bloodResultList', {
                 url: '/hematotoxic/bloodResultList',
                 templateUrl: 'templates/hematotoxic/bloodResultList.html',
-                controller: 'bloodResultListCtrl'
+                controller: 'bloodResultListCtrl',
+                authRequired: true
             })
             .state('bloodResult', {
                 url: '/hematotoxic/bloodResult',
                 templateUrl: 'templates/hematotoxic/bloodResult.html',
                 controller: 'bloodResultCtrl',
+                authRequired: true,
                 params: {
                     'data': null
                 }
@@ -93,6 +115,7 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                 url: '/neurotoxic/motorWeakness',
                 templateUrl: 'templates/neurotoxic/motorWeakness.html',
                 controller: 'MotorWeaknessCtrl',
+                authRequired: true,
                 params: {
                     'snake': null,
                     'stage': null,
@@ -105,6 +128,7 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                 url: '/neurotoxic/management',
                 templateUrl: 'templates/neurotoxic/management.html',
                 controller: 'NManagementCtrl',
+                authRequired: true,
                 params: {
                     'snake': null,
                     'stage': null,
@@ -115,13 +139,15 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
             .state('weaknessResultList', {
                 url: '/neurotoxic/weaknessResultList',
                 templateUrl: 'templates/neurotoxic/weaknessResultList.html',
-                controller: 'WeaknessResultCtrl'
+                controller: 'WeaknessResultCtrl',
+                authRequired: true
             })
             .state('unknownTest', {
                 cache: false,
                 url: '/unknown/unknownTest',
                 templateUrl: 'templates/unknown/unknownTest.html',
                 controller: 'UnknownTestCtrl',
+                authRequired: true,
                 params: {
                     'snake': null,
                     'stage': null,
@@ -133,13 +159,15 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                 cache: false,
                 url: '/unknown/identification',
                 templateUrl: 'templates/unknown/identification.html',
-                controller: 'IdentificationCtrl'
+                controller: 'IdentificationCtrl',
+                authRequired: true
             })
             .state('umanagement', {
                 cache: false,
                 url: '/unknown/management',
                 templateUrl: 'templates/unknown/management.html',
                 controller: 'UManagementCtrl',
+                authRequired: true,
                 params: {
                     'snake': null,
                     'stage': null,
@@ -152,6 +180,7 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                 url: '/flowchart',
                 templateUrl: 'templates/flowchart.html',
                 controller: 'FlowchartCtrl',
+                authRequired: true,
                 params: {
                     'snake': null,
                     'stage': null
@@ -162,6 +191,7 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                 url: '/generalInfo',
                 templateUrl: 'templates/generalInfo.html',
                 controller: 'GeneralInfoCtrl',
+                authRequired: true,
                 params: {
                     'type': null
                 }
@@ -169,6 +199,6 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
 
 
 
-        $urlRouterProvider.otherwise('/sign-in');
+        $urlRouterProvider.otherwise('/record');
 
     });

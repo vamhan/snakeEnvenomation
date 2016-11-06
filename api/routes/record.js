@@ -13,10 +13,7 @@ var appRouter = function(app, db) {
                     }
                 });
             } else {
-                var record_id = Date.now();
-                data["record_id"] = record_id;
                 db.query("INSERT INTO treatmentRecord SET ?", data, function(err, rows) {
-                    console.log(rows);
                     if (err) {
                         console.log(err)
                         var status;
@@ -30,7 +27,7 @@ var appRouter = function(app, db) {
                         }
                         return res.status(status).send({ "message": message });
                     } else {
-                        return res.status(200).send({ "record_id": record_id });
+                        return res.status(200).send({ "record_id": rows.insertId });
                     }
                 });
             }

@@ -10,22 +10,57 @@ var snakes = [];
 
 angular.module('snakeEnvenomation.services', [])
 
-    .factory('UserService', function ($q, $http) {
+    .factory('UserService', function ($q, $http, $cookies) {
 
         return {
-            loginUser: function (username, patientId) {
+            register: function (user) {
                 var deferred = $q.defer();
                 var promise = deferred.promise;
-                $http.get(api_host_url + "/login?username=" + username + "&patient_national_id=" + patientId)
-                    .success(function (data, status, headers, config) {
-                        user = data.physician;
-                        patient = data.patient;
-                        user.username = username;
-                        patient.patient_national_id = patientId;
+                $http({
+                    url: api_host_url + "/register",
+                    method: "POST",
+                    data: user,
+                    headers: {'Content-Type': 'application/json'}
+                }).success(function (data, status, headers, config) {
                         deferred.resolve();
                     })
                     .error(function (data, status, headers, config, statusText) {
-                        deferred.reject(statusText);
+                        deferred.reject(data);
+                    });
+                promise.success = function (fn) {
+                    promise.then(fn);
+                    return promise;
+                }
+                promise.error = function (fn) {
+                    promise.then(null, fn);
+                    return promise;
+                }
+                return promise;
+            },
+            activate: function (id) {
+                $http.put(api_host_url + "/activate/" + id);
+            },
+            resendMail: function (email) {
+                $http.post(api_host_url + "/resendmail?email=" + email);
+            },
+            loginUser: function (email, password) {
+                var deferred = $q.defer();
+                var promise = deferred.promise;
+                $http.get(api_host_url + "/login?email=" + email)
+                    .success(function (data, status, headers, config) {
+                        if (data.physician.password != password) {
+                            deferred.reject({status:1, message:"Wrong password!"});
+                        } else if (!data.physician.is_activate) {
+                            deferred.reject({status:2, message:"Your account hasn't been activated. " + 
+                                    "We sent you a confirmation email with a link to activate your account." + 
+                                    "Please check your email and click the link before you can login to the system. "});
+                        } else {
+                            user = data.physician;
+                            deferred.resolve(user);
+                        }
+                    })
+                    .error(function (data, status, headers, config, statusText) {
+                        deferred.reject({status:status, message:""});
                     });
                 promise.success = function (fn) {
                     promise.then(fn);
@@ -38,31 +73,68 @@ angular.module('snakeEnvenomation.services', [])
                 return promise;
             },
             getUserInfo: function () {
+                user = $cookies.getObject('user');
                 return user;
             },
             getPatientInfo: function () {
                 return patient;
             },
+            getPatientInfoById: function (id) {
+                var deferred = $q.defer();
+                var promise = deferred.promise;
+                $http.get(api_host_url + "/patient?id=" + id)
+                    .success(function (data, status, headers, config) {
+                        deferred.resolve(data);
+                    })
+                promise.success = function (fn) {
+                    promise.then(fn);
+                    return promise;
+                }
+                return promise;
+            },
             updateUserInfo: function (entry) {
-                user.physician_name = entry.physician_name;
                 user.hospital_name = entry.hospital_name;
                 user.hospital_province = entry.hospital_province;
+                var expireDate = new Date();
+                expireDate.setDate(expireDate.getDate() + 1);
+                $cookies.putObject('user', user, {'expires': expireDate});
                 $http.put(api_host_url + "/physician/" + user.user_id + "?"
-                    + "physician_name=" + user.physician_name
-                    + "&hospital_name=" + user.hospital_name
+                    + "hospital_name=" + user.hospital_name
                     + "&hospital_province=" + user.hospital_province);
             },
             updatePatientInfo: function (entry, birthdate) {
+                var deferred = $q.defer();
+                var promise = deferred.promise;
+
+                patient.patient_national_id = entry.patient_national_id;
                 patient.patient_name = entry.patient_name;
                 patient.patient_gender = entry.patient_gender;
                 patient.patient_birthdate = dateShortFormat(birthdate);
-                $http.put(api_host_url + "/patient/" + patient.patient_id + "?"
-                    + "patient_name=" + patient.patient_name
+                $http.post(api_host_url + "/patient?"
+                    + "patient_national_id=" + patient.patient_national_id
+                    + "&patient_name=" + patient.patient_name
                     + "&patient_gender=" + patient.patient_gender
-                    + "&patient_birthdate=" + dateShortFormat(birthdate));
+                    + "&patient_birthdate=" + dateShortFormat(birthdate))
+                .success(function (data, status, headers, config) {
+                    patient.patient_id = data.patient_id
+                    deferred.resolve();
+                })
+                promise.success = function (fn) {
+                    promise.then(fn);
+                    return promise;
+                }
+                return promise;
             },
             setCurrentPatient: function (currentPatient) {
                 patient = currentPatient;
+            },
+            logout: function() {
+                $cookies.remove('user');
+                user = {};
+                patient = {};
+                activeRecords = [];
+                closedRecords = [];
+                record = {};
             }
         }
     })
@@ -197,6 +269,15 @@ angular.module('snakeEnvenomation.services', [])
                 }
                 return record;
             },
+            isRecordOfPatientExisting: function (id) {
+                var flag = false;
+                angular.forEach(activeRecords, function(value, index) {
+                    if (value.patient.patient_national_id == id) {
+                        flag = true;
+                    }   
+                });
+                return flag;
+            },
             getClosedRecordOfRecordId: function (record_id) {
                 var flag = false;
                 angular.forEach(closedRecords, function(value, index) {
@@ -230,6 +311,9 @@ angular.module('snakeEnvenomation.services', [])
                 });
                 var formatDate = incident.incident_date.substr(incident.incident_date.length - 4) + "-" + month + "-" + incident.incident_date.substr(0, 2);*/
 
+                var deferred = $q.defer();
+                var promise = deferred.promise;
+
                 $http.post(api_host_url + "/treatment-record?"
                     + "user_id=" + user.user_id
                     + "&patient_id=" + patient.patient_id
@@ -239,9 +323,13 @@ angular.module('snakeEnvenomation.services', [])
                     + "&incident_province=" + (incident.incident_province === undefined ? "" : incident.incident_province))
                     .success(function (data, status, headers, config) {
                         record.record_id = data.record_id;
+                        deferred.resolve(record);
                     })
-                
-                return record;
+                promise.success = function (fn) {
+                    promise.then(fn);
+                    return promise;
+                }
+                return promise;
             },
             getRecord: function () {
                 return record;

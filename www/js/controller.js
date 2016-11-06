@@ -1,12 +1,13 @@
-//var divide = 720;
+//var divide = 360;
 var divide = 60;
 //var divide = 1;
 //var sDevide = 12;
 var sDevide = 1;
 
-angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
+angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-md5', 'ngCookies'])
 
-    .controller('SignInCtrl', function ($scope, $state, $ionicHistory, UserService, RecordService, SnakeService, StageService, $ionicPopup, $timeout, $rootScope) {        
+    .controller('MainCtrl', function ($scope, $state, $ionicHistory, UserService, RecordService, SnakeService, StageService, $ionicPopup, $timeout, $rootScope, $cookies) {        
+        
         $scope.user = {};
         $scope.patient = {};
         $scope.activeRecords = [];
@@ -17,11 +18,39 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         $scope.my.show_f_menu = false;
         $scope.my.search = "";
 
-        if (testMode) {
-            $scope.user.username = "12345"
-            $scope.patient.id = "1100700764035"
-        }
         SnakeService.getAllSnakes();
+
+
+        $scope.reloadRecords = function() {
+            RecordService.getAllActiveRecords().success(function (data) {
+                $timeout(function () {
+                    $scope.activeRecords = data;
+                    angular.forEach($scope.activeRecords, function(record, index) {
+                        var incidentDate = new Date(record.incident_date);
+                        record.dateFormat = dateShortFormat(incidentDate)
+                    });
+
+                    checkNotification(RecordService, $timeout, $ionicPopup, UserService, $ionicHistory, $state, $scope);
+                });
+            });
+            RecordService.getAllClosedRecords().success(function (data) {
+                $timeout(function () {
+                    $scope.closedRecords = data;
+                    angular.forEach($scope.closedRecords, function(record, index) {
+                        var incidentDate = new Date(record.incident_date);
+                        record.dateFormat = dateShortFormat(incidentDate);
+                    });
+                });
+            })
+        }
+
+        $scope.logout = function() {
+            UserService.logout();
+            $ionicHistory.nextViewOptions({
+                historyRoot: true
+            });
+            $state.go('record', {}, {reload: true});
+        }
 
         $scope.searchCases = function() {
             var filteredList = [];
@@ -41,10 +70,11 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         }
         
         $scope.newCase = function () {
+            UserService.setCurrentPatient({});
             $ionicHistory.nextViewOptions({
                 historyRoot: true
             });
-            $state.go('signin');
+            $state.go('record', {isNew: true}, {reload: true});
         }
         
         $scope.selectRecord = function (record) {
@@ -52,7 +82,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
             $ionicHistory.nextViewOptions({
                 historyRoot: true
             });
-            $state.go('record', {}, {reload: true});
+            $state.go('record', {isNew: false}, {reload: true});
         }
 
         $scope.selectClosedRecord = function (record) {
@@ -93,43 +123,6 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
         $scope.viewWoundCare = function () {
             $state.go('generalInfo', {type: "wound"});
         };
-
-        $scope.login = function (form, user, patient) {
-            if (form.$valid) {
-                UserService.loginUser(user.username, patient.id).success(function (data) {
-                    RecordService.getAllActiveRecords().success(function (data) {
-                        $timeout(function () {
-                            $scope.activeRecords = data;
-                            angular.forEach($scope.activeRecords, function(record, index) {
-                                var incidentDate = new Date(record.incident_date);
-                                record.dateFormat = dateShortFormat(incidentDate)
-                            });
-                            $ionicHistory.nextViewOptions({
-                                historyRoot: true
-                            });
-
-                            checkNotification(RecordService, $timeout, $ionicPopup, UserService, $ionicHistory, $state, $scope);
-
-                            $state.go('record');
-                        });
-                    });
-                    RecordService.getAllClosedRecords().success(function (data) {
-                        $timeout(function () {
-                            $scope.closedRecords = data;
-                            angular.forEach($scope.closedRecords, function(record, index) {
-                                var incidentDate = new Date(record.incident_date);
-                                record.dateFormat = dateShortFormat(incidentDate);
-                            });
-                        });
-                    })
-                }).error(function (data) {
-                    var alertPopup = $ionicPopup.alert({
-                        title: 'Please check your credentials!',
-                        template: data
-                    });
-                });
-            }
-        };
         
         // listen for notification
         $rootScope.$on("$cordovaLocalNotification:trigger", function(event, notification, state) {
@@ -153,19 +146,179 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
             $ionicHistory.nextViewOptions({
                 historyRoot: true
             });
-            $state.go('record', {}, {reload: true});
+            $state.go('record', {isNew: false}, {reload: true});
         })
     })
 
-    .controller('RecordCtrl', function ($scope, $state, $ionicHistory, $cordovaDatePicker, UserService, RecordService, $cordovaGeolocation, $timeout, $ionicPopup) {
+    .controller('SignInCtrl', function ($scope, $state, $ionicHistory, UserService, RecordService, $ionicPopup, md5, $cookies, $ionicModal, $timeout) {        
+        $scope.user = {};
+
+        if (testMode) {
+            $scope.user.email = "vam_han@hotmail.com"
+            $scope.user.password = "password"
+        }
+
+        $ionicModal.fromTemplateUrl('templates/account/register.html', {
+            scope: $scope
+        }).then(function(modal) {
+            $scope.regisModal = modal;
+        });
         
+        $scope.goToRegister = function() {
+            $scope.regisModal.show()
+        }
+
+        $scope.login = function (form, user) {
+            if (form.$valid) {
+                var password = md5.createHash(user.password || '');
+                UserService.loginUser(user.email, password).success(function (data) {
+                    var expireDate = new Date();
+                    expireDate.setDate(expireDate.getDate() + 1);
+                    //expireDate.setMinutes(expireDate.getMinutes() + 1)
+                    delete data.password
+                    $cookies.putObject('user', data, {'expires': expireDate});
+
+                    $scope.modal.hide();
+
+                    $ionicHistory.nextViewOptions({
+                        historyRoot: true
+                    });
+                    $state.go('record', {isNew: true}, {reload: true});
+
+                }).error(function (data) {
+                    if (data.status == 1) {
+                        $ionicPopup.alert({
+                            title: 'Please check your credentials!',
+                            template: data.message
+                        });
+                    } else if (data.status == 2) {
+                        var confirmPopup = $ionicPopup.confirm({
+                            title: 'Please check your email',
+                            template: data.message +
+                                "If you haven't received any email, click Resend button",
+                            okText: "Resend"
+                        });
+
+                        confirmPopup.then(function(res) {
+                            if(res) {
+                                UserService.resendMail(user.email)
+                            }
+                        });
+                    } else if (data.status == 401) {
+                        $ionicPopup.alert({
+                            title: 'Please check your credentials!',
+                            template: 'No user with this email!'
+                        });
+                    } else {
+                        $ionicPopup.alert({
+                            title: 'Internal server error',
+                            template: 'Please try again later'
+                        });
+                    }
+                });
+            }
+        };
+    })
+
+    .controller('RegisterCtrl', function ($scope, $state, $ionicHistory, UserService, $timeout, $ionicPopup, md5) {
+        $scope.user = {};
+        $scope.user.physician_type = "General";
+        $scope.show_username = false;
+
+        $scope.selectUserType = function () {
+            $scope.show_username = $scope.user.physician_type != 'General';
+        }
+
+        $scope.confirm = function (form, user, confirm_password) {
+            
+            // validate input 
+            var valid = user.password == confirm_password;
+            $scope.show_confirm_ps = !valid;
+
+            var phR = /^[0-9]{5}$/
+            var nR = /^[0-9]{13}$/
+            if ((user.physician_type == "Physician" || user.physician_type == "Pharmacist") && !phR.test(user.physician_id)) {
+                valid = false;
+                $scope.show_phid_error = true;
+            } else if (user.physician_type == "Nurse" && !nR.test(user.physician_id)) {
+                valid = false;
+                $scope.show_phid_error = true;
+            } else {
+                $scope.show_phid_error = false;
+            }
+            
+            if (form.$valid && valid) {
+                user.password = md5.createHash(user.password || '');
+                UserService.register(user).success(function () {
+                    var confirmPopup = $ionicPopup.confirm({
+                        title: 'Please check your email',
+                        template: "We sent you a confirmation email with a link to activate your account." + 
+                            "Please check your email and click the link before you can login to the system." +
+                            "If you haven't received any email, click Resend button",
+                        okText: "Resend"
+                    });
+
+                    confirmPopup.then(function(res) {
+                        if(res) {
+                            UserService.resendMail(user.email)
+                        }
+                    });
+
+                    $scope.regisModal.hide();
+                    $state.go('record');
+                }).error(function (data) {
+                    user.password = "";
+                    $ionicPopup.alert({
+                        title: 'Register fail',
+                        template: data.message
+                    });
+                });
+            }
+        };
+
+    })
+
+    .controller('ActivateAccountCtrl', function ($stateParams, UserService) {
+        UserService.activate($stateParams.user_id)
+    })
+
+    .controller('RecordCtrl', function ($scope, $state, $ionicHistory, $cordovaDatePicker, UserService, RecordService, $cordovaGeolocation, $timeout, $ionicPopup, $ionicModal, $cookies) {
+
         $scope.my.show_h_menu = false;
         $scope.my.show_n_menu = false;
         $scope.my.show_f_menu = false;
 
         $scope.user = UserService.getUserInfo();
+        if ($scope.user != null) {
+            $scope.reloadRecords();
+        }
+
+        $scope.retrievePatient = function() {
+            if ($scope.patient.patient_national_id.length == 13) {
+                if (RecordService.isRecordOfPatientExisting($scope.patient.patient_national_id)) {
+                    $scope.patient.patient_national_id = ""
+                    $ionicPopup.alert({
+                        title: 'Existing Record',
+                        template: "There is already an active record with this patient national id. Please select the record from the left menu"
+                    });
+                } else {
+                    UserService.getPatientInfoById($scope.patient.patient_national_id).success(function (data) {
+                        $scope.patient = data.patient;
+                        $scope.patient.patient_gender = !$scope.patient.patient_gender ? "Male" : $scope.patient.patient_gender
+                        var birthdate = $scope.patient.patient_birthdate ? new Date($scope.patient.patient_birthdate) : new Date()
+                        var age = getAge(birthdate)
+                        $scope.patient.age_year = age.year;
+                        $scope.patient.age_month = age.month;
+                        $scope.patient.age_day = age.day;
+                    });
+                }
+            }
+        }
+
+        $scope.editNationalId = !$state.params.isNew
+
         $scope.patient = UserService.getPatientInfo();
-        $scope.patient.patient_gender = !UserService.getPatientInfo().patient_gender ? "Male" : UserService.getPatientInfo().patient_gender
+        $scope.patient.patient_gender = !$scope.patient.patient_gender ? "Male" : $scope.patient.patient_gender
         var birthdate = $scope.patient.patient_birthdate ? new Date($scope.patient.patient_birthdate) : new Date()
         var age = getAge(birthdate)
         $scope.patient.age_year = age.year;
@@ -342,24 +495,27 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova'])
 
             if (valid) {
                 UserService.updateUserInfo(user);
-                UserService.updatePatientInfo(patient, getBirthdateFromAge(patient.age_year, patient.age_month, patient.age_day));
-                $timeout(function () {
-                    var newRecord = RecordService.addRecord(incident);
-                    var flag = true;
-                    angular.forEach($scope.activeRecords, function(record, index) {
-                        if (record.record_id == newRecord.record_id) {
-                            flag = false;
-                        }
+                UserService.updatePatientInfo(patient, getBirthdateFromAge(patient.age_year, patient.age_month, patient.age_day)).success(function () {
+                    $timeout(function () {
+                        RecordService.addRecord(incident).success(function(data){
+                            var newRecord = data;
+                            var flag = true;
+                            angular.forEach($scope.activeRecords, function(record, index) {
+                                if (record.record_id == newRecord.record_id) {
+                                    flag = false;
+                                }
+                            });
+                            if (flag) {
+                                $scope.activeRecords.push(newRecord)
+                            }
+                            angular.forEach($scope.activeRecords, function(record, index) {
+                                var incidentDate = new Date(record.incident_date);
+                                record.dateFormat = dateShortFormat(incidentDate)
+                            });
+                        });
                     });
-                    if (flag) {
-                        $scope.activeRecords.push(newRecord)
-                    }
-                    angular.forEach($scope.activeRecords, function(record, index) {
-                        var incidentDate = new Date(record.incident_date);
-                        record.dateFormat = dateShortFormat(incidentDate)
-                    });
+                    $state.go('patientPUtil', { totest:0 }, {reload: true});
                 });
-                $state.go('patientPUtil', { totest:0 }, {reload: true});
             }
         };
     })

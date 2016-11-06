@@ -1,0 +1,34 @@
+<ion-modal-view style="min-width: 100%; min-height: 100%; top: 0; left: 0; right: 0; bottom: 0" ng-controller="SignInCtrl">
+    <ion-header-bar class="bar bar-header bar-positive">
+        <h1 class="title">SignIn</h1>
+    </ion-header-bar>
+    <ion-content>
+        <div style="float:right" class="light">V 2.2</div>
+        <div style="text-align:center">
+            <img ng-src="img/logo.png" width="250px">
+        </div>
+        <div class="header_title">
+            <h1 class="light" style="font-weight:600">Mahidol Snake Envenomation<br>Support System</h1>
+        </div>
+        <form name="signinForm" novalidate="" ng-submit="login(signinForm, user, patient)">
+            <div class="list list-inset">
+                <label class="item item-input" ng-class="{ 'has-error' : signinForm.email.$invalid && signinForm.$submitted}">
+                    <input type="email" placeholder="Email" name="email" ng-model="user.email" ng-pattern='/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/' required>
+                </label>
+                <div class="form-error" ng-show="signinForm.email.$error.required && signinForm.$submitted">This field is required.</div>
+                <div class="form-error" ng-show="signinForm.email.$error.pattern && signinForm.$submitted">Email address is not valid.</div>
+                <label class="item item-input">
+                    <input type="password" placeholder="Password" ng-model="user.password">
+                </label>
+            </div>
+            <div class="padding">
+                <button class="button button-block button-positive" type="submit">
+                    Submit
+                </button>
+            </div>
+            <div class="padding" style="text-align:center;font-size:16px">
+                <a href="#" class="light" ng-click="goToRegister();">Register New Account</a>
+            </div>
+        </form>
+    </ion-content>
+</ion-modal-view>
