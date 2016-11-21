@@ -4,11 +4,15 @@
             
             <div class="item item-icon-right" ng-repeat="(index, weakness) in motorWeaknesses">
                 <span style="float:left">
-                <p>{{weakness.action_text}}</p>
-                <p>ครั้งที่ {{weakness.stage_times}} {{weakness.date_time}}</p>
+                    <p>{{weakness.action_text}}</p>
+                    <p>ครั้งที่ {{weakness.stage_times}} {{weakness.date_time}}</p>
+                    <p style="color:darkorange" ng-show="weakness.is_edited == 1">edit</p>
                 </span>
-                <span style="float:right">motor weakness: {{(weakness.motor_weakness == 0) ? 'no' : 'yes'}}
-                <br>progression of weakness: {{(weakness.progression == null) ? '-' : weakness.progression == 0 ? 'no' : 'yes'}}</span>
+                <span style="float:right">
+                    motor weakness: {{(weakness.motor_weakness == 0) ? 'no' : 'yes'}}
+                    <br>progression of weakness: {{(weakness.progression == null) ? '-' : weakness.progression == 0 ? 'no' : 'yes'}}
+                </span>
+                <i class="icon ion-edit" style="cursor:pointer" ng-show="$last && record.status == 'active'" ng-click="edit(weakness);"></i>
             </div>
 
         </div>

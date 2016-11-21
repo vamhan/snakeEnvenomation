@@ -81,7 +81,7 @@ var appRouter = function(app, db) {
     });
 
     app.get("/treatment-record/:record_id/blood-tests", function(req, res) {
-        db.query("SELECT * FROM bloodTest b, stage s where b.stage = s.stage_num and record_id=" + req.params.record_id, function(err, rows) {
+        db.query("SELECT b.*, s.action_text FROM bloodTest b, stage s where b.stage = s.stage_num and record_id=" + req.params.record_id, function(err, rows) {
             if (err) {
                 return res.status(500).send({ "message": "internal server error" });
             } else {

@@ -43,6 +43,12 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
 
     .config(function ($stateProvider, $urlRouterProvider) {
         $stateProvider
+            .state('home', {
+                url: '/home',
+                templateUrl: "home.html",
+                controller: 'HomeCtrl',
+                authRequired: true
+            })
             .state('activateAccount', {
                 url: '/activateAccount/:user_id',
                 templateUrl: "templates/account/activateAccount.html",
@@ -96,18 +102,34 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                 }
             })
             .state('bloodResultList', {
+                cache: false,
                 url: '/hematotoxic/bloodResultList',
                 templateUrl: 'templates/hematotoxic/bloodResultList.html',
-                controller: 'bloodResultListCtrl',
+                controller: 'BloodResultListCtrl',
                 authRequired: true
             })
             .state('bloodResult', {
+                cache: false,
                 url: '/hematotoxic/bloodResult',
                 templateUrl: 'templates/hematotoxic/bloodResult.html',
-                controller: 'bloodResultCtrl',
+                controller: 'BloodResultCtrl',
                 authRequired: true,
                 params: {
-                    'data': null
+                    'id': null
+                }
+            })
+            .state('editBloodTest', {
+                cache: false,
+                url: '/hematotoxic/editBloodTest',
+                templateUrl: 'templates/hematotoxic/editBloodTest.html',
+                controller: 'EditBloodTestCtrl',
+                authRequired: true,
+                params: {
+                    'id': null,
+                    'snake': null,
+                    'stage': null,
+                    'record': null,
+                    'times': null
                 }
             })
             .state('motorWeakness', {
@@ -137,10 +159,25 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                 }
             })
             .state('weaknessResultList', {
+                cache: false,
                 url: '/neurotoxic/weaknessResultList',
                 templateUrl: 'templates/neurotoxic/weaknessResultList.html',
                 controller: 'WeaknessResultCtrl',
                 authRequired: true
+            })
+            .state('editMotorWeakness', {
+                cache: false,
+                url: '/neurotoxic/editMotorWeakness',
+                templateUrl: 'templates/neurotoxic/editMotorWeakness.html',
+                controller: 'EditMotorWeaknessCtrl',
+                authRequired: true,
+                params: {
+                    'id': null,
+                    'snake': null,
+                    'stage': null,
+                    'record': null,
+                    'times': null
+                }
             })
             .state('unknownTest', {
                 cache: false,
@@ -199,6 +236,6 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
 
 
 
-        $urlRouterProvider.otherwise('/record');
+        $urlRouterProvider.otherwise('/home');
 
     });

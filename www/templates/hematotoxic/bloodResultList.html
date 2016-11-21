@@ -2,9 +2,10 @@
     <ion-content>
         <div class="list">
             
-            <a class="item item-icon-right" ng-click="navigateToBloodResult(index)" ng-repeat="(index, blood) in bloodTests">
+            <a class="item item-icon-right" ng-click="navigateToBloodResult(blood.test_id)" ng-repeat="(index, blood) in bloodTests">
                 <p>{{blood.action_text}}</p>
                 <p>ครั้งที่ {{blood.stage_times}} {{blood.date_time}}</p>
+                <p style="color:darkorange" ng-show="blood.is_edited == 1">edit</p>
                 <i class="icon ion-chevron-right"></i>
             </a>
 

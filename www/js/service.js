@@ -469,10 +469,14 @@ angular.module('snakeEnvenomation.services', [])
         var bloodTests = [];
 
         return {
-            addBloodTest: function (bloodTest, stage, times) {     
+            addBloodTest: function (bloodTest, stage, times, isEdited) {     
                 bloodTest.stage = stage;
                 bloodTest.stage_times = times;
                 bloodTest.date_time = dateTimeFormat(new Date());
+                bloodTest.is_edited = isEdited;
+                delete bloodTest["action_text"];
+                delete bloodTest["record_id"];
+                delete bloodTest["test_id"];
                 bloodTests.push(bloodTest)
                 $http({
                     url: api_host_url + "/treatment-record/" + record.record_id + "/blood-tests",
@@ -504,6 +508,15 @@ angular.module('snakeEnvenomation.services', [])
                 } else {
                     return null;
                 }
+            },
+            getBloodTestById: function (id) {
+                var test = null;
+                angular.forEach(bloodTests, function(value, index) {   
+                    if (value.test_id == id) {
+                        test = value
+                    }
+                })
+                return test;
             }
         }
     })
@@ -513,11 +526,12 @@ angular.module('snakeEnvenomation.services', [])
         var motorWeaknesses = [];
 
         return {
-            addMotorWeakness: function (weakness, progression, stage, times) {   
+            addMotorWeakness: function (weakness, progression, stage, times, isEdited) {   
                 $http.post(api_host_url + "/treatment-record/" + record.record_id + "/weakness-tests?"
                     + "date_time=" + dateTimeFormat(new Date())
                     + "&stage=" + stage
                     + "&stage_times=" + times
+                    + "&is_edited=" + isEdited
                     + "&motor_weakness=" + weakness
                     + (progression != null ? "&progression=" + progression : ""));
             },
@@ -540,6 +554,15 @@ angular.module('snakeEnvenomation.services', [])
             },
             getLatestMotorWeakness: function () {
                 return motorWeaknesses[motorWeaknesses.length - 1]
+            },
+            getMotorWeaknessById: function (id) {
+                var test = null;
+                angular.forEach(motorWeaknesses, function(value, index) {   
+                    if (value.test_id == id) {
+                        test = value
+                    }
+                })
+                return test;
             }
         }
     })
