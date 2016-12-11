@@ -37,6 +37,8 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
         $scope.my.show_f_menu = false;
         $scope.my.search = "";
 
+        $scope.showAlert = !window.cordova
+
 
         $scope.reloadRecords = function() {
             RecordService.getAllActiveRecords().success(function (data) {
@@ -312,6 +314,9 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
         $scope.my.show_h_menu = false;
         $scope.my.show_n_menu = false;
         $scope.my.show_f_menu = false;
+        RecordService.getProvinces().success(function (data) {
+            $scope.provinces = data;
+        })
 
         $scope.user = UserService.getUserInfo();
 
@@ -348,6 +353,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
         $scope.patient.age_day = age.day;
         
         $scope.incident = {}
+        $scope.selectedItem = {}
         var record = RecordService.getRecordOfPatient();
         var incidentDate = new Date();
         var incidentTime = new Date();
@@ -398,6 +404,17 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
                 }, function (err) {
                     //alert("Current location cannot be retrieved")
                 });
+        }
+
+        $scope.selectProvince = function () {
+            $scope.incident.incident_province = $scope.selectedItem.province.PROVINCE_NAME;
+            RecordService.getDistricts($scope.selectedItem.province.PROVINCE_ID).success(function (data) {
+                $scope.districts = data;
+            })
+        }
+
+        $scope.selectDistrict = function () {
+            $scope.incident.incident_district = $scope.selectedItem.district.AMPHUR_NAME;
         }
 
         $scope.openDatePicker = function (element) {
@@ -476,8 +493,16 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
         $scope.confirm = function (user, patient, incident) {
             
             // validate input
-            var integerRegex = /^[0-9]*$/
             var valid = true;
+            var integerRegex = /^[0-9]{13}$/
+            if (patient.patient_national_id && !integerRegex.test(patient.patient_national_id)) {
+                valid = false;
+                $ionicPopup.alert({
+                    title: "Patient national ID is invalid",
+                    template: 'Only number with length 13 is acceptable!'
+                });
+            } 
+            integerRegex = /^[0-9]*$/
             if (patient.age_year && !integerRegex.test(patient.age_year)) {
                 valid = false;
                 $ionicPopup.alert({
@@ -534,7 +559,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
                                 }
                             });
                             if (flag) {
-                                $scope.activeRecords.push(newRecord)
+                                $scope.activeRecords.unshift(newRecord)
                             }
                             angular.forEach($scope.activeRecords, function(record, index) {
                                 var incidentDate = new Date(record.incident_date);

@@ -44,7 +44,7 @@
                     <div class="form-error" ng-show="registerForm.national_id.$error.pattern && registerForm.$submitted">This field should be only number with length 13</div>
                 <div class="item item-input" ng-show="show_username">
                     <span class="input-label">เลขใบประกอบวิชาชีพ</span>
-                    <input type="text" placeholder="Physician ID" name="physician_id" ng-model="user.physician_id">
+                    <input type="text" placeholder="Medical License" name="physician_id" ng-model="user.physician_id">
                 </div>
                 <div class="form-error" ng-show="registerForm.physician_id.$error.required && registerForm.$submitted">This field is required.</div>
                 <div class="form-error" ng-show="show_phid_error">This field is malformed</div>
