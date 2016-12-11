@@ -106,19 +106,27 @@ angular.module('snakeEnvenomation.services', [])
                 var deferred = $q.defer();
                 var promise = deferred.promise;
 
-                patient.patient_national_id = entry.patient_national_id;
-                patient.patient_name = entry.patient_name;
-                patient.patient_gender = entry.patient_gender;
-                patient.patient_birthdate = dateShortFormat(birthdate);
-                $http.post(api_host_url + "/patient?"
-                    + "patient_national_id=" + patient.patient_national_id
-                    + "&patient_name=" + patient.patient_name
-                    + "&patient_gender=" + patient.patient_gender
-                    + "&patient_birthdate=" + dateShortFormat(birthdate))
-                .success(function (data, status, headers, config) {
-                    patient.patient_id = data.patient_id
+                if (entry.patient_national_id) {
+                    patient.patient_national_id = entry.patient_national_id;
+                    patient.patient_name = entry.patient_name;
+                    patient.patient_gender = entry.patient_gender;
+                    patient.patient_birthdate = dateShortFormat(birthdate);
+                    $http.post(api_host_url + "/patient?"
+                        + "patient_national_id=" + patient.patient_national_id
+                        + "&patient_name=" + patient.patient_name
+                        + "&patient_gender=" + patient.patient_gender
+                        + "&patient_birthdate=" + dateShortFormat(birthdate))
+                    .success(function (data, status, headers, config) {
+                        patient.patient_id = data.patient_id;
+                        deferred.resolve();
+                    })
+                } else {
+                    patient.patient_id = 0;
+                    patient.patient_name = "";
+                    patient.patient_gender = null;
+                    patient.patient_birthdate = dateShortFormat(new Date());
                     deferred.resolve();
-                })
+                }
                 promise.success = function (fn) {
                     promise.then(fn);
                     return promise;
@@ -150,6 +158,7 @@ angular.module('snakeEnvenomation.services', [])
                         activeRecords = data;
                         var promises = activeRecords.map(function(record) {
                             return new Promise(function(resolve, reject) {
+                                record.incident_time = record.incident_time.substr(0, record.incident_time.length - 3);
                                 record.snake = snakes[record.snake_type]
                                 $http.get(api_host_url + "/treatment-record/" + record.record_id + "/current-stage")
                                     .success(function (data, status, headers, config) {
@@ -226,6 +235,7 @@ angular.module('snakeEnvenomation.services', [])
                         closedRecords = data;
                         var promises = closedRecords.map(function(record) {
                             return new Promise(function(resolve, reject) {
+                                record.incident_time = record.incident_time.substr(0, record.incident_time.length - 3);
                                 record.snake = snakes[record.snake_type]
                                 $http.get(api_host_url + "/treatment-record/" + record.record_id + "/current-stage")
                                     .success(function (data, status, headers, config) {
@@ -422,8 +432,40 @@ angular.module('snakeEnvenomation.services', [])
                 });
                 activeRecords.splice(index, 1);
 
-                closedRecords.push(record);
-            }
+                closedRecords.unshift(record);
+                angular.forEach(closedRecords, function(record, index) {
+                    var incidentDate = new Date(record.incident_date);
+                    record.dateFormat = dateShortFormat(incidentDate)
+                });
+            },
+            getProvinces: function () {
+                var deferred = $q.defer();
+                var promise = deferred.promise;
+                $http.get(api_host_url + "/provinces")
+                    .success(function (data, status, headers, config) {
+                        deferred.resolve(data);
+                    })
+                    
+                promise.success = function (fn) {
+                    promise.then(fn);
+                    return promise;
+                }
+                return promise;
+            },
+            getDistricts: function (id) {
+                var deferred = $q.defer();
+                var promise = deferred.promise;
+                $http.get(api_host_url + "/districts?province_id=" + id)
+                    .success(function (data, status, headers, config) {
+                        deferred.resolve(data);
+                    })
+                    
+                promise.success = function (fn) {
+                    promise.then(fn);
+                    return promise;
+                }
+                return promise;
+            },
         }
     })
 

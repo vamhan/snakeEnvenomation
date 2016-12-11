@@ -5,7 +5,7 @@
     <ion-content>
         <div class="card">
             <div class="item item-divider">Physician's information</div>
-            <div class="item item-input">
+            <div class="item item-input" ng-hide="user.physician_type == 'General'">
                 <span class="input-label">Physician ID</span>
                 <input type="text" placeholder="Physician ID" ng-model="user.physician_id" ng-readonly="true">
             </div>
@@ -13,11 +13,11 @@
                 <span class="input-label">Name</span>
                 <input type="text" placeholder="Physician Name" ng-model="user.physician_name" ng-readonly="true">
             </div>
-            <div class="item item-input">
+            <div class="item item-input" ng-hide="user.physician_type == 'General'">
                 <span class="input-label">Hospital</span>
                 <input type="text" placeholder="Hospital" ng-model="user.hospital_name">
             </div>
-            <div class="item item-input">
+            <div class="item item-input" ng-hide="user.physician_type == 'General'">
                 <span class="input-label">Province</span>
                 <input type="text" placeholder="Hospital Province" ng-model="user.hospital_province">
             </div>
@@ -86,13 +86,20 @@
         </div>
         <div class="card">
             <div class="item item-divider">Location of Incident</div>
-            <div class="item item-input">
+            <div class="item item-input item-select">
                 <span class="input-label">Province</span>
                 <input type="text" placeholder="Province" ng-model="incident.incident_province">
+                <select ng-options="province as province.PROVINCE_NAME for province in provinces" 
+                        ng-model="selectedItem.province" ng-change="selectProvince()"></select>
+                <!--<select ng-model="incident.incident_province">
+                    <option ng-repeat="(index, province) in provinces" ng-change="retrieveDistricts">{{province.PROVINCE_NAME}}</option>
+                </select>-->
             </div>
-            <div class="item item-input">
+            <div class="item item-input item-select">
                 <span class="input-label">District</span>
                 <input type="text" placeholder="District" ng-model="incident.incident_district">
+                <select ng-options="district as district.AMPHUR_NAME for district in districts" 
+                        ng-model="selectedItem.district" ng-change="selectDistrict()"></select>
             </div>
         </div>
         <div class="padding">

@@ -235,6 +235,18 @@ var appRouter = function(app, db) {
             }
         });
     });
+
+    app.get("/provinces", function(req, res) {
+        db.query("SELECT PROVINCE_ID, PROVINCE_NAME FROM province order by PROVINCE_NAME",function(err,rows){
+            return res.status(200).send(rows);
+        });
+    });
+
+    app.get("/districts", function(req, res) {
+        db.query("SELECT AMPHUR_NAME FROM amphur where PROVINCE_ID=" + req.query.province_id + " order by AMPHUR_NAME",function(err,rows){
+            return res.status(200).send(rows);
+        });
+    });
 }
 
 module.exports = appRouter;
