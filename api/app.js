@@ -41,7 +41,7 @@ con.connect(function(err){
 
 var router = express.Router();
 
-var routes = require("./routes/user.js")(router, con);
+var routes = require("./routes/user.js")(router, con, config.appUrl);
 var routes = require("./routes/record.js")(router, con);
 var routes = require("./routes/snake.js")(router, con);
 app.use('/snake-envenomation/api', router);

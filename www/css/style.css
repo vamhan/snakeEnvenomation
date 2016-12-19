@@ -1,3 +1,11 @@
+.has-subheader {
+    top: 74px;
+}
+
+.bar-subheader {
+    height: 30px;
+}
+
 .scroll-content {
     background-image: url('../img/bg.jpg');
     -webkit-background-size: cover;
@@ -184,4 +192,9 @@ label.item.has-error {
 .zoom-pane img {
   width: 80%;
   vertical-align: middle;
+}
+
+.spinner svg {
+  stroke: white;
+  fill: white;
 }

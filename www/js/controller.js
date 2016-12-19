@@ -1,8 +1,8 @@
-var divide = 360;
 //var divide = 60;
+var divide = 360;
 //var divide = 1;
-//var sDevide = 12;
-var sDevide = 1;
+var sDevide = 6;
+//var sDevide = 1;
 
 var runNotificaion = true;
 
@@ -194,6 +194,16 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
             $scope.regisModal.show()
         }
 
+        $ionicModal.fromTemplateUrl('templates/account/forgetPassword.html', {
+            scope: $scope
+        }).then(function(modal) {
+            $scope.passwordModal = modal;
+        });
+        
+        $scope.goToResetPassword = function() {
+            $scope.passwordModal.show()
+        }
+
         $scope.login = function (form, user) {
             if (form.$valid) {
                 var password = md5.createHash(user.password || '');
@@ -247,18 +257,20 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
     })
 
     .controller('RegisterCtrl', function ($scope, $state, $ionicHistory, UserService, $timeout, $ionicPopup, md5) {
-        $scope.user = {};
-        $scope.user.physician_type = "General";
+        $scope.regisuser = {};
+        $scope.regisuser.physician_type = "General";
         $scope.show_username = false;
 
         $scope.selectUserType = function () {
-            $scope.show_username = $scope.user.physician_type != 'General';
+            $scope.show_username = $scope.regisuser.physician_type != 'General';
         }
 
-        $scope.confirm = function (form, user, confirm_password) {
+        $scope.confirm = function (form, user) {
+
+            $scope.show_error = true;
             
             // validate input 
-            var valid = user.password == confirm_password;
+            var valid = user.password == user.confirm_password;
             $scope.show_confirm_ps = !valid;
 
             var phR = /^[0-9]{5}$/
@@ -290,6 +302,11 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
                         }
                     });
 
+                    $scope.regisuser = {};
+                    $scope.regisuser.physician_type = "General";
+                    $scope.show_username = false;
+                    $scope.show_error = false
+
                     $scope.regisModal.hide();
                     $state.go('home');
                 }).error(function (data) {
@@ -308,6 +325,49 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
         UserService.activate($stateParams.user_id)
     })
 
+    .controller('ForgetPasswordCtrl', function ($state, $scope, UserService, $ionicPopup) {
+        $scope.confirm = function (form, email) {
+            if (form.$valid) {
+                UserService.forgetPassword(email).success(function () {
+                    $ionicPopup.alert({
+                        title: 'Please check your email',
+                        template: "We sent you an email with a link to reset your password. " + 
+                            "Please check your email and click the link provided."
+                    });
+
+                    $scope.passwordModal.hide();
+                    $state.go('home');
+                }).error(function (data) {
+                    $ionicPopup.alert({
+                        title: 'Process fail',
+                        template: data.message
+                    });
+                });
+            }
+        }
+    })
+
+    .controller('ResetPasswordCtrl', function ($scope, $stateParams, UserService, md5, $ionicPopup) {
+        $scope.confirm = function (form, password, confirm_password) {
+            var valid = password == confirm_password;
+            $scope.show_confirm_ps = !valid;
+
+            if (form.$valid && valid) {
+                UserService.resetPassword($stateParams.user_id, $stateParams.token, md5.createHash(password || '')).success(function () {
+                    $ionicPopup.alert({
+                        title: 'Reset password successfully',
+                        template: 'Please proceed to the login page <a href="http://cdss.topwork.asia:8100/">cdss.topwork.asia:8100</a>'
+                    });
+                }).error(function (data) {
+                    $ionicPopup.alert({
+                        title: 'Reset password fail',
+                        template: 'Please contact web admin'
+                    });
+                });
+            }
+        }
+    })
+
     .controller('RecordCtrl', function ($scope, $state, $ionicHistory, $cordovaDatePicker, UserService, RecordService, 
                                     $cordovaGeolocation, $timeout, $ionicPopup, $ionicLoading) {
 
@@ -319,6 +379,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
         })
 
         $scope.user = UserService.getUserInfo();
+        $scope.incident = {}
 
         $scope.retrievePatient = function() {
             if ($scope.patient.patient_national_id.length == 13) {
@@ -337,6 +398,8 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
                         $scope.patient.age_year = age.year;
                         $scope.patient.age_month = age.month;
                         $scope.patient.age_day = age.day;
+                        $scope.incident.incident_district = data.patient.incident_district
+                        $scope.incident.incident_province = data.patient.incident_province;
                     });
                 }
             }
@@ -352,7 +415,6 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
         $scope.patient.age_month = age.month;
         $scope.patient.age_day = age.day;
         
-        $scope.incident = {}
         $scope.selectedItem = {}
         var record = RecordService.getRecordOfPatient();
         var incidentDate = new Date();
@@ -500,6 +562,13 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
                 $ionicPopup.alert({
                     title: "Patient national ID is invalid",
                     template: 'Only number with length 13 is acceptable!'
+                });
+            } 
+            if (!patient.patient_name) {
+                valid = false;
+                $ionicPopup.alert({
+                    title: "Patient name is invalid",
+                    template: 'This field is required'
                 });
             } 
             integerRegex = /^[0-9]*$/
@@ -1118,13 +1187,21 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
             $state.go('signin');
         };*/
 
-        $scope.show_checktime = stage.action_type == "alert"
-        $scope.totalCheckTimes = [];
-        for (var i = 1; i <= stage.times; i++) {
-            var item = {};
-            item.number = i;
-            item.class = $state.params.times - 1 >= i ? "active" : record.notif_times - 1 >= i ? "notif" : "";
-            $scope.totalCheckTimes.push(item);
+        $scope.show_checktime = stage.action_type == "alert";
+        updateCheckTime();
+        $scope.doRefresh = function() {
+            updateCheckTime();
+            $scope.$broadcast('scroll.refreshComplete');
+        };
+
+        function updateCheckTime() {
+            $scope.totalCheckTimes = [];
+            for (var i = 1; i <= stage.times; i++) {
+                var item = {};
+                item.number = i;
+                item.class = $state.params.times - 1 >= i ? "active" : record.notif_times - 1 >= i ? "notif" : "";
+                $scope.totalCheckTimes.push(item);
+            }
         }
 
 
@@ -1501,13 +1578,21 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
             $state.go('patientPUtil', { totest:1 }, {reload: true});
         }
 
-        $scope.show_checktime = stage.action_type == "alert"
-        $scope.totalCheckTimes = [];
-        for (var i = 1; i <= stage.times; i++) {
-            var item = {};
-            item.number = i;
-            item.class = $state.params.times - 1 >= i ? "active" : record.notif_times - 1 >= i ? "notif" : "";
-            $scope.totalCheckTimes.push(item);
+        $scope.show_checktime = stage.action_type == "alert";
+        updateCheckTime();
+        $scope.doRefresh = function() {
+            updateCheckTime();
+            $scope.$broadcast('scroll.refreshComplete');
+        };
+
+        function updateCheckTime() {
+            $scope.totalCheckTimes = [];
+            for (var i = 1; i <= stage.times; i++) {
+                var item = {};
+                item.number = i;
+                item.class = $state.params.times - 1 >= i ? "active" : record.notif_times - 1 >= i ? "notif" : "";
+                $scope.totalCheckTimes.push(item);
+            }
         }
 
         /*$scope.closeCase = function () {

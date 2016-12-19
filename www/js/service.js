@@ -14,6 +14,7 @@ angular.module('snakeEnvenomation.services', [])
 
         return {
             register: function (user) {
+                delete user["confirm_password"]
                 var deferred = $q.defer();
                 var promise = deferred.promise;
                 $http({
@@ -42,6 +43,50 @@ angular.module('snakeEnvenomation.services', [])
             },
             resendMail: function (email) {
                 $http.post(api_host_url + "/resendmail?email=" + email);
+            },
+            forgetPassword: function (email) {
+                var deferred = $q.defer();
+                var promise = deferred.promise;
+                $http.post(api_host_url + "/forgotpassword?email=" + email)
+                    .success(function (data, status, headers, config) {
+                        deferred.resolve();
+                    })
+                    .error(function (data, status, headers, config, statusText) {
+                        deferred.reject(data);
+                    });
+                promise.success = function (fn) {
+                    promise.then(fn);
+                    return promise;
+                }
+                promise.error = function (fn) {
+                    promise.then(null, fn);
+                    return promise;
+                }
+                return promise;
+            },
+            resetPassword: function (userid, token, password) {
+                var deferred = $q.defer();
+                var promise = deferred.promise;
+                $http({
+                    url: api_host_url + "/resetpassword/" + userid,
+                    method: "POST",
+                    data: {token: token, password: password},
+                    headers: {'Content-Type': 'application/json'}
+                }).success(function (data, status, headers, config) {
+                        deferred.resolve();
+                    })
+                    .error(function (data, status, headers, config, statusText) {
+                        deferred.reject(data);
+                    });
+                promise.success = function (fn) {
+                    promise.then(fn);
+                    return promise;
+                }
+                promise.error = function (fn) {
+                    promise.then(null, fn);
+                    return promise;
+                }
+                return promise;
             },
             loginUser: function (email, password) {
                 var deferred = $q.defer();
@@ -106,27 +151,20 @@ angular.module('snakeEnvenomation.services', [])
                 var deferred = $q.defer();
                 var promise = deferred.promise;
 
-                if (entry.patient_national_id) {
-                    patient.patient_national_id = entry.patient_national_id;
-                    patient.patient_name = entry.patient_name;
-                    patient.patient_gender = entry.patient_gender;
-                    patient.patient_birthdate = dateShortFormat(birthdate);
-                    $http.post(api_host_url + "/patient?"
-                        + "patient_national_id=" + patient.patient_national_id
-                        + "&patient_name=" + patient.patient_name
-                        + "&patient_gender=" + patient.patient_gender
-                        + "&patient_birthdate=" + dateShortFormat(birthdate))
-                    .success(function (data, status, headers, config) {
-                        patient.patient_id = data.patient_id;
-                        deferred.resolve();
-                    })
-                } else {
-                    patient.patient_id = 0;
-                    patient.patient_name = "";
-                    patient.patient_gender = null;
-                    patient.patient_birthdate = dateShortFormat(new Date());
+                patient.patient_name = entry.patient_name;
+                patient.patient_gender = entry.patient_gender;
+                patient.patient_birthdate = dateShortFormat(birthdate);
+                $http.post(api_host_url + "/patient?"
+                    + "patient_id=" + (entry.patient_id ? entry.patient_id : 0)
+                    + (entry.patient_national_id ? "&patient_national_id=" + entry.patient_national_id : "")
+                    + "&patient_name=" + patient.patient_name
+                    + "&patient_gender=" + patient.patient_gender
+                    + "&patient_birthdate=" + dateShortFormat(birthdate))
+                .success(function (data, status, headers, config) {
+                    patient.patient_id = data.patient_id;
+                    patient.patient_national_id = entry.patient_national_id
                     deferred.resolve();
-                }
+                })
                 promise.success = function (fn) {
                     promise.then(fn);
                     return promise;

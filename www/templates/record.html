@@ -90,7 +90,7 @@
                 <span class="input-label">Province</span>
                 <input type="text" placeholder="Province" ng-model="incident.incident_province">
                 <select ng-options="province as province.PROVINCE_NAME for province in provinces" 
-                        ng-model="selectedItem.province" ng-change="selectProvince()"></select>
+                        ng-model="selectedItem.province" ng-change="selectProvince()" style="width:0px"></select>
                 <!--<select ng-model="incident.incident_province">
                     <option ng-repeat="(index, province) in provinces" ng-change="retrieveDistricts">{{province.PROVINCE_NAME}}</option>
                 </select>-->
@@ -99,7 +99,7 @@
                 <span class="input-label">District</span>
                 <input type="text" placeholder="District" ng-model="incident.incident_district">
                 <select ng-options="district as district.AMPHUR_NAME for district in districts" 
-                        ng-model="selectedItem.district" ng-change="selectDistrict()"></select>
+                        ng-model="selectedItem.district" ng-change="selectDistrict()" style="width:0px"></select>
             </div>
         </div>
         <div class="padding">
