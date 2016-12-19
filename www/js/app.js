@@ -55,6 +55,12 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                 controller: 'ActivateAccountCtrl',
                 authRequired: false
             })
+            .state('resetPassword', {
+                url: '/resetPassword/:user_id/:token',
+                templateUrl: "templates/account/resetPassword.html",
+                controller: 'ResetPasswordCtrl',
+                authRequired: false
+            })
             .state('record', {
                 cache: false,
                 url: '/record',
