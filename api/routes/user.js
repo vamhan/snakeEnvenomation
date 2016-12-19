@@ -1,4 +1,4 @@
-var appUrl = "http://localhost:8100"
+var appUrl = "http://www.topwork.asia:8100"
 var nodemailer = require('nodemailer');
 var smtpTransport = require('nodemailer-smtp-transport');
 
