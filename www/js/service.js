@@ -10,7 +10,7 @@ var snakes = [];
 
 angular.module('snakeEnvenomation.services', [])
 
-    .factory('UserService', function ($q, $http, $cookies) {
+    .factory('UserService', function ($q, $http) {
 
         return {
             register: function (user) {
@@ -118,7 +118,7 @@ angular.module('snakeEnvenomation.services', [])
                 return promise;
             },
             getUserInfo: function () {
-                user = $cookies.getObject('user');
+                user = JSON.parse(window.localStorage['user'] || '{}');
                 return user;
             },
             getPatientInfo: function () {
@@ -140,9 +140,7 @@ angular.module('snakeEnvenomation.services', [])
             updateUserInfo: function (entry) {
                 user.hospital_name = entry.hospital_name;
                 user.hospital_province = entry.hospital_province;
-                var expireDate = new Date();
-                expireDate.setDate(expireDate.getDate() + 1);
-                $cookies.putObject('user', user, {'expires': expireDate});
+                window.localStorage.setItem("user", JSON.stringify(user));
                 $http.put(api_host_url + "/physician/" + user.user_id + "?"
                     + "hospital_name=" + user.hospital_name
                     + "&hospital_province=" + user.hospital_province);
@@ -175,7 +173,7 @@ angular.module('snakeEnvenomation.services', [])
                 patient = currentPatient;
             },
             logout: function() {
-                $cookies.remove('user');
+                window.localStorage.removeItem("user");
                 user = {};
                 patient = {};
                 activeRecords = [];

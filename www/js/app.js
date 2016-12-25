@@ -5,9 +5,9 @@
 // the 2nd parameter is an array of 'requires'
 
 
-angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', 'snakeEnvenomation.services', 'ngCookies'])
+angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', 'snakeEnvenomation.services'])
 
-    .run(function ($ionicPlatform, $cookies, $rootScope, $ionicModal) {
+    .run(function ($ionicPlatform, $rootScope, $ionicModal) {
         $ionicPlatform.ready(function () {
             /*if(device.platform === "iOS") {
                 window.plugin.notification.local.registerPermission();
@@ -30,7 +30,7 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
         });
 
         $rootScope.$on('$stateChangeStart', function (event, toState, toParams) {
-            var userCookie = $cookies.get('user');
+            var userCookie = window.localStorage['user'];
             if (toState.authRequired && userCookie == null) {
                 $ionicModal.fromTemplateUrl('templates/account/sign-in.html', {
                     

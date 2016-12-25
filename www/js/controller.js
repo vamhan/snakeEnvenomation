@@ -1,12 +1,12 @@
-//var divide = 60;
-var divide = 360;
+var divide = 60;
+//var divide = 360;
 //var divide = 1;
-var sDevide = 6;
-//var sDevide = 1;
+//var sDevide = 6;
+var sDevide = 1;
 
 var runNotificaion = true;
 
-angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-md5', 'ngCookies'])
+angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-md5'])
 
     .controller('HomeCtrl', function ($scope, $state, $ionicHistory, UserService, SnakeService) {
         $scope.siteEnter = function() {
@@ -176,22 +176,12 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
         })
     })
 
-    .controller('SignInCtrl', function ($scope, $state, $ionicHistory, UserService, $ionicPopup, md5, $cookies, $ionicModal) {        
+    .controller('SignInCtrl', function ($scope, $state, $ionicHistory, UserService, $ionicPopup, md5, $ionicModal) {        
         $scope.user = {};
 
         if (testMode) {
             $scope.user.email = "vam_han@hotmail.com"
             $scope.user.password = "password"
-        }
-
-        $ionicModal.fromTemplateUrl('templates/account/register.html', {
-            scope: $scope
-        }).then(function(modal) {
-            $scope.regisModal = modal;
-        });
-        
-        $scope.goToRegister = function() {
-            $scope.regisModal.show()
         }
 
         $ionicModal.fromTemplateUrl('templates/account/forgetPassword.html', {
@@ -204,15 +194,22 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
             $scope.passwordModal.show()
         }
 
+        $ionicModal.fromTemplateUrl('templates/account/register.html', {
+            scope: $scope
+        }).then(function(modal) {
+            $scope.regisModal = modal;
+        });
+        
+        $scope.goToRegister = function() {
+            $scope.regisModal.show()
+        }
+
         $scope.login = function (form, user) {
             if (form.$valid) {
                 var password = md5.createHash(user.password || '');
                 UserService.loginUser(user.email, password).success(function (data) {
-                    var expireDate = new Date();
-                    expireDate.setDate(expireDate.getDate() + 1);
-                    //expireDate.setMinutes(expireDate.getMinutes() + 1)
                     delete data.password
-                    $cookies.putObject('user', data, {'expires': expireDate});
+                    window.localStorage.setItem("user", JSON.stringify(data));
 
                     $scope.modal.hide();
 
@@ -326,7 +323,10 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
     })
 
     .controller('ForgetPasswordCtrl', function ($state, $scope, UserService, $ionicPopup) {
+        $scope.abc = {};
         $scope.confirm = function (form, email) {
+            $scope.show_error = true;
+
             if (form.$valid) {
                 UserService.forgetPassword(email).success(function () {
                     $ionicPopup.alert({
@@ -335,6 +335,8 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
                             "Please check your email and click the link provided."
                     });
 
+                    $scope.abc = {};
+                    $scope.show_error = false;
                     $scope.passwordModal.hide();
                     $state.go('home');
                 }).error(function (data) {
@@ -347,21 +349,34 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
         }
     })
 
-    .controller('ResetPasswordCtrl', function ($scope, $stateParams, UserService, md5, $ionicPopup) {
+    .controller('ResetPasswordCtrl', function ($state, $scope, $stateParams, UserService, md5, $ionicPopup, $ionicHistory) {
         $scope.confirm = function (form, password, confirm_password) {
             var valid = password == confirm_password;
             $scope.show_confirm_ps = !valid;
 
             if (form.$valid && valid) {
+                
                 UserService.resetPassword($stateParams.user_id, $stateParams.token, md5.createHash(password || '')).success(function () {
-                    $ionicPopup.alert({
+                    var alertPopup = $ionicPopup.alert({
                         title: 'Reset password successfully',
-                        template: 'Please proceed to the login page <a href="http://cdss.topwork.asia:8100/">cdss.topwork.asia:8100</a>'
+                        template: 'Please click OK to go to the login page'
+                    });
+                    alertPopup.then(function(res) {
+                        $ionicHistory.nextViewOptions({
+                            historyRoot: true
+                        });
+                        $state.go('home');
                     });
                 }).error(function (data) {
-                    $ionicPopup.alert({
+                    var alertPopup = $ionicPopup.alert({
                         title: 'Reset password fail',
                         template: 'Please contact web admin'
+                    });
+                    alertPopup.then(function(res) {
+                        $ionicHistory.nextViewOptions({
+                            historyRoot: true
+                        });
+                        $state.go('home');
                     });
                 });
             }
@@ -1191,7 +1206,6 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
         updateCheckTime();
         $scope.doRefresh = function() {
             updateCheckTime();
-            $scope.$broadcast('scroll.refreshComplete');
         };
 
         function updateCheckTime() {
@@ -1582,7 +1596,6 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
         updateCheckTime();
         $scope.doRefresh = function() {
             updateCheckTime();
-            $scope.$broadcast('scroll.refreshComplete');
         };
 
         function updateCheckTime() {
