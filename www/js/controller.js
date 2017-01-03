@@ -1,8 +1,8 @@
-//var divide = 60;
-var divide = 360;
+var divide = 60;
+//var divide = 360;
 //var divide = 1;
-var sDevide = 6;
-//var sDevide = 1;
+//var sDevide = 6;
+var sDevide = 1;
 
 var checkConnection;
 var runNotificaion;
