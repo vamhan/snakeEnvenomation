@@ -5,6 +5,10 @@ var crypto = require('crypto');
 
 var appRouter = function(app, db, appUrl) {
 
+    app.get("/ping", function(req, res) {
+        return res.status(200).send();
+    });
+
     app.post("/register", function(req, res) {
         var data = req.body;
         db.query("INSERT INTO physician SET ?", data, function(err, result) {

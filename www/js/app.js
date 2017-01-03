@@ -9,9 +9,9 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
 
     .run(function ($ionicPlatform, $rootScope, $ionicModal) {
         $ionicPlatform.ready(function () {
-            /*if(device.platform === "iOS") {
+            if(window.cordova && device.platform === "iOS") {
                 window.plugin.notification.local.registerPermission();
-            }*/
+            }
             if (window.cordova && window.cordova.plugins.Keyboard) {
                 // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
                 // for form inputs)
@@ -26,7 +26,9 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
                 StatusBar.styleDefault();
             }
             
-            //cordova.plugins.notification.local.cancelAll();
+            if (window.cordova) {
+                cordova.plugins.notification.local.cancelAll();
+            }
         });
 
         $rootScope.$on('$stateChangeStart', function (event, toState, toParams) {

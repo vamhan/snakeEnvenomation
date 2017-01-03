@@ -1,31 +1,56 @@
-var divide = 60;
-//var divide = 360;
+//var divide = 60;
+var divide = 360;
 //var divide = 1;
-//var sDevide = 6;
-var sDevide = 1;
+var sDevide = 6;
+//var sDevide = 1;
 
-var runNotificaion = true;
+var checkConnection;
+var runNotificaion;
 
 angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-md5'])
 
-    .controller('HomeCtrl', function ($scope, $state, $ionicHistory, UserService, SnakeService) {
+    .controller('HomeCtrl', function ($scope, $state, $ionicHistory, UserService, SnakeService, $ionicPopup, $interval, $http) {
         $scope.siteEnter = function() {
 
             UserService.getUserInfo();
-            SnakeService.getAllSnakes();
 
-            runNotificaion = true;
-            $scope.reloadRecords();
+            SnakeService.initAllSnakes().success(function (data) {
+                $scope.reloadRecords();
 
-            $ionicHistory.nextViewOptions({
-                historyRoot: true
+                checkConnection = $interval(ping, 5000);
+                function ping() {
+                    $http.get(api_host_url + "/ping").error(function (data, status, headers, config, statusText) {
+                        $ionicPopup.alert({
+                            title: 'Network error!!!',
+                            template: "Please check your internet connection and then try again later"
+                        });
+                        if (window.cordova) {
+                            cordova.plugins.notification.local.cancelAll();
+                        }
+                        $interval.cancel(checkConnection);
+                        $interval.cancel(runNotificaion);
+                        $ionicHistory.nextViewOptions({
+                            historyRoot: true
+                        });
+                        $state.go('home');
+                    });
+                }
+
+                $ionicHistory.nextViewOptions({
+                    historyRoot: true
+                });
+                $state.go('record', {isNew: true}, {reload: true});
+            }).error(function () {
+                $ionicPopup.alert({
+                    title: 'Network error!!!',
+                    template: "Please check your internet connection and then try again later"
+                });
             });
-            $state.go('record', {isNew: true}, {reload: true});
         }
     })
 
     .controller('MainCtrl', function ($scope, $state, $ionicHistory, UserService, RecordService, StageService, 
-                                    $ionicPopup, $timeout, $rootScope, $ionicLoading) {        
+                                    $ionicPopup, $timeout, $rootScope, $ionicLoading, $cordovaLocalNotification, $interval) {        
         
         $scope.user = {};
         $scope.patient = {};
@@ -39,7 +64,6 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
 
         $scope.showAlert = !window.cordova
 
-
         $scope.reloadRecords = function() {
             RecordService.getAllActiveRecords().success(function (data) {
                 $timeout(function () {
@@ -48,10 +72,13 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
                         var incidentDate = new Date(record.incident_date);
                         record.dateFormat = dateShortFormat(incidentDate)
                     });
-
-                    checkNotification(RecordService, $timeout, $ionicPopup, UserService, $ionicHistory, $state, $scope);
                 });
+
+                runNotificaion = $interval(function() {
+                    checkNotification(RecordService, $timeout, $ionicPopup, UserService, $ionicHistory, $state, $scope, $cordovaLocalNotification, $interval)
+                }, (60000 / sDevide));
             });
+
             RecordService.getAllClosedRecords().success(function (data) {
                 $timeout(function () {
                     $scope.closedRecords = data;
@@ -60,12 +87,16 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
                         record.dateFormat = dateShortFormat(incidentDate);
                     });
                 });
-            })
+            });
         }
 
         $scope.logout = function() {
             UserService.logout();
-            runNotificaion = false;
+            $interval.cancel(checkConnection);
+            $interval.cancel(runNotificaion);
+            if (window.cordova) {
+                cordova.plugins.notification.local.cancelAll();
+            }
             $ionicHistory.nextViewOptions({
                 historyRoot: true
             });
@@ -150,29 +181,18 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
             $state.go('generalInfo', {type: "wound"});
         };
         
-        // listen for notification
-        $rootScope.$on("$cordovaLocalNotification:trigger", function(event, notification, state) {
-            var data = JSON.parse(notification.data);
-            $timeout(function () {
-                $scope.activeRecords
-            });
-            var alertPopup = $ionicPopup.alert({
-                title: notification.title,
-                template: "<b>" + notification.text + "</b><br>" +
-                    data.patient.patient_name + "<br>" +
-                    data.incident_date + " " + data.incident_time + "<br>" + 
-                    data.snake.snake_thai_name
-            });
-        });
-        
         $rootScope.$on('$cordovaLocalNotification:click', function(event, notification, state) {
-            var data = JSON.parse(notification.data);
-            UserService.setCurrentPatient(data.patient);
-            RecordService.getRecordOfPatient();
             $ionicHistory.nextViewOptions({
                 historyRoot: true
             });
-            $state.go('record', {isNew: false}, {reload: true});
+            if ($scope.activeRecords.length > 0) {
+                var data = JSON.parse(notification.data);
+                UserService.setCurrentPatient(data.patient);
+                RecordService.getRecordOfPatient();
+                $state.go('patientPUtil', { totest:data.totest }, {reload: true});
+            } else {
+                $state.go('home');
+            }
         })
     })
 
@@ -244,8 +264,8 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
                         });
                     } else {
                         $ionicPopup.alert({
-                            title: 'Internal server error',
-                            template: 'Please try again later'
+                            title: 'Network error!!!',
+                            template: "Please check your internet connection and then try again later"
                         });
                     }
                 });
@@ -307,11 +327,18 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
                     $scope.regisModal.hide();
                     $state.go('home');
                 }).error(function (data) {
-                    user.password = "";
-                    $ionicPopup.alert({
-                        title: 'Register fail',
-                        template: data.message
-                    });
+                    if (data) {
+                        user.password = "";
+                        $ionicPopup.alert({
+                            title: 'Register fail',
+                            template: data.message
+                        });
+                    } else {
+                        $ionicPopup.alert({
+                            title: 'Network error!!!',
+                            template: "Please check your internet connection and then try again later"
+                        });
+                    }
                 });
             }
         };
@@ -340,10 +367,17 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
                     $scope.passwordModal.hide();
                     $state.go('home');
                 }).error(function (data) {
-                    $ionicPopup.alert({
-                        title: 'Process fail',
-                        template: data.message
-                    });
+                    if (data) {
+                        $ionicPopup.alert({
+                            title: 'Process fail',
+                            template: data.message
+                        });
+                    } else {
+                        $ionicPopup.alert({
+                            title: 'Network error!!!',
+                            template: "Please check your internet connection and then try again later"
+                        });
+                    }
                 });
             }
         }
@@ -659,7 +693,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
 
     .controller('PatientPUtilCtrl', function ($scope, $state, $ionicHistory, UserService, SnakeService, RecordService, 
                                                 StageService, BloodTestService, $ionicPopover, 
-                                                $ionicPopup, $timeout, $cordovaLocalNotification, $ionicModal, $ionicLoading) {
+                                                $ionicPopup, $timeout, $ionicModal, $ionicLoading) {
 
         var record = RecordService.getRecord();
         $scope.user = UserService.getUserInfo();
@@ -688,11 +722,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
             $scope[ybuttonS] = "button-dark";
         };
 
-        SnakeService.getAllSnakes().success(function (data) {
-            $timeout(function () {
-                $scope.snakes = data;
-            });
-        });
+        $scope.snakes = SnakeService.getAllSnakes();
 
         $scope.snakeCheckbox = [];
         $scope.snakeCheckbox[record.snake_type] = true;
@@ -813,17 +843,6 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
                                     nextStage = 36
                                     break;
                             }
-                            if (record.transaction && !record.respiratory_failure) {
-                                // cancel previous notification
-                                if (window.cordova) {
-                                    var previousId = parseInt((record.record_id + "").substring(4) + "" + record.transaction.stage.stage_num + "" + record.transaction.times)
-                                    $cordovaLocalNotification.isPresent(previousId).then(function (present) {
-                                        if (present) {
-                                            $cordovaLocalNotification.cancel(previousId);
-                                        }
-                                    });
-                                }
-                            }
 
                             // log current transaction
                             var nStage = StageService.getStage(nextStage);
@@ -852,17 +871,6 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
                         if (record.transaction && record.systemic_bleeding) { // already start management process and if it was systemic_bleeding previously
                             $state.go('hmanagement', { snake: selectedSnake, stage: record.transaction.stage.stage_num, times: record.transaction.times }, {reload: true});
                         } else {
-                            if (record.transaction && !record.systemic_bleeding) {
-                                // cancel previous notification
-                                if (window.cordova) {
-                                    var previousId = parseInt((record.record_id + "").substring(4) + "" + record.transaction.stage.stage_num + "" + record.transaction.times)
-                                    $cordovaLocalNotification.isPresent(previousId).then(function (present) {
-                                        if (present) {
-                                            $cordovaLocalNotification.cancel(previousId);
-                                        }
-                                    });
-                                }
-                            }
                             var nextStage;
                             switch (selectedSnake) {
                                 case 0:
@@ -964,7 +972,8 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
         };
     })
 
-    .controller('BloodSampleCtrl', function ($scope, $state, $ionicHistory, BloodTestService, SnakeService, StageService, RecordService, UserService, $ionicPopup, $cordovaLocalNotification, $timeout) {
+    .controller('BloodSampleCtrl', function ($scope, $state, $ionicHistory, BloodTestService, SnakeService, StageService, 
+                                    RecordService, UserService, $ionicPopup, $timeout, $cordovaLocalNotification) {
 
         $scope.my.show_h_menu = true;
         $scope.my.show_n_menu = false;
@@ -1073,18 +1082,19 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
                         template: 'Blood ใน urine positive โปรดระวังอาจมี hemolysis ได้'
                     });
                 }
+
+                var record = RecordService.getRecord();
                 
                 // clear previous notification
-                var record = RecordService.getRecord();
-                var previousId = parseInt((record.record_id + "").substring(4) + "" + stage.stage_num + "" + $state.params.times)
-                
                 if (window.cordova) {
+                    var previousId = parseInt(record.record_id + "000" + stage.stage_num)
                     $cordovaLocalNotification.isTriggered(previousId).then(function (present) {
                         if (present) {
                             $cordovaLocalNotification.clear(previousId);
                         }
                     });
                 }
+
             
                 BloodTestService.addBloodTest(scopeBloodTest, $state.params.stage, $state.params.times, 0);
 
@@ -1135,7 +1145,8 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
 
     })
 
-    .controller('HManagementCtrl', function ($scope, $state, $ionicHistory, $ionicPopup, UserService, RecordService, BloodTestService, SnakeService, StageService, $cordovaLocalNotification, $timeout) {
+    .controller('HManagementCtrl', function ($scope, $state, $ionicHistory, $ionicPopup, UserService, RecordService, 
+                                        BloodTestService, SnakeService, StageService, $timeout) {
 
         var record = RecordService.getRecord();
         $scope.my.show_h_menu = true;
@@ -1257,25 +1268,6 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
             });
             $state.go('hmanagement', { snake: $state.params.snake, stage: stage.next_yes_stage, times: 1 });
         };*/
-
-        // schedule notification
-        /*if (stage.action_type == "alert" && (!$scope.record.transaction 
-            || !($scope.record.transaction.stage.stage_num == stage.stage_num && $scope.record.transaction.times == $state.params.times))) {
-            var now = new Date().getTime();
-            var notifTime = new Date(now + ((stage.frequent / divide) * 1000));
-            var option = {
-                id: parseInt((record.record_id + "").substring(4) + "" + stage.stage_num + "" + $state.params.times),
-                at: notifTime,
-                title: stage.relate_to.replace( /\b\w/g, function (m) {return m.toUpperCase();}),
-                text: stage.action_text + "   times: " + $state.params.times + "  patient: " + UserService.getPatientInfo().patient_name,
-                sound: null,
-                data: RecordService.getRecord()
-                //badge: 1
-            };
-            $cordovaLocalNotification.schedule(option).then(function () {
-                alert("notification add")
-            });
-        }*/
         
         // update badge
         if (record.notif_stage == record.transaction.stage.stage_num && record.notif_times <= record.transaction.times) {
@@ -1319,7 +1311,8 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
         };
     })
 
-    .controller('EditBloodTestCtrl', function ($scope, $state, $ionicHistory, BloodTestService, SnakeService, StageService, RecordService, UserService, $ionicPopup, $cordovaLocalNotification, $timeout) {
+    .controller('EditBloodTestCtrl', function ($scope, $state, $ionicHistory, BloodTestService, SnakeService, StageService, 
+                                        RecordService, UserService, $ionicPopup, $timeout) {
 
         $scope.my.show_h_menu = false;
         $scope.my.show_n_menu = false;
@@ -1426,7 +1419,8 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
     })
 
 
-    .controller('MotorWeaknessCtrl', function ($scope, $state, $ionicHistory, SnakeService, StageService, MotorWeaknessService, RecordService, UserService, $ionicPopup, $cordovaLocalNotification, $timeout) {
+    .controller('MotorWeaknessCtrl', function ($scope, $state, $ionicHistory, SnakeService, StageService, MotorWeaknessService, 
+                                        RecordService, UserService, $ionicPopup, $timeout, $cordovaLocalNotification) {
 
         $scope.my.show_h_menu = false;
         $scope.my.show_n_menu = true;
@@ -1468,11 +1462,12 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
             var valid = true;
 
             if (valid) {
+
+                var record = RecordService.getRecord();
                 
                 // clear previous notification
-                var record = RecordService.getRecord();
-                var previousId = parseInt((record.record_id + "").substring(4) + "" + stage.stage_num + "" + $state.params.times)
                 if (window.cordova) {
+                    var previousId = parseInt(record.record_id + "000" + stage.stage_num)
                     $cordovaLocalNotification.isTriggered(previousId).then(function (present) {
                         if (present) {
                             $cordovaLocalNotification.clear(previousId);
@@ -1530,7 +1525,8 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
 
     })
 
-    .controller('NManagementCtrl', function ($scope, $state, $ionicHistory, $ionicPopup, UserService, RecordService, SnakeService, StageService, MotorWeaknessService, $timeout, $cordovaLocalNotification) {
+    .controller('NManagementCtrl', function ($scope, $state, $ionicHistory, $ionicPopup, UserService, RecordService, SnakeService, 
+                                    StageService, MotorWeaknessService, $timeout) {
 
         var record = RecordService.getRecord();
         $scope.my.show_h_menu = record.status == "active" ? false : true;;
@@ -1633,25 +1629,6 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
             //}
         };*/
 
-
-        // schedule notification
-        /*if (stage.action_type == "alert" && (!$scope.record.transaction 
-            || !($scope.record.transaction.stage.stage_num == stage.stage_num && $scope.record.transaction.times == $state.params.times))) {
-            var now = new Date().getTime();
-            var notifTime = new Date(now + ((stage.frequent / divide) * 1000));
-            var option = {
-                id: parseInt((record.record_id + "").substring(4) + "" + stage.stage_num + "" + $state.params.times),
-                at: notifTime,
-                title: stage.relate_to.replace( /\b\w/g, function (m) {return m.toUpperCase();}),
-                text: stage.action_text + "   times: " + $state.params.times + "  patient: " + UserService.getPatientInfo().patient_name,
-                sound: null,
-                data: RecordService.getRecord()
-                //badge: 1
-            };
-            $cordovaLocalNotification.schedule(option).then(function () {
-                //alert("notification add")
-            });
-        }*/
         
         // update badge
         if (record.notif_stage == record.transaction.stage.stage_num && record.notif_times <= record.transaction.times) {
@@ -1758,7 +1735,8 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
     })
 
 
-    .controller('UnknownTestCtrl', function ($scope, $state, $ionicHistory, SnakeService, StageService, RecordService, BloodTestService, MotorWeaknessService, UserService, $ionicPopup, $cordovaLocalNotification, $timeout) {
+    .controller('UnknownTestCtrl', function ($scope, $state, $ionicHistory, SnakeService, StageService, RecordService, 
+                                    BloodTestService, MotorWeaknessService, UserService, $ionicPopup, $timeout, $cordovaLocalNotification) {
 
         $scope.my.show_h_menu = true;
         $scope.my.show_n_menu = true;
@@ -1873,11 +1851,12 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
                         template: 'Creatinine มากกว่าค่าเดิม 0.5 mg/dL'
                     });
                 }
+
+                var record = RecordService.getRecord();
                 
                 // clear previous notification
-                var record = RecordService.getRecord();
-                var previousId = parseInt((record.record_id + "").substring(4) + "" + stage.stage_num + "" + $state.params.times)
                 if (window.cordova) {
+                    var previousId = parseInt(record.record_id + "000" + stage.stage_num)
                     $cordovaLocalNotification.isTriggered(previousId).then(function (present) {
                         if (present) {
                             $cordovaLocalNotification.clear(previousId);
@@ -2038,7 +2017,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
 
     .controller('IdentificationCtrl', function ($scope, $state, $ionicHistory, SnakeService, StageService, RecordService, 
                                             BloodTestService, MotorWeaknessService, UserService, $ionicPopup, 
-                                            $cordovaLocalNotification, $timeout, $ionicLoading) {
+                                            $timeout, $ionicLoading) {
 
         $scope.my.show_h_menu = true;
         $scope.my.show_n_menu = true;
@@ -2200,7 +2179,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
     })
 
 
-    .controller('UManagementCtrl', function ($scope, $state, $ionicHistory, $ionicPopup, UserService, RecordService, SnakeService, StageService, $timeout, $cordovaLocalNotification) {
+    .controller('UManagementCtrl', function ($scope, $state, $ionicHistory, $ionicPopup, UserService, RecordService, SnakeService, StageService, $timeout) {
 
         $scope.my.show_h_menu = true;
         $scope.my.show_n_menu = true;
@@ -2310,33 +2289,6 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
             });
             $state.go('signin');
         };*/
-        
-        // schedule notification
-        /*if (stage.action_type == "alert" && (!$scope.record.transaction 
-            || !($scope.record.transaction.stage.stage_num == stage.stage_num && $scope.record.transaction.times == $state.params.times))) {
-            var text = stage.action_text
-            if ($state.params.stage == 71) {
-                if ($state.params.times % 6 == 0) {
-                    text = "Observe weakness and neuro sign & CBC, PT, INR, 20 min WBCT";
-                } else {
-                    text = "Observe weakness and neuro sign";
-                }
-            }
-            var now = new Date().getTime();
-            var notifTime = new Date(now + ((stage.frequent / divide) * 1000));
-            var option = {
-                id: parseInt((record.record_id + "").substring(4) + "" + stage.stage_num + "" + $state.params.times),
-                at: notifTime,
-                title: stage.relate_to.replace( /\b\w/g, function (m) {return m.toUpperCase();}),
-                text: text + "   times: " + $state.params.times + "  patient: " + UserService.getPatientInfo().patient_name,
-                sound: null,
-                data: RecordService.getRecord()
-                //badge: 1
-            };
-            $cordovaLocalNotification.schedule(option).then(function () {
-                //alert("notification add")
-            });
-        }*/
 
         // update badge
         if (record.notif_stage == record.transaction.stage.stage_num && record.notif_times <= record.transaction.times) {
@@ -2432,156 +2384,142 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
         } 
     })
 
-function scheduleCheck(RecordService, timeout, ionicPopup, UserService, ionicHistory, state, scope) {
-    if (runNotificaion) {
-        timeout(function() {
-            checkNotification(RecordService, timeout, ionicPopup, UserService, ionicHistory, state, scope)
-        }, (60000 / sDevide));
-    }
-}
-
-function checkNotification(RecordService, timeout, ionicPopup, UserService, ionicHistory, state, scope) {
-    if (runNotificaion) {
-        scope.preventClick = "click-block";
-        RecordService.getAllActiveRecords().success(function (activeRecords) {
-            angular.forEach(activeRecords, function(record, index) {
-                if (record.notif_stage != 0 && record.transaction.stage.action_type == "alert") {
-                    var lastNotifTime = new Date(record.notif_datetime).getTime();
-                    var frequent = ((record.transaction.stage.frequent / divide) * 1000)
-                    var now = new Date().getTime();
-                    var alertText = "ตรวจกล้ามเนื้ออ่อนแรง";
-                    if (record.transaction.stage.relate_to == "blood test") {
-                        alertText = "ตรวจเลือด";
-                    }
-                    if (record.transaction.stage.frequent == 86400) {
-                        if (record.notif_times > 1 && (lastNotifTime + frequent) <= now && record.notif_times <= record.transaction.stage.times) {
-                            var confirmPopup = ionicPopup.confirm({
-                                title: alertText,
-                                template: "<b>ครั้งที่ " + record.notif_times + "</b><br>" +
-                                    record.patient.patient_name + "<br>" +
-                                    dateShortFormat(new Date(record.incident_date)) + " " + record.incident_time + "<br>" + 
-                                    record.snake.snake_thai_name
-                            });
-
-                            confirmPopup.then(function(res) {
-                                if(res) {
-                                    UserService.setCurrentPatient(record.patient);
-                                    RecordService.getRecordOfPatient();
-                                    ionicHistory.nextViewOptions({
-                                        historyRoot: true
-                                    });
-                                    state.go('patientPUtil', { totest:1 }, {reload: true});
-                                }
-                            });
-                            // update badge
-                            timeout(function () {
-                                angular.forEach(scope.activeRecords, function(value, i) {
-                                    if (value.record_id == record.record_id) {
-                                        value.notif_active = 1;
-                                    }   
-                                });
-                            });
-
-                            RecordService.updateNotifActive(record, 1);
-                            RecordService.updateNotification(record, record.transaction.stage.stage_num, new Date(lastNotifTime + frequent), (record.notif_times + 1));
-                            /*var option = {
-                                id: parseInt((record.record_id + "").substring(4) + "" + stage.stage_num + "" + $state.params.times),
-                                title: stage.relate_to.replace( /\b\w/g, function (m) {return m.toUpperCase();}),
-                                text: stage.action_text + "   times: " + $state.params.times + "  patient: " + UserService.getPatientInfo().patient_name,
-                                sound: null,
-                                data: RecordService.getRecord()
-                                //badge: 1
-                            };
-                            $cordovaLocalNotification.schedule(option).then(function () {
-                                alert("notification add")
-                            });*/
-                        }
-                    } else {
-                        if ((lastNotifTime + frequent) <= now && record.notif_times <= record.transaction.stage.times) {
-                            var confirmPopup = ionicPopup.confirm({
-                                title: alertText,
-                                template: "<b>ครั้งที่ " + record.notif_times + "</b><br>" +
-                                    record.patient.patient_name + "<br>" +
-                                    dateShortFormat(new Date(record.incident_date)) + " " + record.incident_time + "<br>" + 
-                                    record.snake.snake_thai_name
-                            });
-
-                            confirmPopup.then(function(res) {
-                                if(res) {
-                                    UserService.setCurrentPatient(record.patient);
-                                    RecordService.getRecordOfPatient();
-                                    ionicHistory.nextViewOptions({
-                                        historyRoot: true
-                                    });
-                                    state.go('patientPUtil', { totest:1 }, {reload: true});
-                                }
-                            });
-                            // update badge
-                            timeout(function () {
-                                angular.forEach(scope.activeRecords, function(value, i) {
-                                    if (value.record_id == record.record_id) {
-                                        value.notif_active = 1;
-                                    }   
-                                });
-                            });
-
-                            RecordService.updateNotifActive(record, 1);
-                            RecordService.updateNotification(record, record.transaction.stage.stage_num, new Date(lastNotifTime + frequent), (record.notif_times + 1));
-                            /*var option = {
-                                id: parseInt((record.record_id + "").substring(4) + "" + stage.stage_num + "" + $state.params.times),
-                                title: stage.relate_to.replace( /\b\w/g, function (m) {return m.toUpperCase();}),
-                                text: stage.action_text + "   times: " + $state.params.times + "  patient: " + UserService.getPatientInfo().patient_name,
-                                sound: null,
-                                data: RecordService.getRecord()
-                                //badge: 1
-                            };
-                            $cordovaLocalNotification.schedule(option).then(function () {
-                                alert("notification add")
-                            });*/
-                        }
-                    }
+function checkNotification(RecordService, timeout, ionicPopup, UserService, ionicHistory, state, scope, cordovaNotif, interval) {
+    scope.preventClick = "click-block";
+    RecordService.getAllActiveRecords().success(function (activeRecords) {
+        angular.forEach(activeRecords, function(record, index) {
+            if (record.notif_stage != 0 && record.transaction.stage.action_type == "alert") {
+                var lastNotifTime = new Date(record.notif_datetime).getTime();
+                var frequent = ((record.transaction.stage.frequent / divide) * 1000)
+                var now = new Date().getTime();
+                var alertText = "ตรวจกล้ามเนื้ออ่อนแรง";
+                if (record.transaction.stage.relate_to == "blood test") {
+                    alertText = "ตรวจเลือด";
                 }
-                if (record.notif_datetime2 != null && record.transaction2 != null) {
-                    var lastNotifTime = new Date(record.notif_datetime2).getTime();
-                    var frequent = ((record.transaction2.stage.frequent / divide) * 1000)
-                    var now = new Date().getTime();
-                    if ((lastNotifTime + frequent) <= now && record.notif_times2 <= record.transaction2.stage.times) {
-                        var confirmPopup = ionicPopup.confirm({
-                            title: "ตรวจกล้ามเนื้ออ่อนแรง",
-                            template: "<b>ครั้งที่ " + record.notif_times2 + "</b><br>" +
-                                record.patient.patient_name + "<br>" +
-                                dateShortFormat(new Date(record.incident_date)) + " " + record.incident_time + "<br>" + 
-                                record.snake.snake_thai_name
-                        });
+                if ((record.transaction.stage.frequent == 86400 &&
+                        record.notif_times > 1 && (lastNotifTime + frequent) <= now && record.notif_times <= record.transaction.stage.times) ||
+                    (record.transaction.stage.frequent != 86400 && 
+                        (lastNotifTime + frequent) <= now && record.notif_times <= record.transaction.stage.times)) {
+                    var confirmPopup = ionicPopup.confirm({
+                        title: alertText,
+                        template: "<b>ครั้งที่ " + record.notif_times + "</b><br>" +
+                            record.patient.patient_name + "<br>" +
+                            dateShortFormat(new Date(record.incident_date)) + " " + record.incident_time + "<br>" + 
+                            record.snake.snake_thai_name
+                    });
 
-                        confirmPopup.then(function(res) {
-                            if(res) {
-                                UserService.setCurrentPatient(record.patient);
-                                RecordService.getRecordOfPatient();
-                                ionicHistory.nextViewOptions({
-                                    historyRoot: true
-                                });
-                                state.go('patientPUtil', { totest:2 }, {reload: true});
-                            }
-                        });
-                        // update badge
-                        timeout(function () {
-                            angular.forEach(scope.activeRecords, function(value, i) {
-                                if (value.record_id == record.record_id) {
-                                    value.notif_active = 1;
-                                }   
+                    confirmPopup.then(function(res) {
+                        if(res) {
+                            UserService.setCurrentPatient(record.patient);
+                            RecordService.getRecordOfPatient();
+                            ionicHistory.nextViewOptions({
+                                historyRoot: true
                             });
-                        });
+                            state.go('patientPUtil', { totest:1 }, {reload: true});
+                        }
+                    });
 
-                        RecordService.updateNotifActive(record, 1);
-                        RecordService.updateNotification2(record, new Date(lastNotifTime + frequent), (record.notif_times2 + 1));
+                    if (window.cordova) {
+                        var option = {
+                            id: record.record_id + "000" + record.transaction.stage.stage_num,// + "0" + record.notif_times,
+                            title: alertText + "  ครั้งที่ " + record.notif_times,
+                            text: record.patient.patient_name + "\n" +
+                                dateShortFormat(new Date(record.incident_date)) + " " + record.incident_time + "\n" + 
+                                record.snake.snake_thai_name,
+                            sound: null,
+                            data: {patient: record.patient, totest: 1}
+                            //badge: 1
+                        };
+                        cordovaNotif.schedule(option).then(function () {
+                            //alert("notification add")
+                        });
                     }
+
+                    // update badge
+                    timeout(function () {
+                        angular.forEach(scope.activeRecords, function(value, i) {
+                            if (value.record_id == record.record_id) {
+                                value.notif_active = 1;
+                            }   
+                        });
+                    });
+
+                    RecordService.updateNotifActive(record, 1);
+                    RecordService.updateNotification(record, record.transaction.stage.stage_num, new Date(lastNotifTime + frequent), (record.notif_times + 1));
+                    
                 }
-            });
-            scope.preventClick = "";
-            scheduleCheck(RecordService, timeout, ionicPopup, UserService, ionicHistory, state, scope)
-        })
-    }
+            }
+            if (record.notif_datetime2 != null && record.transaction2 != null) {
+                var lastNotifTime = new Date(record.notif_datetime2).getTime();
+                var frequent = ((record.transaction2.stage.frequent / divide) * 1000)
+                var now = new Date().getTime();
+                if ((lastNotifTime + frequent) <= now && record.notif_times2 <= record.transaction2.stage.times) {
+                    var confirmPopup = ionicPopup.confirm({
+                        title: "ตรวจกล้ามเนื้ออ่อนแรง",
+                        template: "<b>ครั้งที่ " + record.notif_times2 + "</b><br>" +
+                            record.patient.patient_name + "<br>" +
+                            dateShortFormat(new Date(record.incident_date)) + " " + record.incident_time + "<br>" + 
+                            record.snake.snake_thai_name
+                    });
+
+                    confirmPopup.then(function(res) {
+                        if(res) {
+                            UserService.setCurrentPatient(record.patient);
+                            RecordService.getRecordOfPatient();
+                            ionicHistory.nextViewOptions({
+                                historyRoot: true
+                            });
+                            state.go('patientPUtil', { totest:2 }, {reload: true});
+                        }
+                    });
+
+                    if (window.cordova) {
+                        var option = {
+                            id: record.record_id + "000" + record.transaction2.stage.stage_num,// + "0" + record.notif_times2,
+                            title: "ตรวจกล้ามเนื้ออ่อนแรง  ครั้งที่ " + record.notif_times2,
+                            text: record.patient.patient_name + "\n" +
+                                dateShortFormat(new Date(record.incident_date)) + " " + record.incident_time + "\n" + 
+                                record.snake.snake_thai_name,
+                            sound: null,
+                            data: {patient: record.patient, totest: 2}
+                            //badge: 1
+                        };
+                        cordovaNotif.schedule(option).then(function () {
+                            //alert("notification add")
+                        });
+                    }
+
+                    // update badge
+                    timeout(function () {
+                        angular.forEach(scope.activeRecords, function(value, i) {
+                            if (value.record_id == record.record_id) {
+                                value.notif_active = 1;
+                            }   
+                        });
+                    });
+
+                    RecordService.updateNotifActive(record, 1);
+                    RecordService.updateNotification2(record, new Date(lastNotifTime + frequent), (record.notif_times2 + 1));
+                }
+            }
+        });
+        scope.preventClick = "";
+    }).error(function () {
+        ionicPopup.alert({
+            title: 'Network error!!!',
+            template: "Please check your internet connection and then try again later"
+        });
+        scope.preventClick = "";
+        interval.cancel(runNotificaion);
+        interval.cancel(checkConnection);
+        if (window.cordova) {
+            cordova.plugins.notification.local.cancelAll();
+        }
+        ionicHistory.nextViewOptions({
+            historyRoot: true
+        });
+        state.go('home');
+    });
 }
     
     

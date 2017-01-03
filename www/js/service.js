@@ -23,11 +23,10 @@ angular.module('snakeEnvenomation.services', [])
                     data: user,
                     headers: {'Content-Type': 'application/json'}
                 }).success(function (data, status, headers, config) {
-                        deferred.resolve();
-                    })
-                    .error(function (data, status, headers, config, statusText) {
-                        deferred.reject(data);
-                    });
+                    deferred.resolve();
+                }).error(function (data, status, headers, config, statusText) {
+                    deferred.reject(data);
+                });
                 promise.success = function (fn) {
                     promise.then(fn);
                     return promise;
@@ -251,6 +250,9 @@ angular.module('snakeEnvenomation.services', [])
                         Promise.all(promises)
                             .then(function() { deferred.resolve(activeRecords); })
                             .catch(console.error);
+                    })
+                    .error(function (data, status, headers, config, statusText) {
+                        deferred.reject();
                     });
                     
                 promise.success = function (fn) {
@@ -508,24 +510,20 @@ angular.module('snakeEnvenomation.services', [])
     .factory('SnakeService', function ($q, $http) {
 
         return {
-            getAllSnakes: function () {
+            initAllSnakes: function () {
                 var deferred = $q.defer();
                 var promise = deferred.promise;
-                if (snakes.length > 0) {
-                    deferred.resolve(snakes);
-                } else {
-                    $http.get(api_host_url + "/snakes")
-                        .success(function (data, status, headers, config) {
-                            snakes = data;
-                            angular.forEach(snakes, function (value, key) {
-                                value.imgs = value.snake_images_url.split(",");
-                            });
-                            deferred.resolve(snakes);
-                        })
-                        .error(function (data, status, headers, config) {
-                            deferred.reject(status);
+                $http.get(api_host_url + "/snakes")
+                    .success(function (data, status, headers, config) {
+                        snakes = data;
+                        angular.forEach(snakes, function (value, key) {
+                            value.imgs = value.snake_images_url.split(",");
                         });
-                }
+                        deferred.resolve(snakes);
+                    })
+                    .error(function (data, status, headers, config) {
+                        deferred.reject(status);
+                    });
                 promise.success = function (fn) {
                     promise.then(fn);
                     return promise;
@@ -535,6 +533,9 @@ angular.module('snakeEnvenomation.services', [])
                     return promise;
                 }
                 return promise;
+            },
+            getAllSnakes: function () {
+                return snakes;
             },
             getSnakeByID: function (snakeId) {
                 return snakes[snakeId]

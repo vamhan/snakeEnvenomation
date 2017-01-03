@@ -22,38 +22,38 @@
             </div>
         </div>
 
-        <div class="padding border">
-            <div class="header_title" ng-show="show_weakness">
+        <div class="padding border" ng-show="show_weakness">
+            <div class="header_title">
                 <h3 style="font-weight:600">Does the patient has any motor weakness?</h3>
                 <button class="button" ng-class="m_y_class" style="width:40%;margin-right:20px" ng-click="toggleYesSelection('m_y_class', 'm_n_class')">Yes</button>
                 <button class="button" ng-class="m_n_class" style="width:40%" ng-click="toggleNoSelection('m_n_class', 'm_y_class')">No</button>
             </div>
-            <div class="card unit-list" ng-show="show_bloodtest">
-                <div class="item item-input">
-                    <span class="input-label">INR prolong</span>
-                    <input type="text" placeholder="INR" ng-model="bloodTest.INR">
-                    <span class="input-label" style="width:100px"></span>
-                    <button class="button" ng-class="inr_class" ng-click="toggleINRValue(0.8)" style="margin-right:10px;width:180px">Default < 1.2</button>
-                </div>
-                <div class="item item-select">
-                    <div class="input-label">20 Minutes WBCT</div>
-                    <select ng-model="bloodTest.WBCT">
-                        <option>Clotted</option>
-                        <option>Unclotted</option>
-                    </select>
-                </div>
-                <div class="item item-input">
-                    <span class="input-label">Platelet</span>
-                    <input type="text" placeholder="Platelet" ng-model="bloodTest.platelets">
-                    <span class="input-label" style="width:100px">/mcl</span>
-                    <button class="button" ng-class="p_class" ng-click="togglePlateletValue(150000)" style="margin-right:10px;width:180px">Default >= 100,000</button>
-                </div>
-                <div class="item item-input">
-                    <span class="input-label">Creatinine</span>
-                    <input type="text" placeholder="Creatinine" ng-model="bloodTest.creatinine">
-                    <span class="input-label" style="width:100px">mg/dl</span>
-                    <span class="input-label" style="width:180px"></span>
-                </div>
+        </div>
+        <div class="card unit-list" ng-show="show_bloodtest">
+            <div class="item item-input row">
+                <span class="input-label col col-30">INR</span>
+                <input class="col col-30" type="text" placeholder="INR" ng-model="bloodTest.INR">
+                <span class="input-label col col-20"></span>
+                <button class="button col col-20" ng-class="inr_class" ng-click="toggleINRValue(0.8)" style="margin-top:5px;font-size:11px;white-space:pre-line;line-height:1.42;">Default < 1.2</button>
+            </div>
+            <div class="item item-select">
+                <div class="input-label">20 Minutes WBCT</div>
+                <select ng-model="bloodTest.WBCT">
+                    <option>Clotted</option>
+                    <option>Unclotted</option>
+                </select>
+            </div>
+            <div class="item item-input row">
+                <span class="input-label col col-30">Platelet</span>
+                <input class="col col-30" type="text" placeholder="Platelet" ng-model="bloodTest.platelets">
+                <span class="input-label col col-20">/mcl</span>
+                <button class="button col col-20" ng-class="p_class" ng-click="togglePlateletValue(150000)" style="margin-top:5px;font-size:11px;white-space:pre-line;line-height:1.42;">Default >= 100,000</button>
+            </div>
+            <div class="item item-input row">
+                <span class="input-label col col-30">Creatinine</span>
+                <input class="col col-30" type="text" placeholder="Creatinine" ng-model="bloodTest.creatinine">
+                <span class="input-label col col-20">mg/dl</span>
+                <span class="input-label col col-20"></span>
             </div>
         </div>
         <div class="padding">
