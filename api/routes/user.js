@@ -160,18 +160,18 @@ module.exports = appRouter;
 
 function sendEmail(email, subject, detail) {
     var transporter = nodemailer.createTransport(smtpTransport({
-        host: 'smtp.zoho.com',
+        host: 'smtp.gmail.com',
         port: 465,
         secure: true,
         auth: {
-            user: 'krissada@thaiprogrammer.org',
-            pass: 'oooaaakkk'
+            user: 'cdss.noreply@gmail.com',
+            pass: 'x]vf4yp,kd'
         }
     }));
 
     // setup e-mail data with unicode symbols
     var mailOptions = {
-        from: 'krissada@thaiprogrammer.org', 
+        from: 'cdss.noreply@gmail.com', 
         to: email,
         subject: subject,
         html: detail
