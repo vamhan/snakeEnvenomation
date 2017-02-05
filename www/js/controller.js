@@ -1,6 +1,6 @@
-var divide = 60;
+//var divide = 60;
 //var divide = 360;
-//var divide = 1;
+var divide = 1;
 //var sDevide = 6;
 var sDevide = 1;
 
@@ -643,7 +643,21 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
                 });
             } 
             var today = new Date();
-            if (incident.incident_date.getTime() > today.getTime()) {
+            var fdate = document.getElementById("myDate").value
+            var ftime = document.getElementById("myTime").value
+            if (!Date.parse(fdate) || !incident.incident_date) {
+                valid = false;
+                $ionicPopup.alert({
+                    title: 'Date of incident is invalid',
+                    template: "Please input the valid date " + (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 ? "with format YYYY-mm-dd (for example 2017-02-02)" : "")
+                });
+            } else if (!Date.parse(fdate + " " + ftime) || !incident.incident_time) {
+                valid = false;
+                $ionicPopup.alert({
+                    title: 'Time of incident is invalid',
+                    template: "Please input the valid time " + (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 ? "with format hh:mm (for example 14:30)" : "")
+                });
+            } else if (incident.incident_date.getTime() > today.getTime()) {
                 valid = false;
                 $ionicPopup.alert({
                     title: 'Date of incident is invalid',
