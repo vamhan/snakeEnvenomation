@@ -154,6 +154,17 @@ var appRouter = function(app, db, appUrl) {
             });
         }
     });
+
+    app.post("/patientlog", function(req, res) {
+        db.query("INSERT INTO edit_patient_log SET ?", req.query, function(err, result) {
+            if (err) {
+                console.log(err)
+                return res.status(400).send({ "message": "Saving data failed, malformed syntax" });
+            } else {
+                return res.status(200).send({ "message": "Data is saved successfully" });
+            }
+        });
+    });
 }
 
 module.exports = appRouter;

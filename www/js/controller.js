@@ -674,12 +674,13 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
 
             if (valid) {
                 UserService.updateUserInfo(user);
-
+                var bdate = getBirthdateFromAge(patient.age_year, patient.age_month, patient.age_day)
+                RecordService.editPatientLog(patient, bdate, incident)
                 $ionicLoading.show({
                     template: 'Loading...'
                 })
 
-                UserService.updatePatientInfo(patient, getBirthdateFromAge(patient.age_year, patient.age_month, patient.age_day)).success(function () {
+                UserService.updatePatientInfo(patient, bdate).success(function () {
                     $ionicLoading.hide();
                     $timeout(function () {
                         RecordService.addRecord(incident).success(function(data){
@@ -708,6 +709,8 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
     .controller('PatientPUtilCtrl', function ($scope, $state, $ionicHistory, UserService, SnakeService, RecordService, 
                                                 StageService, BloodTestService, $ionicPopover, 
                                                 $ionicPopup, $timeout, $ionicModal, $ionicLoading) {
+
+        $scope.show_editPatient_button = $state.params.totest != 0
 
         var record = RecordService.getRecord();
         $scope.user = UserService.getUserInfo();
@@ -777,6 +780,13 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
                 $scope.popover.remove();
             }
         });
+
+        $scope.editPatient = function () {
+            $ionicHistory.nextViewOptions({
+                historyRoot: true
+            });
+            $state.go('record', {isNew: false}, {reload: true});
+        };
 
         $scope.confirm = function () {
             
