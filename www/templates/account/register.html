@@ -16,37 +16,37 @@
                     </select>
                 </div>
                 <div class="item item-input" ng-class="{ 'has-error' : registerForm.physician_name.$invalid && registerForm.$submitted}">
-                    <span class="input-label">ชื่อ - นามสกุล</span>
+                    <span class="input-label">ชื่อ - นามสกุล<span style="color:red"> *</span></span>
                     <input type="text" placeholder="Full Name" name="physician_name" ng-model="regisuser.physician_name" required>
                 </div>
                 <div class="form-error" ng-show="registerForm.physician_name.$error.required && registerForm.$submitted && show_error">This field is required.</div>
                 <div class="item item-input">
-                    <span class="input-label">Email</span>
+                    <span class="input-label">Email<span style="color:red"> *</span></span>
                     <input type="email" placeholder="Email" name="email" ng-model="regisuser.email" ng-pattern='/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/' required>
                 </div>
                 <div class="form-error" ng-show="registerForm.email.$error.required && registerForm.$submitted && show_error">This field is required.</div>
                 <div class="form-error" ng-show="registerForm.email.$error.pattern && registerForm.$submitted && show_error">Email address is not valid.</div>
                 <div class="item item-input">
-                    <span class="input-label">Password</span>
+                    <span class="input-label">Password<span style="color:red"> *</span></span>
                     <input type="password" placeholder="Password" name="password" ng-model="regisuser.password" required>
                 </div>
                 <div class="form-error" ng-show="registerForm.password.$error.required && registerForm.$submitted && show_error">This field is required.</div>
                 <div class="item item-input">
-                    <span class="input-label">Confirm Password</span>
+                    <span class="input-label">Confirm Password<span style="color:red"> *</span></span>
                     <input type="password" placeholder="Confirm Password" ng-model="regisuser.confirm_password">
                 </div>
                 <div class="form-error" ng-show="show_confirm_ps && show_error">Fields are not equal</div>
                 <div class="item item-input">
                     <span class="input-label">เลขบัตรประชาชน</span>
-                    <input type="number" placeholder="National ID" name="national_id" ng-model="regisuser.national_id" required ng-pattern="/^[0-9]{13}$/">
+                    <input type="number" placeholder="National ID" name="national_id" ng-model="regisuser.national_id" ng-pattern="/^[0-9]{13}$/">
                 </div>
-                <div class="form-error" ng-show="registerForm.national_id.$error.required && registerForm.$submitted && show_error">This field is required.</div>
+                <!--<div class="form-error" ng-show="registerForm.national_id.$error.required && registerForm.$submitted && show_error">This field is required.</div>-->
                     <div class="form-error" ng-show="registerForm.national_id.$error.pattern && registerForm.$submitted && show_error">This field should be only number with length 13</div>
                 <div class="item item-input" ng-show="show_username">
                     <span class="input-label">เลขใบประกอบวิชาชีพ</span>
                     <input type="text" placeholder="Medical License" name="physician_id" ng-model="regisuser.physician_id">
                 </div>
-                <div class="form-error" ng-show="registerForm.physician_id.$error.required && registerForm.$submitted && show_error">This field is required.</div>
+                <!--<div class="form-error" ng-show="registerForm.physician_id.$error.required && registerForm.$submitted && show_error">This field is required.</div>-->
                 <div class="form-error" ng-show="show_phid_error && show_error">This field is malformed</div>
             </div>
             <div class="padding">

@@ -514,14 +514,16 @@ angular.module('snakeEnvenomation.services', [])
                 return promise;
             },
             editPatientLog: function (patient, birthdate, incident) {
-                $http.post(api_host_url + "/patientlog?"
-                    + "patient_id=" + patient.patient_id
-                    + "&patient_name=" + patient.patient_name
-                    + "&patient_gender=" + patient.patient_gender
-                    + "&patient_birthdate=" + dateShortFormat(birthdate)
-                    + "&incident_district=" + (incident.incident_district === undefined ? "" : incident.incident_district)
-                    + "&incident_province=" + (incident.incident_province === undefined ? "" : incident.incident_province)
-                    + "&editor=" + user.user_id)
+                if (patient.patient_id) {
+                    $http.post(api_host_url + "/patientlog?"
+                        + "patient_id=" + patient.patient_id
+                        + "&patient_name=" + patient.patient_name
+                        + "&patient_gender=" + patient.patient_gender
+                        + "&patient_birthdate=" + dateShortFormat(birthdate)
+                        + "&incident_district=" + (incident.incident_district === undefined ? "" : incident.incident_district)
+                        + "&incident_province=" + (incident.incident_province === undefined ? "" : incident.incident_province)
+                        + "&editor=" + user.user_id)
+                }
             }
         }
     })

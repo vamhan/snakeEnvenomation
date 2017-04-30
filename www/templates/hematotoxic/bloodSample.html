@@ -24,7 +24,7 @@
 
         <div class="card unit-list">
             <div class="item item-input row" style="background-color:lightblue">
-                <span class="input-label col col-30">INR</span>
+                <span class="input-label col col-30">INR<span style="color:red"> *</span></span>
                 <input class="col col-30" type="text" placeholder="INR" ng-model="bloodTest.INR">
                 <span class="input-label col-20"></span>
                 <button class="button col-20" ng-class="inr_class" ng-click="toggleINRValue(0.8)" style="margin-top:5px;font-size:11px;white-space:pre-line;line-height:1.42;">Default < 1.2</button>
@@ -32,7 +32,7 @@
         </div>
         <div class="card unit-list">
             <div class="item item-select" style="background-color:lightblue">
-                <div class="input-label">20 Minutes WBCT</div>
+                <div class="input-label">20 Minutes WBCT<span style="color:red"> *</span></div>
                 <select ng-model="bloodTest.WBCT" style="background-color:lightblue">
                     <option>Clotted</option>
                     <option>Unclotted</option>
@@ -54,7 +54,7 @@
                 <span class="input-label col col-20"></span>
             </div>
             <div class="item item-input row" style="background-color:lightblue">
-                <span class="input-label col col-30">Platelet</span>
+                <span class="input-label col col-30">Platelet<span style="color:red"> *</span></span>
                 <input class="col col-30" type="text" placeholder="Platelet" ng-model="bloodTest.platelets">
                 <span class="input-label col col-20">/mcl</span>
                 <button class="button col col-20" ng-class="p_class" ng-click="togglePlateletValue(150000)" style="margin-top:5px;font-size:11px;white-space:pre-line;line-height:1.42;">Default >= 100,000</button>

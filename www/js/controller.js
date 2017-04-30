@@ -49,7 +49,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
         }
     })
 
-    .controller('MainCtrl', function ($scope, $state, $ionicHistory, UserService, RecordService, StageService, 
+    .controller('MainCtrl', function ($scope, $state, $ionicHistory, UserService, RecordService, StageService, $ionicModal, 
                                     $ionicPopup, $timeout, $rootScope, $ionicLoading, $cordovaLocalNotification, $interval) {        
         
         $scope.user = {};
@@ -101,6 +101,16 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
                 historyRoot: true
             });
             $state.go('home');
+        }
+
+        $ionicModal.fromTemplateUrl('templates/about.html', {
+            scope: $scope
+        }).then(function(modal) {
+            $scope.aboutModal = modal;
+        });
+
+        $scope.about = function() {
+            $scope.aboutModal.show()
         }
 
         $scope.searchCases = function() {
@@ -292,10 +302,10 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
 
             var phR = /^[0-9]{5}$/
             var nR = /^[0-9]{13}$/
-            if ((user.physician_type == "Physician" || user.physician_type == "Pharmacist") && !phR.test(user.physician_id)) {
+            if ((user.physician_type == "Physician" || user.physician_type == "Pharmacist") && user.physician_id && !phR.test(user.physician_id)) {
                 valid = false;
                 $scope.show_phid_error = true;
-            } else if (user.physician_type == "Nurse" && !nR.test(user.physician_id)) {
+            } else if (user.physician_type == "Nurse" && user.physician_id && !nR.test(user.physician_id)) {
                 valid = false;
                 $scope.show_phid_error = true;
             } else {
@@ -612,7 +622,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
                     title: "Patient national ID is invalid",
                     template: 'Only number with length 13 is acceptable!'
                 });
-            } 
+            }
             if (!patient.patient_name) {
                 valid = false;
                 $ionicPopup.alert({

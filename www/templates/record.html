@@ -1,7 +1,7 @@
 <ion-view title="Record Information (#2)">
     <ion-nav-buttons side="left">
         <button class="button button-icon button-clear ion-folder" menu-toggle="left"></button>
-    </ion-nav-buttons>   
+    </ion-nav-buttons>  
     <ion-content>
         <div class="card">
             <div class="item item-divider">Physician's information</div>
@@ -29,7 +29,7 @@
                 <input type="text" placeholder="National ID" ng-model="patient.patient_national_id" ng-readonly="editNationalId" ng-change="retrievePatient()">
             </div>
             <div class="item item-input">
-                <span class="input-label">Patient Name</span>
+                <span class="input-label">Patient Name<span style="color:red"> *</span></span>
                 <input type="text" placeholder="Patient Name" ng-model="patient.patient_name">
             </div>
             <div class="item item-select">
