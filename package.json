@@ -16,11 +16,16 @@
     "shelljs": "^0.3.0"
   },
   "cordovaPlugins": [
-    "cordova-plugin-device",
+    "cordova-plugin-app-event",
+    "cordova-plugin-badge",
     "cordova-plugin-console",
-    "cordova-plugin-whitelist",
+    "cordova-plugin-datepicker",
+    "cordova-plugin-device",
+    "cordova-plugin-geolocation",
     "cordova-plugin-splashscreen",
     "cordova-plugin-statusbar",
+    "cordova-plugin-whitelist",
+    "de.appplant.cordova.plugin.local-notification",
     "ionic-plugin-keyboard"
   ],
   "cordovaPlatforms": [
