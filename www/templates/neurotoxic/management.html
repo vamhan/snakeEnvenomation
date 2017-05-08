@@ -47,9 +47,11 @@
         </div>
 
         <div class="card info-list" ng-show="show_checktime">
-            <div class="item item-divider">
-                <div style="float:left;margin:6px 30px 0px 5px">Number of check and notification times</div>
-                <button class="button button-calm button-small" ng-click="doRefresh()" style="float:right;width: 80px">Update</button>
+            <div class="item item-divider row">
+                <div class="col col-80" style="white-space: normal;font-weight: 500;margin-top: 5px">Number of check and notification times</div>
+                <div class="col col-20">
+                    <button class="button button-calm button-small" ng-click="doRefresh()">Refresh</button>
+                </div>
             </div>
             <div class="item">
                 <ul class='indicate-circle'>
@@ -57,14 +59,18 @@
                 </ul>  
             </div>
             <div class="item">
-                <ul class='indicate-circle'>
-                    <li class="active"></li>
-                </ul>
-                <div style="float:left;margin:6px 30px 0px 5px">จำนวนครั้งที่ตรวจไปแล้ว</div>
-                <ul class='indicate-circle'>
-                    <li class="notif"></li>
-                </ul>
-                <div style="float:left;margin:6px 30px 0px 5px">จำนวนครั้งที่แจ้งเตือนไปแล้ว</div> 
+                <div style="float:left;margin-right: 20px;margin-bottom: 5px">
+                    <ul class='indicate-circle' style="float: left;">
+                        <li class="active"></li>
+                    </ul>
+                    <div style="float: left;margin:6px 0px 0px 5px">จำนวนครั้งที่ตรวจไปแล้ว</div>
+                </div>
+                <div style="float:left;margin-right: 20px">
+                    <ul class='indicate-circle' style="float: left;">
+                        <li class="notif"></li>
+                    </ul>
+                    <div style="float: left;margin:6px 0px 0px 5px">จำนวนครั้งที่แจ้งเตือนไปแล้ว</div> 
+                </div>
             </div>
         </div>
         

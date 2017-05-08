@@ -34,12 +34,12 @@
 </head>
 
 <body>
-    <ion-side-menus ng-controller="MainCtrl">
+    <ion-side-menus ng-controller="MainCtrl" ng-cloak>
         <div ng-class="preventClick"></div>
         <ion-side-menu side="left">
             <ion-header-bar class="bar bar-header bar-dark">
                 <button menu-close class="button button-clear button-primary" ng-click="logout()">Logout</button>
-                <button menu-close class="button button-clear button-primary" ng-click="about()">v0.1.0b</button>
+                <button menu-close class="button button-clear button-primary" ng-click="about()">v{{ version }}</button>
             </ion-header-bar>
             <ion-content style="background-image:none">       
                 <ion-list>
@@ -115,6 +115,7 @@
         </ion-side-menu>
 
     </ion-side-menus>
+    <div class="loader"></div>
 
 </body>
 

@@ -64,6 +64,8 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
 
         $scope.showAlert = !window.cordova
 
+        $scope.version = version;
+
         $scope.reloadRecords = function() {
             RecordService.getAllActiveRecords().success(function (data) {
                 $timeout(function () {
@@ -661,7 +663,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
                     title: 'Date of incident is invalid',
                     template: "Please input the valid date " + (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 ? "with format YYYY-mm-dd (for example 2017-02-02)" : "")
                 });
-            } else if (!Date.parse(fdate + " " + ftime) || !incident.incident_time) {
+            } else if (!Date.parse((fdate + " " + ftime).replace(' ', 'T')) || !incident.incident_time) {
                 valid = false;
                 $ionicPopup.alert({
                     title: 'Time of incident is invalid',

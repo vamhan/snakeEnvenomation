@@ -29,6 +29,9 @@ angular.module('snakeEnvenomation', ['ionic', 'snakeEnvenomation.controllers', '
             if (window.cordova) {
                 cordova.plugins.notification.local.cancelAll();
             }
+            var body = document.getElementsByTagName('body')[0];
+            var loader = document.getElementsByClassName('loader')[0];
+            body.removeChild(loader);
         });
 
         $rootScope.$on('$stateChangeStart', function (event, toState, toParams) {
