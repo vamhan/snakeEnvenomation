@@ -2,6 +2,6 @@
     "host": "localhost",
     "username": "cdss",
     "password": "cdss1q2w3e",
-    "database": "cdss"
-    "appUrl": "http://www.topwork.asia:8100"
+    "database": "cdss",
+    "appUrl": "http://cdss.topwork.asia"
 }

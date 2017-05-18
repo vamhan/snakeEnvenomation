@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.buzzfreeze.cdss" version="0.1.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.buzzfreeze.cdss" version="0.1.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>Mahidol Snake Envenomation</name>
   <description>
     Mahidol snake envenomation support system.
   </description>
-  <author email="krissada@buzzfreeze.com" href="http://www.topwork.asia/">
+  <author email="krissada@buzzfreeze.com" href="http://www.buzzfreeze.com/">
     BuzzFreeze Solution Co.,Ltd.
   </author>
   <content src="index.html"/>
