@@ -1197,7 +1197,13 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
         var stage = StageService.getStage($state.params.stage);
         $scope.stage = stage;
 
-        $scope.action_text = (stage.addition_text != null && $state.params.times == 1) ? stage.addition_text + "\n" + stage.action_text : stage.action_text;
+        // $scope.action_text = (stage.addition_text != null && $state.params.times == 1) ? stage.addition_text + "\n" + stage.action_text : stage.action_text;
+        $scope.action_text = "";
+        if (record.transaction.consult_reason && record.transaction.consult_reason == "Data Discordance") { // Consult PC: Data Discordance
+            $scope.action_text = stage.action_text;
+        } else { // Common Stage
+            $scope.action_text = (stage.addition_text != null && $state.params.times == 1) ? stage.addition_text + "\n" + stage.action_text : stage.action_text;
+        }
 
         if (stage.action_type == "alert") {
             var nextCheckText = "";
@@ -1279,7 +1285,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
                 title = "How to manage"
                 content = "<ul style='list-style: circle;-webkit-padding-start: 1em;'><li>หากมี Systemic bleeding (except microscopic hematuria) -> go to 1.2 and consult PC</li>"
                     + "<li>หากพบมีหนังตาตกหรือกล้ามเนื้ออ่อนแรง (อาจวินิจฉัยชนิดงูผิด) -> consult PC</li>"
-                    + "<li>หากพบว่าแผลบวม (อาจวินิจฉัยชนิดงูผิด) -> consult PC</li>"
+                    + (($scope.snake && [1,2].indexOf($scope.snake.snake_id) == -1) ? "<li>หากพบว่าแผลบวม (อาจวินิจฉัยชนิดงูผิด) -> consult PC</li>":"")
                     + "<li>ปกติไม่มีความจำเป็นต้องให้ antibiotic prophylaxis, การให้ antibiotic ให้เฉพาะรายที่มีลักษณะของการติดเชื้อ</li>"
                     + "<li>หาก UA มีผล blood positive, แต่ RBC 0-1 ควรระวังภาวะ hemolysis และ DIC ควรดู slide PBS</li>"
                     + "<li>Done = เมื่อ F/U เป็น OPD case ครบ 3 ครั้ง, ให้ administer tetanus prophylaxis</li></ul>"
@@ -1582,7 +1588,13 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
         var stage = StageService.getStage($state.params.stage);
         $scope.stage = stage;
 
-        $scope.action_text = (stage.addition_text != null && $state.params.times == 1) ? stage.addition_text + "\n" + stage.action_text : stage.action_text;
+        // $scope.action_text = (stage.addition_text != null && $state.params.times == 1) ? stage.addition_text + "\n" + stage.action_text : stage.action_text;
+        $scope.action_text = "";
+        if (record.transaction.consult_reason && record.transaction.consult_reason == "Data Discordance") { // Consult PC: Data Discordance
+            $scope.action_text = stage.action_text;
+        } else { // Common Stage
+            $scope.action_text = (stage.addition_text != null && $state.params.times == 1) ? stage.addition_text + "\n" + stage.action_text : stage.action_text;
+        }
 
         if (stage.action_type == "alert") {
             var nextCheckText = "";
