@@ -3,3 +3,5 @@ platforms/
 plugins/
 resources/
 npm-debug.log
+node_modules/
+.vscode/

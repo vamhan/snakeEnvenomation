@@ -1278,7 +1278,7 @@ angular.module('snakeEnvenomation.controllers', ['ionic', 'ngCordova', 'angular-
             if (type == 0) {
                 title = "Indication for antivenom"
                 content = "<ul style='list-style: circle;-webkit-padding-start: 1em;'><li>Systemic bleeding (except microscopic hematuria) or</li>"
-                    + "<li>Platelets < 100,000/mcL or</li>"
+                    + "<li>Platelets < 50,000/mcL or</li>"
                     + "<li>INR >= 1.20 or</li>"
                     + "<li>20-min WBCT: not clot</li></ul>"
             } else {
